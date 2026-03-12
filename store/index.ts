@@ -1,5 +1,7 @@
 import { AuthStore, DriverStore, LocationStore, MarkerData, User } from '@/types/type';
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useLocationStore = create<LocationStore>((set) => ({
   userLatitude: null,
@@ -71,9 +73,26 @@ export const usePromoStore = create<PromoStore>((set) => ({
   clearSelectedPromo: () => set(() => ({ selectedPromo: null })),
 }));
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  token: null,
-  user: null,
-  setAuth: (token: string, user: User) => set({ token, user }),
-  logout: () => set({ token: null, user: null }),
-}));
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      token: null,
+      user: null,
+      hasHydrated: false,
+      setAuth: (token: string, user: User) => set({ token, user }),
+      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
+      logout: () => set({ token: null, user: null }),
+    }),
+    {
+      name: 'bengo-auth-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: (state) => {
+        return () => {
+          if (state) {
+            state.setHasHydrated(true);
+          }
+        };
+      },
+    }
+  )
+);

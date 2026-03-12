@@ -9,7 +9,7 @@ import PromoSection from "@/components/Home/PromoSection";
 import { icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import * as Location from "expo-location";
 import { router } from "expo-router";
@@ -29,8 +29,7 @@ export default function HomeScreen() {
     setDestinationLocation,
     destinationLatitude: storeDestinationLatitude,
   } = useLocationStore();
-  const { user } = useUser();
-  const { signOut } = useAuth();
+  const { user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
   const [hasPermissions, setHasPermissions] = useState(false);
@@ -38,7 +37,7 @@ export default function HomeScreen() {
   const googleInputRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const handleSignOut = () => {
-    signOut();
+    logout();
     router.replace("/(auth)/sign-in");
   };
 
@@ -59,7 +58,7 @@ export default function HomeScreen() {
     const fetchUserData = async () => {
       if (!user?.id) return;
       try {
-        const response = await fetchAPI(`/(api)/user?clerkId=${user.id}`, {
+        const response = await fetchAPI(`/(api)/user/${user.id}`, {
           method: "GET",
         });
 
@@ -75,7 +74,7 @@ export default function HomeScreen() {
       try {
         // Check if user is a driver
         const driverRes = await fetchAPI(
-          `/(api)/driver/profile?clerk_id=${user.id}`,
+          `/(api)/driver/profile?user_id=${user.id}`,
           {
             method: "GET",
           }
@@ -128,7 +127,7 @@ export default function HomeScreen() {
 
       try {
         const driverRes = await fetchAPI(
-          `/(api)/driver/profile?clerk_id=${user.id}`,
+          `/(api)/driver/profile?user_id=${user.id}`,
           { method: "GET" }
         );
 
@@ -221,7 +220,6 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1 bg-general-500">
         <View className="px-4">
           {/* Header */}
@@ -229,10 +227,7 @@ export default function HomeScreen() {
             <Text className="text-2xl capitalize font-JakartaExtraBold text-secondary-900">
               {t("home.greeting")}
               {", "}
-              {userData?.name ||
-                (user?.firstName || user?.lastName
-                  ? `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-                  : user?.emailAddresses[0].emailAddress.split("@")[0])}
+              {userData?.name || user?.name}
               {""}👋
             </Text>
             <TouchableOpacity
@@ -334,6 +329,5 @@ export default function HomeScreen() {
           </BottomSheetView>
         </BottomSheet>
       </SafeAreaView>
-    </GestureHandlerRootView>
   );
 }

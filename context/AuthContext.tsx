@@ -8,12 +8,13 @@ interface AuthContextType {
   logout: () => void;
   user: User | null;
   token: string | null;
+  hasHydrated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { setAuth, logout: clearAuth, user, token } = useAuthStore();
+  const { setAuth, logout: clearAuth, user, token, hasHydrated } = useAuthStore();
 
   const login = async (account: string, password: string) => {
     try {
@@ -61,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ login, logout, user, token }}>
+    <AuthContext.Provider value={{ login, logout, user, token, hasHydrated }}>
       {children}
     </AuthContext.Provider>
   );

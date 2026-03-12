@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import * as ImagePicker from "expo-image-picker";
 
 import PageHeader from "@/components/Common/PageHeader";
@@ -22,7 +22,7 @@ import { fetchAPI } from "@/lib/fetch";
 
 export default function DriverRegistrationScreen() {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
 
@@ -44,7 +44,7 @@ export default function DriverRegistrationScreen() {
       if (!user?.id) return;
       try {
         const response = await fetchAPI(
-          `/(api)/driver/profile?clerk_id=${user.id}`,
+          `/(api)/driver/profile?user_id=${user.id}`,
           { method: "GET" }
         );
 
@@ -94,7 +94,7 @@ export default function DriverRegistrationScreen() {
 
   const pickImage = async (type: "license" | "vehicle" | "profile") => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: type === "profile" ? [1, 1] : [4, 3],
       quality: 0.8,
@@ -102,7 +102,7 @@ export default function DriverRegistrationScreen() {
 
     if (!result.canceled && result.assets[0]) {
       const uri = result.assets[0].uri;
-      const photoKey = `${type}_photo_uri`;
+      const photoKey = `${type}_photo_uri` as keyof typeof form;
 
       setForm((prev) => ({ ...prev, [photoKey]: uri }));
 
@@ -148,10 +148,10 @@ export default function DriverRegistrationScreen() {
         license: "license_image_url",
         vehicle: "car_image_url",
         profile: "profile_image_url",
-      };
+      } as const;
 
       // Store the Cloudinary URL
-      const urlKey = urlFieldMap[type];
+      const urlKey = urlFieldMap[type] as keyof typeof form;
 
       setForm((prev) => {
         const updatedForm = { ...prev, [urlKey]: cloudinaryUrl };
@@ -164,7 +164,7 @@ export default function DriverRegistrationScreen() {
       );
 
       // Clear the local URI on error
-      const photoKey = `${type}_photo_uri`;
+      const photoKey = `${type}_photo_uri` as keyof typeof form;
       setForm((prev) => ({ ...prev, [photoKey]: null }));
     } finally {
       setUploadingImage((prev) => ({ ...prev, [type]: false }));
@@ -225,10 +225,9 @@ export default function DriverRegistrationScreen() {
     setLoading(true);
 
     const submitData = {
-      clerk_id: user?.id,
-      email: user?.primaryEmailAddress?.emailAddress,
-      first_name: user?.firstName || "",
-      last_name: user?.lastName || "",
+      user_id: user?.id,
+      email: user?.email,
+      name: user?.name || "",
       phone: form.phone,
       license_number: form.license_number,
       vehicle_type: form.vehicle_type,
@@ -252,8 +251,6 @@ export default function DriverRegistrationScreen() {
           registerResponse.error || t("driver.registrationFailed")
         );
       }
-
-      const driverId = registerResponse.data.driver_id;
 
       Alert.alert(t("common.success"), t("driver.registrationSuccess"), [
         {
@@ -304,9 +301,9 @@ export default function DriverRegistrationScreen() {
           label={t("profile.phone")}
           placeholder="+84 123 456 789"
           icon={icons.chat}
-          iconStyle="#22c55e"
+          iconStyle="text-green-500"
           value={form.phone}
-          onChangeText={(value) =>
+          onChangeText={(value: string) =>
             setForm((prev) => ({ ...prev, phone: value }))
           }
           keyboardType="phone-pad"
@@ -316,9 +313,9 @@ export default function DriverRegistrationScreen() {
           label={t("driver.licenseNumber")}
           placeholder="123456789"
           icon={icons.list}
-          iconStyle="#22c55e"
+          iconStyle="text-green-500"
           value={form.license_number}
-          onChangeText={(value) =>
+          onChangeText={(value: string) =>
             setForm((prev) => ({ ...prev, license_number: value }))
           }
         />

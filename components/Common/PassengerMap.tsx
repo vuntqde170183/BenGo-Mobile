@@ -11,26 +11,19 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 
 const PassengerMap = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const {
     data: drivers,
     loading,
     error,
   } = useFetch<Driver[]>(
-    `/(api)/driver${user?.id ? `?clerk_id=${user.id}` : ""}`
+    `/(api)/driver${user?.id ? `?user_id=${user.id}` : ""}`
   );
 
   useEffect(() => {
-    if (Array.isArray(drivers)) {
-      const counts = drivers.reduce((acc: { [key: string]: number }, driver) => {
-        const type = driver.vehicle_type || "Unknown";
-        acc[type] = (acc[type] || 0) + 1;
-        return acc;
-      }, {});
-    }
     if (error) console.error("PassengerMap - Drivers fetch error:", error);
   }, [drivers, error]);
   const {

@@ -1,27 +1,18 @@
-import { tokenCache } from "@/lib/auth";
-import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
+import "react-native-reanimated";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { LogBox } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import "react-native-reanimated";
+
 import "../global.css";
 import "@/lib/i18n"; // Initialize i18n
 import { AuthProvider } from "@/context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
-if (!publishableKey) {
-  throw new Error(
-    "Thiếu Publishable Key. Vui lòng thiết lập EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY trong file .env"
-  );
-}
-
-LogBox.ignoreLogs(["Clerk:", "new NativeEventEmitter", "[clerk/telemetry]"]);
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -40,32 +31,21 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  useEffect(() => {
-    // rideStatusUpdater.start();
-    return () => {
-      // rideStatusUpdater.stop();
-    };
-  }, []);
-
   if (!loaded) {
     return null;
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-        <ClerkLoaded>
-          <AuthProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(root)" options={{ headerShown: false }} />
-              <Stack.Screen name="(driver)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </AuthProvider>
-        </ClerkLoaded>
-      </ClerkProvider>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(root)" options={{ headerShown: false }} />
+          <Stack.Screen name="(driver)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }

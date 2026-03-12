@@ -47,7 +47,7 @@ declare interface MapProps {
   onMapReady?: () => void;
 }
 
-declare interface Ride {
+export interface Ride {
   ride_id?: number | string;
   origin_address: string;
   destination_address: string;
@@ -397,7 +397,7 @@ declare interface RideStatusSyncData {
   };
 }
 
-declare interface User {
+export interface User {
   id: string;
   phone: string;
   name: string;
@@ -405,9 +405,11 @@ declare interface User {
   email?: string;
 }
 
-declare interface AuthStore {
+export interface AuthStore {
   token: string | null;
   user: User | null;
+  hasHydrated: boolean;
   setAuth: (token: string, user: User) => void;
+  setHasHydrated: (state: boolean) => void;
   logout: () => void;
 }

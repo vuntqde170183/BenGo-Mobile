@@ -25,13 +25,13 @@ export interface DriverStats {
 export const driverService = {
   toggleStatus: async (payload: { isOnline: boolean; location: { lat: number; lng: number } }) => {
     return await fetchAPI("/(api)/driver/status", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(payload),
     });
   },
 
-  getPendingOrders: async (lat: number, lng: number, radiusInKm: number = 5): Promise<PendingOrder[]> => {
-    const response = await fetchAPI(`/(api)/driver/orders/pending?lat=${lat}&lng=${lng}&radius=${radiusInKm}`);
+  getPendingOrders: async (lat: number, lng: number, radius: number = 5): Promise<PendingOrder[]> => {
+    const response = await fetchAPI(`/(api)/driver/orders/pending?lat=${lat}&lng=${lng}&radius=${radius}`);
     return response.data || [];
   },
 
@@ -41,14 +41,14 @@ export const driverService = {
     });
   },
 
-  getStats: async (startDate: string, endDate: string): Promise<DriverStats> => {
-    const response = await fetchAPI(`/(api)/driver/stats?startDate=${startDate}&endDate=${endDate}`);
+  getStats: async (from: string, to: string): Promise<DriverStats> => {
+    const response = await fetchAPI(`/(api)/driver/stats?from=${from}&to=${to}`);
     return response.data || { totalEarnings: 0, totalTrips: 0, rating: 5 };
   },
 
-  updateLocation: async (location: { lat: number; lng: number }) => {
+  updateLocation: async (location: { lat: number; lng: number; heading?: number }) => {
     return await fetchAPI("/(api)/driver/location", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(location),
     });
   },

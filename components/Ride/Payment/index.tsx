@@ -1,4 +1,4 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import { useStripe } from "@stripe/stripe-react-native";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -28,8 +28,8 @@ const Payment = ({
 }: PaymentProps) => {
   const { t } = useTranslation();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const { userId } = useAuth();
-  const { user } = useUser();
+  const { user } = useAuth();
+  const userId = user?.id;
 
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPaymentIntent, setCurrentPaymentIntent] = useState<any>(null);
@@ -148,11 +148,8 @@ const Payment = ({
         driver_id: driverId,
         user_id: userId,
         payment_intent_id: currentPaymentIntent?.id || "cash_payment",
-        user_name: user?.fullName || user?.firstName || fullName || "User",
-        user_email:
-          user?.emailAddresses?.[0]?.emailAddress ||
-          email ||
-          "user@example.com",
+        user_name: user?.name || fullName || "User",
+        user_email: user?.email || email || "user@example.com",
       };
 
       const response = await fetchAPI("/(api)/ride/book", {
@@ -179,13 +176,13 @@ const Payment = ({
         throw new Error(t("payment.amountRequired"));
       }
 
-      if (!email) {
+      if (!email && !user?.email) {
         throw new Error(t("payment.emailRequired"));
       }
 
       const requestBody = {
-        name: fullName || email.split("@")[0],
-        email: email,
+        name: user?.name || fullName || (email || "").split("@")[0],
+        email: user?.email || email,
         amount: amount,
       };
 

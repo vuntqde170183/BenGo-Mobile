@@ -1,44 +1,46 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, Switch, Image } from 'react-native';
+import { icons } from '@/constants';
 
 interface HeaderProps {
   isOnline: boolean;
-  onOpenSettings: () => void;
+  onToggleStatus: () => void;
   userName?: string;
+  avatarUrl?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
   isOnline,
-  onOpenSettings,
+  onToggleStatus,
   userName,
 }) => {
   return (
-    <View className="flex-row items-center justify-between px-5 py-4 bg-white border-b border-gray-100">
+    <View className="flex-row items-center justify-between px-5 py-3 bg-white border-b border-gray-50 rounded-b-2xl shadow-sm">
       <View className="flex-row items-center">
-        <View className="bg-green-500 w-10 h-10 rounded-xl items-center justify-center mr-3">
-            <Text className="text-white font-JakartaBold text-xl">B</Text>
+        <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center border border-gray-50">
+            <Image 
+              source={icons.person}
+              className="w-6 h-6"
+              tintColor="#374151"
+            />
         </View>
-        <View>
-          <Text className="text-gray-400 text-xs font-JakartaMedium">Xin chào,</Text>
-          <Text className="text-gray-900 text-base font-JakartaBold">{userName || 'Tài xế'}</Text>
+        <View className="ml-3">
+          <Text className="text-gray-900 text-base font-JakartaBold leading-tight">{userName || 'Tài xế'}</Text>
+          <Text className={`text-[10px] font-JakartaMedium ${isOnline ? 'text-green-500' : 'text-gray-400'}`}>
+            {isOnline ? '● Đang trực tuyến' : '○ Ngoại tuyến'}
+          </Text>
         </View>
       </View>
       
       <View className="flex-row items-center">
-        <View className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full mr-2 border border-gray-100">
-          <View className={`w-2 h-2 rounded-full mr-2 ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
-          <Text className={`text-[10px] font-JakartaMedium ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
-            {isOnline ? 'Trực tuyến' : 'Ngoại tuyến'}
-          </Text>
-        </View>
-        
-        <TouchableOpacity 
-          className="w-9 h-9 bg-gray-50 rounded-full items-center justify-center border border-gray-100"
-          onPress={onOpenSettings}
-        >
-          <Ionicons name="settings-outline" size={18} color="#374151" />
-        </TouchableOpacity>
+        <Switch
+          trackColor={{ false: "#E5E7EB", true: "#22C55E" }}
+          thumbColor="#FFFFFF"
+          ios_backgroundColor="#E5E7EB"
+          onValueChange={onToggleStatus}
+          value={isOnline}
+          style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+        />
       </View>
     </View>
   );

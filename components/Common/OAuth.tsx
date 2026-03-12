@@ -1,25 +1,16 @@
 import { icons } from "@/constants";
-import { googleOAuth } from "@/lib/auth";
-import { useOAuth } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, View, Alert } from "react-native";
 import CustomButton from "./CustomButton";
 import { useTranslation } from "react-i18next";
 
 const OAuth = () => {
   const { t } = useTranslation();
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+
   const handleGoogleSignIn = useCallback(async () => {
-    try {
-      const result = await googleOAuth(startOAuthFlow);
-      if (result.code === "session_exists" || result.code === "success") {
-        router.push("/(root)/tabs/home");
-      }
-    } catch (err) {
-      console.error("❌ OAuth error:", err);
-    }
-  }, []);
+    Alert.alert(t("common.info"), "Google Sign-In is temporarily unavailable.");
+  }, [t]);
 
   return (
     <View>

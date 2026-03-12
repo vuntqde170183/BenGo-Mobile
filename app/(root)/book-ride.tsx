@@ -4,7 +4,7 @@ import PageHeader from "@/components/Common/PageHeader";
 import { icons } from "@/constants";
 import { formatTime } from "@/lib/utils";
 import { useDriverStore, useLocationStore, usePromoStore } from "@/store";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { Image, Text, View, Alert, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +16,7 @@ import { router } from "expo-router";
 
 const BookRide = () => {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const {
     userAddress,
     destinationAddress,
@@ -244,10 +244,10 @@ const BookRide = () => {
               )}
 
               <Payment
-                fullName={user?.fullName!}
-                email={user?.emailAddresses[0].emailAddress!}
+                fullName={user?.name!}
+                email={user?.email!}
                 amount={currentPrice.toString()}
-                driverId={driverDetails?.id}
+                driverId={driverDetails?.id!}
                 rideTime={driverDetails?.time!}
                 originAddress={userAddress!}
                 destinationAddress={destinationAddress!}

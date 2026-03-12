@@ -3,7 +3,6 @@ import InputField from "@/components/Common/InputField";
 import OAuth from "@/components/Common/OAuth";
 import { icons, images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
-import { useSignUp } from "@clerk/clerk-expo";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -23,7 +22,6 @@ import { useTranslation } from "react-i18next";
 
 const SignUp = () => {
   const { t } = useTranslation();
-  const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -34,90 +32,40 @@ const SignUp = () => {
     phone: "",
   });
 
-  const [verification, setVerification] = useState({
-    state: "default",
-    error: "",
-    code: "",
-  });
-
   const onSignUpPress = async () => {
-    if (!isLoaded) {
+    if (!form.name || !form.email || !form.password) {
+      Alert.alert(t("common.error"), t("auth.missingFields") || "Vui lòng nhập đầy đủ thông tin");
       return;
     }
+
     setLoading(true);
     try {
-      await signUp.create({
-        emailAddress: form.email,
-        password: form.password,
+      // Direct call to register user in our database
+      const response = await fetchAPI("/(api)/user", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          clerkId: `user_${Date.now()}`, // Generating a mock ID since we don't have Clerk
+          phone: form.phone,
+          password: form.password, // Ideally hashed on server
+        }),
       });
 
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      if (response.error) {
+        throw new Error(response.error);
+      }
 
-      setVerification({
-        ...verification,
-        state: "pending",
-      });
+      setShowSuccessModal(true);
     } catch (err: any) {
       Alert.alert(
         t("common.error"),
-        err.errors?.[0]?.longMessage || t("errors.somethingWentWrong")
+        err.message || t("errors.somethingWentWrong")
       );
     } finally {
       setLoading(false);
     }
   };
-
-  const onPressVerify = async () => {
-    if (!isLoaded) return;
-    setLoading(true);
-    try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code: verification.code,
-      });
-
-      if (completeSignUp.status === "complete") {
-        const response = await fetchAPI("/(api)/user", {
-          method: "POST",
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            clerkId: completeSignUp.createdUserId,
-            phone: form.phone,
-          }),
-        });
-
-        if (response.error) {
-          throw new Error(response.error);
-        }
-
-        await setActive({ session: completeSignUp.createdSessionId });
-        setVerification({
-          ...verification,
-          state: "success",
-        });
-      } else {
-        setVerification({
-          ...verification,
-          error: t("errors.tryAgain"),
-          state: "failed",
-        });
-      }
-    } catch (err: any) {
-      setVerification({
-        ...verification,
-        error: err.errors?.[0]?.longMessage || t("errors.somethingWentWrong"),
-        state: "failed",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (verification.state === "success") {
-      setShowSuccessModal(true);
-    }
-  }, [verification.state]);
 
   return (
     <SafeAreaView className="flex-1 bg-general-500">
@@ -196,43 +144,6 @@ const SignUp = () => {
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
 
-      {/* Modal for Verification OTP */}
-      <Modal
-        visible={verification.state === "pending"}
-        transparent={true}
-        animationType="fade"
-      >
-        <View
-          className="flex-1 justify-center items-center px-4"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <View className="bg-white w-full px-7 py-9 rounded-2xl min-h-[300px]">
-            <Text className="mb-2 text-2xl text-black font-JakartaBold">
-              {t("auth.signUp")}
-            </Text>
-            <Text className="mb-4 font-Jakarta">
-              {t("common.loading")} {form.email}
-            </Text>
-            <InputField
-              label={t("common.confirm")}
-              placeholder="*****"
-              icon="lock-closed-outline"
-              value={verification.code}
-              keyboardType="numeric"
-              onChangeText={(code) =>
-                setVerification({ ...verification, code })
-              }
-            />
-            <CustomButton
-              title={t("common.confirm")}
-              onPress={onPressVerify}
-              loading={loading}
-              className="mt-4 bg-success-500"
-            />
-          </View>
-        </View>
-      </Modal>
-
       {/* Modal for Success */}
       <Modal
         visible={showSuccessModal}
@@ -249,16 +160,16 @@ const SignUp = () => {
               className="w-[110px] h-[110px] mx-auto my-4"
             />
             <Text className="text-2xl text-center text-black font-JakartaBold">
-              {t("common.success")}!
+              Đăng ký thành công!
             </Text>
             <Text className="mt-4 text-base text-center text-gray-400 font-Jakarta">
-              {t("auth.createAccount")}
+              Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để bắt đầu.
             </Text>
             <CustomButton
-              title={t("common.done")}
+              title={t("auth.signIn")}
               onPress={() => {
                 setShowSuccessModal(false);
-                router.push("/(root)/tabs/home");
+                router.replace("/(auth)/sign-in");
               }}
               className="mt-4"
             />

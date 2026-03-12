@@ -86,7 +86,7 @@ const SignIn = () => {
     setIsLoading(true);
     try {
       const loggedInUser = await login(account, password);
-      
+
       if (loggedInUser?.role === "DRIVER") {
         router.replace("/(driver)/tabs/home");
       } else {
@@ -146,7 +146,6 @@ const SignIn = () => {
 
             {/* Form */}
             <View className="flex-1">
-              {/* Account Input - Email hoặc SĐT */}
               <InputField
                 label="Email hoặc Số điện thoại"
                 placeholder="Nhập email hoặc số điện thoại"

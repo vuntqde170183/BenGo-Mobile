@@ -13,7 +13,7 @@ import { Alert, Image, Text, View, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { RatingModal } from "@/components/Ride/RatingModal";
 import { useState } from "react";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import { fetchAPI } from "@/lib/fetch";
 import CustomButton from "@/components/Common/CustomButton";
 
@@ -31,7 +31,8 @@ const RideCard = ({
   onStatusUpdated,
 }: RideCardProps) => {
   const { t, i18n } = useTranslation();
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.id;
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 

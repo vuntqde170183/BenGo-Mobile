@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 
 import PageHeader from "@/components/Common/PageHeader";
@@ -21,7 +21,7 @@ import { DriverProfile as DriverProfileType } from "@/types/type";
 
 export default function DriverProfileScreen() {
   const { t, i18n } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [driverProfile, setDriverProfile] = useState<DriverProfileType | null>(
@@ -29,9 +29,10 @@ export default function DriverProfileScreen() {
   );
 
   const loadDriverProfile = async () => {
+    if (!user?.id) return;
     try {
       const response = await fetchAPI(
-        `/(api)/driver/profile?clerk_id=${user?.id}`,
+        `/(api)/driver/profile?user_id=${user.id}`,
         {
           method: "GET",
         }
@@ -58,7 +59,7 @@ export default function DriverProfileScreen() {
 
   useEffect(() => {
     loadDriverProfile();
-  }, []);
+  }, [user?.id]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -131,17 +132,21 @@ export default function DriverProfileScreen() {
             className="p-4"
           >
             <View className="flex-row items-center">
-              <Image
-                source={{
-                  uri:
-                    driverProfile.profile_image_url ||
-                    "https://via.placeholder.com/80",
-                }}
-                className="w-20 h-20 rounded-full border-4 border-white"
-              />
+              <View 
+                className="w-20 h-20 rounded-full bg-white flex items-center justify-center border-4 border-white shadow-xl"
+              >
+                {driverProfile.profile_image_url ? (
+                  <Image
+                    source={{ uri: driverProfile.profile_image_url }}
+                    className="w-full h-full rounded-full"
+                  />
+                ) : (
+                  <Ionicons name="person" size={40} color="#10B981" />
+                )}
+              </View>
               <View className="flex-1 ml-4">
                 <Text className="text-2xl font-JakartaBold text-neutral-200">
-                  {driverProfile.last_name} {driverProfile.first_name}
+                  {driverProfile.last_name || user?.name} {driverProfile.first_name || ""}
                 </Text>
                 <View className="flex-row items-center mt-1">
                   <Ionicons name="star" size={16} color="#FCD34D" />
@@ -165,10 +170,9 @@ export default function DriverProfileScreen() {
                   name={statusColor.icon as any}
                   size={16}
                   color={statusColor.text}
-                  className="mt-0.5"
                 />
                 <Text
-                  className="ml-2 font-JakartaBold mb-1"
+                  className="ml-2 font-JakartaBold"
                   style={{ color: statusColor.text }}
                 >
                   {getStatusText(driverProfile.approval_status)}
@@ -250,7 +254,7 @@ export default function DriverProfileScreen() {
             />
           )}
 
-          <View className="space-y-3">
+          <View>
             <View className="flex-row items-center py-3 border-b border-gray-100">
               <View className="w-10 h-10 items-center justify-center bg-green-50 rounded-full">
                 <Ionicons name="car-sport-outline" size={20} color="#22c55e" />
@@ -301,7 +305,7 @@ export default function DriverProfileScreen() {
             {t("driver.contactInfo")}
           </Text>
 
-          <View className="space-y-3">
+          <View>
             <View className="flex-row items-center py-3 border-b border-gray-100">
               <View className="w-10 h-10 items-center justify-center bg-green-50 rounded-full">
                 <Ionicons name="mail-outline" size={20} color="#10B981" />
@@ -311,7 +315,7 @@ export default function DriverProfileScreen() {
                   {t("profile.email")}
                 </Text>
                 <Text className="text-base font-JakartaBold text-gray-900">
-                  {driverProfile.email}
+                  {driverProfile.email || user?.email}
                 </Text>
               </View>
             </View>

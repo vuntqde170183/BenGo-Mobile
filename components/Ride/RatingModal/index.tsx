@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { StarRating } from "../../Common/StarRating";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -46,7 +46,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
   onRatingSubmitted,
 }) => {
   const { t, i18n } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);

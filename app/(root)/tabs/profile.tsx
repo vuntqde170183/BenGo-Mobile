@@ -1,4 +1,4 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import {
   Image,
   ScrollView,
@@ -20,7 +20,7 @@ import { fetchAPI } from "@/lib/fetch";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function ProfileScreen() {
-  const { user } = useUser();
+  const { user, logout } = useAuth();
 
   const { t } = useTranslation();
   const [isDriver, setIsDriver] = useState(false);
@@ -33,7 +33,6 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [userData, setUserData] = useState<any>(null);
-  const { signOut } = useAuth();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -68,7 +67,7 @@ export default function ProfileScreen() {
     if (!user?.id) return;
 
     try {
-      const response = await fetchAPI(`/(api)/user?clerkId=${user.id}`, {
+      const response = await fetchAPI(`/(api)/user/${user.id}`, {
         method: "GET",
       });
 
@@ -115,7 +114,7 @@ export default function ProfileScreen() {
 
     try {
       const response = await fetchAPI(
-        `/(api)/driver/profile?clerk_id=${user.id}`,
+        `/(api)/driver/profile?user_id=${user.id}`,
         { method: "GET" }
       );
 
@@ -161,7 +160,7 @@ export default function ProfileScreen() {
   const userId = user?.id || "default";
   const backgroundImageUrl = `https://picsum.photos/seed/${userId}/800/400`;
   const handleSignOut = () => {
-    signOut();
+    logout();
     router.replace("/(auth)/sign-in");
   };
   return (
@@ -197,21 +196,16 @@ export default function ProfileScreen() {
                 }}
               />
               <View className="flex justify-center items-center h-full">
-                <Image
-                  source={{
-                    uri: user?.externalAccounts[0]?.imageUrl ?? user?.imageUrl,
-                  }}
-                  style={{ width: 110, height: 110, borderRadius: 55 }}
-                  className="border-4 border-white shadow-xl shadow-black/50"
-                />
+                <View 
+                  className="w-[110px] h-[110px] rounded-full bg-green-100 flex items-center justify-center border-4 border-white shadow-xl"
+                >
+                  <Ionicons name="person" size={60} color="#16a34a" />
+                </View>
                 <Text className="mt-3 text-xl font-JakartaBold text-neutral-200">
-                  {userData?.name ||
-                    (user?.firstName || user?.lastName
-                      ? `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-                      : user?.emailAddresses[0].emailAddress.split("@")[0])}
+                  {userData?.name || user?.name}
                 </Text>
                 <Text className="mt-1 text-sm font-JakartaMedium text-neutral-200/80">
-                  {user?.primaryEmailAddress?.emailAddress || ""}
+                  {user?.email || ""}
                 </Text>
               </View>
             </ImageBackground>
@@ -357,10 +351,7 @@ export default function ProfileScreen() {
                       {t("profile.name")}
                     </Text>
                     <Text className="text-base font-JakartaBold text-neutral-800">
-                      {userData?.name ||
-                        (user?.firstName || user?.lastName
-                          ? `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-                          : user?.emailAddresses[0].emailAddress.split("@")[0])}
+                      {userData?.name || user?.name}
                     </Text>
                   </View>
                 </View>
@@ -375,8 +366,7 @@ export default function ProfileScreen() {
                       {t("profile.email")}
                     </Text>
                     <Text className="text-base font-JakartaBold text-neutral-800">
-                      {user?.primaryEmailAddress?.emailAddress ||
-                        t("common.notProvided")}
+                      {user?.email || t("common.notProvided")}
                     </Text>
                   </View>
                 </View>
@@ -391,7 +381,7 @@ export default function ProfileScreen() {
                       {t("profile.phone")}
                     </Text>
                     <Text className="text-base font-JakartaBold text-neutral-800">
-                      {formatPhoneNumber(userData?.phone)}
+                      {formatPhoneNumber(userData?.phone || user?.phone)}
                     </Text>
                   </View>
                 </View>

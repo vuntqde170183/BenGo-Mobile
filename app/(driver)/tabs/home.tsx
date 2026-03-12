@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Alert, Modal, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Alert, Modal, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import {
   Header,
-  LocationCard,
-  ToggleCard,
-  ActionCard,
-  StatsCard,
   MapCard,
+  SummaryCard,
   type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
 import { useAuth } from '@/context/AuthContext';
@@ -20,6 +17,7 @@ interface LocationState {
   coordinates: string;
   latitude: number;
   longitude: number;
+  heading: number | null;
 }
 
 const DriverHome = () => {
@@ -43,8 +41,10 @@ const DriverHome = () => {
     coordinates: '',
     latitude: 0,
     longitude: 0,
+    heading: null,
   });
   const { user } = useAuth();
+  const mapRef = useRef<any>(null);
 
   // Fetch pending orders nearby
   const fetchPendingOrders = useCallback(async () => {
@@ -52,11 +52,13 @@ const DriverHome = () => {
 
     setIsLoadingOrders(true);
     try {
+      console.log('[DriverHome] Fetching pending orders at:', currentLocation.latitude, currentLocation.longitude);
       const orders = await driverService.getPendingOrders(
         currentLocation.latitude,
         currentLocation.longitude,
         5,
       );
+      console.log('[DriverHome] Pending orders received:', orders?.length || 0);
       setPendingOrders(orders || []);
     } catch (error) {
       console.error('Fetch pending orders error:', error);
@@ -76,6 +78,7 @@ const DriverHome = () => {
     const newStatus = !isOnline;
 
     try {
+      console.log('[DriverHome] Toggling status to:', newStatus);
       await driverService.toggleStatus({
         isOnline: newStatus,
         location: {
@@ -122,13 +125,11 @@ const DriverHome = () => {
     setIsLoadingStats(true);
     try {
       const today = new Date();
-      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      const dateString = today.toISOString().split('T')[0];
 
-      const stats = await driverService.getStats(
-        startOfDay.toISOString(),
-        endOfDay.toISOString(),
-      );
+      console.log('[DriverHome] Fetching stats for:', dateString);
+      const stats = await driverService.getStats(dateString, dateString);
+      console.log('[DriverHome] Stats received:', stats);
       setDriverStats(stats);
     } catch (error) {
       console.error('Fetch stats error:', error);
@@ -138,52 +139,55 @@ const DriverHome = () => {
   }, []);
 
   // Update location to backend periodically
-  const updateLocationToServer = useCallback(async (lat: number, lng: number) => {
+  const updateLocationToServer = useCallback(async (lat: number, lng: number, heading?: number) => {
     try {
-      await driverService.updateLocation({ lat, lng });
+      await driverService.updateLocation({ lat, lng, heading });
     } catch (error) {
       console.warn('Update location error:', error);
     }
   }, []);
 
-  // Get address from coordinates using Nominatim (as requested by user)
   const reverseGeocode = async (latitude: number, longitude: number): Promise<{ address: string; city: string }> => {
     try {
+      const apiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+      console.log('[DriverHome] Reverse geocoding for:', { latitude, longitude });
+      
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'BenGoDriver/1.0',
-          },
-        },
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=vi`
       );
       const data = await response.json();
+      console.log('[DriverHome] Google Geocode Response:', data.status, data.results?.length, 'results');
 
-      if (data && data.address) {
-        const addr = data.address;
-        const streetAddress = [
-          addr.house_number,
-          addr.road || addr.street,
-          addr.suburb || addr.neighbourhood,
-        ].filter(Boolean).join(', ');
+      if (data && data.results && data.results.length > 0) {
+        const result = data.results[0];
+        const addrComponents = result.address_components;
 
-        const cityName = [
-          addr.city || addr.town || addr.village,
-          addr.state,
-        ].filter(Boolean).join(', ');
+        let streetNumber = '';
+        let route = '';
+        let district = '';
+        let city = '';
+
+        for (const component of addrComponents) {
+          if (component.types.includes('street_number')) streetNumber = component.long_name;
+          if (component.types.includes('route')) route = component.long_name;
+          if (component.types.includes('administrative_area_level_2')) district = component.long_name;
+          if (component.types.includes('administrative_area_level_1')) city = component.long_name;
+        }
+
+        const streetAddress = [streetNumber, route].filter(Boolean).join(' ');
 
         return {
-          address: streetAddress || data.display_name?.split(',').slice(0, 2).join(',') || 'Không xác định',
-          city: cityName || 'Việt Nam',
+          address: streetAddress || result.formatted_address.split(',')[0],
+          city: district || city || 'Việt Nam',
         };
       }
       return { address: 'Không xác định', city: 'Việt Nam' };
     } catch (error) {
+      console.error('Reverse Geocode error:', error);
       return { address: 'Lỗi tải địa chỉ', city: 'Việt Nam' };
     }
   };
 
-  // Get current location
   const getCurrentLocation = useCallback(async () => {
     setIsLoadingLocation(true);
 
@@ -195,15 +199,22 @@ const DriverHome = () => {
         coordinates: '',
         latitude: 0,
         longitude: 0,
+        heading: null,
       });
       setIsLoadingLocation(false);
       return;
     }
 
     try {
-      const location = await Location.getCurrentPositionAsync({});
+      console.log('[DriverHome] Getting current position...');
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
       const { latitude, longitude } = location.coords;
+      console.log('[DriverHome] Coordinates obtained:', latitude, longitude);
+      
       const { address, city } = await reverseGeocode(latitude, longitude);
+      console.log('[DriverHome] Address resolved:', address, city);
 
       setCurrentLocation({
         address,
@@ -211,13 +222,22 @@ const DriverHome = () => {
         coordinates: `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`,
         latitude,
         longitude,
+        heading: location.coords.heading,
       });
 
       if (isOnline) {
-        updateLocationToServer(latitude, longitude);
+        updateLocationToServer(latitude, longitude, location.coords.heading || undefined);
       }
     } catch (error) {
-      console.error('Location error:', error);
+      console.error('[DriverHome] Location error:', error);
+      // Fallback values so UI doesn't hang
+      setCurrentLocation(prev => ({
+        ...prev,
+        address: 'Không thể xác định vị trí',
+        city: 'Việt Nam',
+        latitude: 21.0285,
+        longitude: 105.8542,
+      }));
     } finally {
       setIsLoadingLocation(false);
     }
@@ -228,7 +248,6 @@ const DriverHome = () => {
     fetchDriverStats();
   }, [getCurrentLocation, fetchDriverStats]);
 
-  // Auto-refresh pending orders khi online
   useEffect(() => {
     if (isOnline && currentLocation.latitude !== 0) {
       fetchPendingOrders();
@@ -237,11 +256,14 @@ const DriverHome = () => {
     }
   }, [isOnline, fetchPendingOrders, currentLocation.latitude]);
 
-  // Cập nhật vị trí lên server mỗi 10s khi online
   useEffect(() => {
     if (isOnline && currentLocation.latitude !== 0) {
       const interval = setInterval(() => {
-        updateLocationToServer(currentLocation.latitude, currentLocation.longitude);
+        updateLocationToServer(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          currentLocation.heading || undefined
+        );
       }, 10000);
       return () => clearInterval(interval);
     }
@@ -252,88 +274,92 @@ const DriverHome = () => {
     return amount.toLocaleString('vi-VN') + ' ₫';
   };
 
-  const todayStats = [
-    { value: String(driverStats.totalTrips), label: 'HOÀN THÀNH' },
-    { value: formatCurrency(driverStats.totalEarnings), label: 'THU NHẬP' },
-    { value: `${driverStats.rating.toFixed(1)} ⭐`, label: 'ĐÁNH GIÁ' },
-  ];
-
-  const orderMarkers: MarkerLocation[] = pendingOrders.map((order, index) => ({
-    id: order.orderId,
-    latitude: order.pickup?.lat || currentLocation.latitude + (index * 0.001),
-    longitude: order.pickup?.lng || currentLocation.longitude + (index * 0.001),
-    title: `Đơn #${order.orderId.slice(-4)}`,
-    description: `${formatCurrency(order.price)} - ${order.distance} km`,
-  }));
-
-  const handleMarkerPress = (marker: MarkerLocation) => {
-    const order = pendingOrders.find(o => o.orderId === marker.id);
-    if (order) {
-      setSelectedOrder(order);
-      setShowOrderModal(true);
-    }
+  const handleOrderPress = (order: PendingOrder) => {
+    setSelectedOrder(order);
+    setShowOrderModal(true);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <Header
         isOnline={isOnline}
-        onOpenSettings={() => Alert.alert('Cài đặt', 'Tính năng đang phát triển')}
+        onToggleStatus={toggleOnlineStatus}
         userName={user?.name}
       />
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        <View className="mt-4">
-          <MapCard
-            fixedMarkers={orderMarkers}
-            onMarkerPress={handleMarkerPress}
-            showUserLocation={true}
-          />
-        </View>
-
-        <LocationCard
-          address={currentLocation.address}
-          city={currentLocation.city}
-          coordinates={currentLocation.coordinates}
-          onRefresh={getCurrentLocation}
-          isLoading={isLoadingLocation}
+      <View className="flex-1">
+        <SummaryCard 
+          totalEarnings={driverStats.totalEarnings}
+          totalTrips={driverStats.totalTrips}
         />
 
-        <View className="px-5 mt-2">
-          <Text className="text-gray-900 text-base font-JakartaBold mb-4">Bảng điều khiển</Text>
-          
-          <ToggleCard isOnline={isOnline} onToggle={toggleOnlineStatus} />
-
-          {isOnline && (
-            <View className="flex-row items-center bg-blue-50 p-4 rounded-2xl mt-4 border border-blue-100">
-               <Text className="text-xl mr-3">📦</Text>
-               <Text className="flex-1 text-blue-800 text-xs font-JakartaMedium">
-                  {isLoadingOrders ? 'Đang tìm đơn hàng...' : `${pendingOrders.length} đơn hàng khả dụng gần bạn`}
-               </Text>
-               <TouchableOpacity onPress={fetchPendingOrders}>
-                  <Text className="text-blue-500 text-lg">🔄</Text>
-               </TouchableOpacity>
-            </View>
-          )}
-
-          <View className="flex-row mt-4 -mx-1">
-            <ActionCard
-              icon="💰"
-              title="Thu nhập"
-              value={formatCurrency(driverStats.totalEarnings)}
-              description="Hôm nay"
-            />
-            <ActionCard
-              icon="🕒"
-              title="Lịch sử"
-              value={String(driverStats.totalTrips)}
-              description="Chuyến hôm nay"
-            />
-          </View>
-
-          <StatsCard title="Thống kê hiệu suất" stats={todayStats} />
+        <View className="px-5 mb-2">
+           {isOnline ? (
+             <Text className="text-green-600 text-[11px] font-JakartaMedium italic">
+               Đang tìm đơn hàng mới xung quanh bạn...
+             </Text>
+           ) : (
+             <Text className="text-red-500 text-[11px] font-JakartaBold">
+               Bạn đang tắt chế độ nhận đơn
+             </Text>
+           )}
         </View>
-      </ScrollView>
+
+        <View className="flex-1 relative">
+           <MapCard 
+             orders={pendingOrders}
+             onOrderPress={handleOrderPress}
+           />
+           
+           {/* Recenter FAB */}
+           <TouchableOpacity 
+             className="absolute right-5 bottom-5 w-12 h-12 bg-white rounded-full shadow-md items-center justify-center border border-gray-100"
+             onPress={getCurrentLocation}
+           >
+              <Text className="text-xl">📍</Text>
+           </TouchableOpacity>
+        </View>
+        
+        {/* Bottom List of Orders */}
+        <View className="h-1/3 bg-white border-t border-gray-50">
+           <View className="px-5 py-3 border-b border-gray-50 flex-row justify-between items-center">
+              <Text className="text-gray-900 font-JakartaBold">Đơn hàng khả dụng ({pendingOrders.length})</Text>
+              <TouchableOpacity onPress={fetchPendingOrders}>
+                 <Text className="text-blue-500 text-xs font-JakartaBold">LÀM MỚI</Text>
+              </TouchableOpacity>
+           </View>
+           
+           <FlatList
+             data={pendingOrders}
+             keyExtractor={(item) => item.orderId}
+             renderItem={({ item }) => (
+               <TouchableOpacity 
+                 onPress={() => handleOrderPress(item)}
+                 className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 active:bg-gray-50"
+               >
+                 <View className="flex-1 mr-4">
+                    <View className="flex-row items-center mb-1">
+                       <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                       <Text className="text-gray-900 font-JakartaBold text-[13px] flex-1" numberOfLines={1}>
+                          {item.pickup?.address || 'Điểm đón hiện tại'}
+                       </Text>
+                    </View>
+                    <Text className="text-gray-400 text-[11px] font-Jakarta ml-4">Cách bạn {item.distance} km</Text>
+                 </View>
+                 <Text className="text-green-600 font-JakartaBold text-base">{formatCurrency(item.price)}</Text>
+               </TouchableOpacity>
+             )}
+             ListEmptyComponent={() => (
+               <View className="flex-1 items-center justify-center pt-10">
+                  <Text className="text-gray-400 font-Jakarta text-xs">
+                    {isOnline ? 'Chưa tìm thấy đơn hàng nào gần đây' : 'Bật trực tuyến để xem đơn hàng'}
+                  </Text>
+               </View>
+             )}
+             showsVerticalScrollIndicator={false}
+           />
+        </View>
+      </View>
 
       <Modal
         visible={showOrderModal}
@@ -342,39 +368,39 @@ const DriverHome = () => {
         onRequestClose={() => setShowOrderModal(false)}
       >
         <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-white rounded-t-[40px] p-6 pb-10">
+          <View className="bg-white rounded-t-[40px] p-6 pb-10 shadow-2xl">
             {selectedOrder && (
               <>
-                <View className="w-12 h-1.5 bg-gray-200 rounded-full self-center mb-6" />
-                <Text className="text-gray-900 text-xl font-JakartaBold text-center mb-6">Yêu cầu chuyến đi mới</Text>
+                <View className="w-12 h-1.5 bg-gray-100 rounded-full self-center mb-6" />
+                <Text className="text-gray-900 text-xl font-JakartaBold text-center mb-6">Chi tiết đơn hàng</Text>
                 
                 <View className="space-y-4">
                     <View className="flex-row justify-between items-center py-3 border-b border-gray-50">
-                        <Text className="text-gray-500 font-Jakarta">Mã đơn hàng</Text>
-                        <Text className="text-gray-900 font-JakartaBold">#{selectedOrder.orderId.slice(-8)}</Text>
+                        <Text className="text-gray-400 font-Jakarta text-xs">Mã đơn hàng</Text>
+                        <Text className="text-gray-900 font-JakartaBold text-xs">#{selectedOrder.orderId.slice(-8)}</Text>
                     </View>
                     <View className="flex-row justify-between items-center py-3 border-b border-gray-50">
-                        <Text className="text-gray-500 font-Jakarta">Khoảng cách</Text>
-                        <Text className="text-gray-900 font-JakartaBold">{selectedOrder.distance} km</Text>
+                        <Text className="text-gray-400 font-Jakarta text-xs">Khoảng cách</Text>
+                        <Text className="text-gray-900 font-JakartaBold text-xs">{selectedOrder.distance} km</Text>
                     </View>
-                    <View className="flex-row justify-between items-center py-3">
-                        <Text className="text-gray-500 font-Jakarta">Giá cước</Text>
-                        <Text className="text-green-600 text-2xl font-JakartaBold">{formatCurrency(selectedOrder.price)}</Text>
+                    <View className="py-4">
+                        <Text className="text-gray-400 font-Jakarta text-[10px] uppercase mb-1">Giá cước thanh toán</Text>
+                        <Text className="text-green-600 text-3xl font-JakartaBold">{formatCurrency(selectedOrder.price)}</Text>
                     </View>
                 </View>
 
                 <View className="flex-row mt-8 gap-4">
                   <TouchableOpacity
-                    className="flex-1 h-14 bg-gray-100 rounded-2xl items-center justify-center"
+                    className="flex-1 h-14 bg-gray-50 rounded-2xl items-center justify-center border border-gray-100"
                     onPress={() => {
                       setShowOrderModal(false);
                       setSelectedOrder(null);
                     }}
                   >
-                    <Text className="text-gray-500 font-JakartaBold">Bỏ qua</Text>
+                    <Text className="text-gray-400 font-JakartaBold">BỎ QUA</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className={`flex-[2] h-14 bg-green-500 rounded-2xl items-center justify-center ${isAccepting ? 'opacity-70' : ''}`}
+                    className={`flex-[2] h-14 bg-green-500 rounded-2xl items-center justify-center shadow-sm ${isAccepting ? 'opacity-70' : ''}`}
                     onPress={() => handleAcceptOrder(selectedOrder.orderId)}
                     disabled={isAccepting}
                   >

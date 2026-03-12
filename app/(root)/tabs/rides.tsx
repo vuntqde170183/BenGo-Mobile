@@ -2,7 +2,7 @@ import RideCard from "@/components/Ride/RideCard";
 import { images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { Ride } from "@/types/type";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth } from "@/context/AuthContext";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import {
@@ -22,7 +22,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RidesScreen() {
   const { t } = useTranslation();
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.id;
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -120,7 +121,7 @@ export default function RidesScreen() {
                   (item.ride_status === "pending" ||
                     item.ride_status === "confirmed" ||
                     item.ride_status === "driver_arrived") &&
-                  item.ride_id
+                   item.ride_id
                     ? () => handleCancelRide(Number(item.ride_id))
                     : undefined
                 }
