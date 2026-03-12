@@ -16,6 +16,7 @@
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.6",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/bottom-tabs": "^7.15.5",
     "@stripe/stripe-react-native": "0.50.3",
     "cloudinary": "^2.8.0",
     "date-fns": "^4.1.0",

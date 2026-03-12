@@ -4,7 +4,7 @@ import { fetchAPI } from '@/lib/fetch';
 import { User } from '@/types/type';
 
 interface AuthContextType {
-  login: (account: string, password: string) => Promise<void>;
+  login: (account: string, password: string) => Promise<User | null>;
   logout: () => void;
   user: User | null;
   token: string | null;
@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (loginData && loginData.accessToken && loginData.user) {
         setAuth(loginData.accessToken, loginData.user);
         console.log('[AuthContext] Login successful for:', loginData.user.email || loginData.user.phone);
+        return loginData.user;
       } else {
         console.error('[AuthContext] Login failed: Invalid response format', response);
         throw new Error('Phản hồi đăng nhập không hợp lệ');

@@ -85,10 +85,10 @@ const SignIn = () => {
     // Call API
     setIsLoading(true);
     try {
-      await login(account, password);
-
-      if (user?.role === "DRIVER") {
-        router.replace("/(driver)/(tabs)/home");
+      const loggedInUser = await login(account, password);
+      
+      if (loggedInUser?.role === "DRIVER") {
+        router.replace("/(driver)/tabs/home");
       } else {
         router.replace("/(root)/tabs/home");
       }

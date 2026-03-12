@@ -1,0 +1,35 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+
+interface StatItem {
+  value: string;
+  label: string;
+}
+
+interface StatsCardProps {
+  title: string;
+  stats: StatItem[];
+}
+
+const StatsCard: React.FC<StatsCardProps> = ({ title, stats }) => {
+  return (
+    <View className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mt-4 mx-5">
+      <Text className="text-gray-800 text-sm font-JakartaBold mb-4">{title}</Text>
+      <View className="flex-row justify-around">
+        {stats.map((stat, index) => (
+          <React.Fragment key={index}>
+            <View className="items-center flex-1">
+              <Text className="text-gray-900 text-base font-JakartaBold mb-1">{stat.value}</Text>
+              <Text className="text-gray-400 text-[9px] font-JakartaMedium text-center uppercase tracking-tighter">{stat.label}</Text>
+            </View>
+            {index < stats.length - 1 && (
+              <View className="w-[1px] h-8 bg-gray-50 self-center" />
+            )}
+          </React.Fragment>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+export default StatsCard;
