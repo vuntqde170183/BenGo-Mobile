@@ -12,13 +12,13 @@ const Layout = () => {
             tabBarInactiveTintColor: "#94a3b8",
             tabBarShowLabel: true,
             tabBarLabelStyle: {
-                fontSize: 12,
+                fontSize: 14,
                 fontFamily: "Jakarta-Medium",
                 marginBottom: 5,
             },
             tabBarStyle: {
                 backgroundColor: "#ffffff",
-                height: 60 + insets.bottom,
+                height: 65 + insets.bottom,
                 borderTopWidth: 1,
                 borderTopColor: "#F3F4F6",
                 paddingTop: 10,
@@ -32,6 +32,16 @@ const Layout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color }) => (
                         <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="activities"
+                options={{
+                    title: "Hoạt động",
+                    headerShown: false,
+                    tabBarIcon: ({ focused, color }) => (
+                        <Ionicons name={focused ? "receipt" : "receipt-outline"} size={24} color={color} />
                     )
                 }}
             />

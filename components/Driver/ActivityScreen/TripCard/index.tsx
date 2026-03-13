@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { OrderHistoryItem } from '@/lib/driver';
+import { OrderHistoryItem } from '@/api/driver';
 
 interface TripCardProps {
   item: OrderHistoryItem;

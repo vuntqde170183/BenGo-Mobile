@@ -6,20 +6,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
-  Dimensions
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import { OrderDetail } from '@/lib/driver';
-import { useOrderDetail } from '@/hooks/useDriver';
-
-const { width } = Dimensions.get('window');
-
+import { useDriverOrderDetail } from '@/hooks/useDriver';
 const TripDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: order, isLoading: loading } = useOrderDetail(id || null);
+  const { data: order, isLoading: loading } = useDriverOrderDetail(id || null);
 
   if (loading) {
     return (
@@ -202,7 +197,7 @@ const TripDetailScreen = () => {
             <View className="bg-white p-5 rounded-3xl border border-gray-100">
               <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-4">Hình ảnh minh chứng</Text>
               <View className="flex-row flex-wrap gap-2">
-                {order.goodsImages.map((img, idx) => (
+                {order.goodsImages.map((img: string, idx: number) => (
                   <Image
                     key={idx}
                     source={{ uri: img }}

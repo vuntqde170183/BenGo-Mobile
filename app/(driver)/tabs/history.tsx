@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { OrderHistoryItem } from '@/lib/driver';
+import { OrderHistoryItem } from '@/api/driver';
 import { useDriverOrders } from '@/hooks/useDriver';
 import TripCard from '@/components/Driver/ActivityScreen/TripCard';
 import InputField from '@/components/Common/InputField';

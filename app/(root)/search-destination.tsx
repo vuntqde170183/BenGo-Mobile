@@ -17,8 +17,9 @@ import { useTranslation } from "react-i18next";
 import * as Location from "expo-location";
 
 import { useLocationStore } from "@/store";
-import { customerService, UserProfile } from "@/lib/customer";
+import { useCustomerProfile } from "@/hooks/useCustomer";
 import { useAuth } from "@/context/AuthContext";
+import { UserProfile } from "@/api/customer";
 
 const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY!;
 
@@ -26,8 +27,7 @@ const SearchDestinationScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { setDestinationLocation, setUserLocation } = useLocationStore();
-  const [userData, setUserData] = useState<UserProfile | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const { data: userData, isLoading: isLoadingProfile } = useCustomerProfile(user?.id || null);
   const [searchQuery, setSearchQuery] = useState("");
   const googlePlacesRef = useRef<any>(null);
   const inputRef = useRef<TextInput>(null);
@@ -38,22 +38,6 @@ const SearchDestinationScreen = () => {
       inputRef.current?.focus();
     }, 100);
   }, []);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user?.id) return;
-      setIsLoadingProfile(true);
-      try {
-        const data = await customerService.getProfile(user.id);
-        if (data) setUserData(data);
-      } catch (error) {
-        console.error("Error fetching profile for saved places:", error);
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    };
-    fetchProfile();
-  }, [user]);
 
   const handleSelectLocation = (data: any, details: any = null) => {
     if (details) {

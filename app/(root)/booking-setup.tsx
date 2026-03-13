@@ -141,11 +141,11 @@ const BookingSetupScreen = () => {
 
       if (response && response.data) {
         Alert.alert("Thành công", "Đơn hàng của bạn đã được tạo.");
-        router.push("/(root)/tabs/home");
+        router.push(`/(root)/track-order/${response.data._id}` as any);
       } else {
         // Fallback for demo
         Alert.alert("Đặt đơn thành công", "Đơn hàng của bạn đang được tìm tài xế.");
-        router.push("/(root)/tabs/home");
+        router.push(`/(root)/track-order/mock-order-id` as any);
       }
     } catch (error) {
       Alert.alert("Lỗi", "Không thể tạo đơn hàng lúc này. Vui lòng thử lại.");
@@ -188,7 +188,7 @@ const BookingSetupScreen = () => {
                 />
               </View>
               <View className="flex-1">
-                <Text style={{ color: '#10B981', fontSize: 13, fontWeight: '700', letterSpacing: 1 }}>ĐIỂM LẤY HÀNG</Text>
+                <Text style={{ color: '#10B981', fontSize: 14, fontWeight: '700', letterSpacing: 1 }}>ĐIỂM LẤY HÀNG</Text>
                 <Text className="text-gray-800 text-base font-JakartaSemiBold mt-1" numberOfLines={2}>
                   {userAddress}
                 </Text>
@@ -201,7 +201,7 @@ const BookingSetupScreen = () => {
                 <Ionicons name="flag" size={24} color="#EF4444" />
               </View>
               <View className="flex-1">
-                <Text style={{ color: '#EF4444', fontSize: 13, fontWeight: '700', letterSpacing: 1 }}>ĐIỂM GIAO HÀNG</Text>
+                <Text style={{ color: '#EF4444', fontSize: 14, fontWeight: '700', letterSpacing: 1 }}>ĐIỂM GIAO HÀNG</Text>
                 <Text className="text-gray-800 text-base font-JakartaSemiBold mt-1" numberOfLines={2}>
                   {destinationAddress}
                 </Text>
@@ -307,7 +307,7 @@ const BookingSetupScreen = () => {
                   <Text className={`font-JakartaBold mt-2 ${selectedVehicle === v.id ? "text-green-600" : "text-neutral-500"}`}>
                     {v.title}
                   </Text>
-                  <Text className="text-xs text-neutral-400 mt-1">
+                  <Text className="text-sm text-neutral-400 mt-1">
                     {estimation?.duration || 15} phút
                   </Text>
                 </TouchableOpacity>
@@ -326,7 +326,7 @@ const BookingSetupScreen = () => {
               </Text>
             </View>
             <View className="items-end">
-              <Text className="text-neutral-400 text-xs">{estimation?.distance || 0} km</Text>
+              <Text className="text-neutral-400 text-sm">{estimation?.distance || 0} km</Text>
             </View>
           </View>
 

@@ -22,3 +22,5 @@
                 ]}
               />
             </View>
+
+3. Lưu ý: Sử dụng màu green-600 là màu primary (chủ đạo), text-size nhỏ nhất là text-sm (không được nhỏ hơn text-sm ~ 14px)

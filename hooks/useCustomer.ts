@@ -1,18 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { customerService, NearbyDriver, UserProfile } from "@/lib/customer";
+import * as CustomerApi from "@/api/customer";
 
 export const useNearbyDrivers = (lat: number | null, lng: number | null, radius: number = 5) => {
-  return useQuery<NearbyDriver[]>({
-    queryKey: ["nearby-drivers", lat, lng, radius],
-    queryFn: () => customerService.getNearbyDrivers(lat!, lng!, radius),
-    enabled: !!lat && !!lng,
-  });
+    return useQuery({
+        queryKey: ["nearby-drivers", lat, lng, radius],
+        queryFn: () => CustomerApi.getNearbyDrivers(lat!, lng!, radius),
+        enabled: !!lat && !!lng,
+    });
 };
 
 export const useCustomerProfile = (userId: string | null) => {
-  return useQuery<UserProfile>({
-    queryKey: ["customer-profile", userId],
-    queryFn: () => customerService.getProfile(userId!),
-    enabled: !!userId,
-  });
+    return useQuery({
+        queryKey: ["customer-profile", userId],
+        queryFn: () => CustomerApi.getProfile(userId!),
+        enabled: !!userId,
+    });
 };

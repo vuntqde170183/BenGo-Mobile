@@ -11,6 +11,14 @@ const Layout = () => {
         name="driver-registration"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="track-order/[id]"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="payment/[id]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 };

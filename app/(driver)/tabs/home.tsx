@@ -10,8 +10,8 @@ import {
   type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
 import { useAuth } from '@/context/AuthContext';
-import { driverService, PendingOrder } from '@/lib/driver';
 import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation } from '@/hooks/useDriver';
+import { PendingOrder } from '@/api/driver';
 
 interface LocationState {
   address: string;
