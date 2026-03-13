@@ -17,6 +17,7 @@ const InputField = ({
   label,
   labelStyle,
   icon,
+  iconRight,
   secureTextEntry = false,
   containerStyle,
   inputStyle,
@@ -29,11 +30,13 @@ const InputField = ({
 
   return (
     <View className="my-2 w-full">
-      <Text
-        className={`text-lg font-JakartaSemiBold mb-2 text-green-600 ${labelStyle}`}
-      >
-        {label}
-      </Text>
+      {label && (
+        <Text
+          className={`text-lg font-JakartaSemiBold mb-2 text-green-600 ${labelStyle}`}
+        >
+          {label}
+        </Text>
+      )}
       <View
         className={`flex flex-row justify-start items-center relative 
         bg-neutral-100 rounded-full border ${error ? "border-red-500" : "border-gray-300"} focus:border-green-500  ${containerStyle}`}
@@ -59,6 +62,11 @@ const InputField = ({
           {...props}
           placeholderTextColor={"#AAAAAA"}
         />
+        {iconRight && (
+          <View className="pr-4">
+            {iconRight}
+          </View>
+        )}
         {secureTextEntry && (
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}

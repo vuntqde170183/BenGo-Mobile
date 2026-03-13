@@ -129,8 +129,9 @@ export interface GoogleInputProps {
 }
 
 export interface InputFieldProps extends TextInputProps {
-  label: string;
+  label?: string;
   icon?: any;
+  iconRight?: any;
   secureTextEntry?: boolean;
   labelStyle?: string;
   containerStyle?: string;

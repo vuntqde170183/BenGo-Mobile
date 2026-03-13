@@ -22,6 +22,31 @@ export interface DriverStats {
   rating: number;
 }
 
+export interface OrderHistoryItem {
+  id: string;
+  status: 'PENDING' | 'ACCEPTED' | 'PICKED_UP' | 'DELIVERED' | 'CANCELLED';
+  pickupAddress: string;
+  dropoffAddress: string;
+  totalPrice: number;
+  createdAt: string;
+}
+
+export interface OrderDetail extends OrderHistoryItem {
+  customerId: { _id: string; name: string; phone: string };
+  driverId?: { _id: string; name: string; phone: string; avatar?: string };
+  pickup: { address: string; lat: number; lng: number };
+  dropoff: { address: string; lat: number; lng: number };
+  vehicleType: string;
+  goodsImages?: string[];
+  distanceKm: number;
+  paymentMethod: 'CASH' | 'WALLET';
+  paymentStatus: 'UNPAID' | 'PAID';
+  priority: 'NORMAL' | 'VIP' | 'URGENT' | 'FRAGILE';
+  specialNote?: string;
+  tags?: string[];
+  updatedAt: string;
+}
+
 export const driverService = {
   toggleStatus: async (payload: { isOnline: boolean; location: { lat: number; lng: number } }) => {
     return await fetchAPI("/(api)/driver/status", {
@@ -51,5 +76,16 @@ export const driverService = {
       method: "PUT",
       body: JSON.stringify(location),
     });
+  },
+
+  getOrders: async (params: { page?: number; limit?: number; status?: string; search?: string }): Promise<{ data: { data: OrderHistoryItem[], meta: { total: number, page: number, limit: number } } }> => {
+    const { page = 1, limit = 10, status = 'ALL', search = '' } = params;
+    const response = await fetchAPI(`/(api)/driver/orders?page=${page}&limit=${limit}&status=${status}&search=${search}`);
+    return response || { data: { data: [], meta: { total: 0, page: 1, limit: 10 } } };
+  },
+
+  getOrderDetails: async (id: string): Promise<OrderDetail> => {
+    const response = await fetchAPI(`/(api)/orders/${id}`);
+    return response.data;
   },
 };
