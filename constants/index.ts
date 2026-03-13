@@ -103,3 +103,36 @@ export const onboarding = [
 export const data = {
     onboarding,
 };
+
+export const basePrices = {
+    BIKE: 15000,
+    VAN: 50000,
+    TRUCK: 80000,
+};
+
+export const perKmPrices = {
+    BIKE: 5000,
+    VAN: 12000,
+    TRUCK: 18000,
+};
+
+export const vehicleTypes = {
+    BIKE: {
+        label: "Xe máy",
+        icon: "bicycle-outline",
+        color: "#10B981",
+        description: "Dành cho các đơn hàng nhỏ, gọn, cần giao nhanh.",
+    },
+    VAN: {
+        label: "Xe tải van",
+        icon: "car-sport-outline",
+        color: "#3B82F6",
+        description: "Phù hợp cho hàng hóa vừa phải, đồ điện tử hoặc chuyển nhà nhỏ.",
+    },
+    TRUCK: {
+        label: "Xe tải",
+        icon: "bus-outline",
+        color: "#EF4444",
+        description: "Dành cho hàng hóa lớn, cồng kềnh, khối lượng nặng.",
+    },
+};

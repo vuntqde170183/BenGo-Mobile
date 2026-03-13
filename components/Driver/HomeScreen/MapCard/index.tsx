@@ -31,11 +31,8 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
   useEffect(() => {
     (async () => {
       try {
-        console.log('[MapCard] Requesting permissions...');
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          console.warn('[MapCard] Permission denied');
-          // Fallback to a default location (e.g., Hanoi) if denied
           setRegion({
             latitude: 16.047079,
             longitude: 108.206230,
@@ -46,11 +43,9 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
           return;
         }
 
-        console.log('[MapCard] Getting position...');
         let location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Balanced,
         });
-        console.log('[MapCard] Position obtained:', location.coords.latitude, location.coords.longitude);
 
         const currentRegion = {
           latitude: location.coords.latitude,
@@ -60,8 +55,6 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
         };
         setRegion(currentRegion);
       } catch (error) {
-        console.error('[MapCard] Error getting location:', error);
-        // Fallback to a default location (Da Nang) on error
         setRegion({
           latitude: 16.047079,
           longitude: 108.206230,
@@ -70,7 +63,6 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
         });
       } finally {
         setLoading(false);
-        console.log('[MapCard] Loading finished');
       }
     })();
   }, []);

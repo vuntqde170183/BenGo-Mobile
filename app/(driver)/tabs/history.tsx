@@ -45,10 +45,6 @@ const DriverHistory = () => {
   });
 
   useEffect(() => {
-    console.log('[DriverHistory] filter state changed:', { statusFilter, timeFilter, search });
-  }, [statusFilter, timeFilter, search]);
-
-  useEffect(() => {
     if (data?.data?.data) {
       if (page === 1) {
         setOrders(data.data.data);

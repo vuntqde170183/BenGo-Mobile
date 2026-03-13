@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Order } from "@/api/orders";
+import VehicleBadge from "@/components/Common/VehicleBadge";
 
 const statusColors: Record<string, string> = {
     PENDING: "text-amber-600 bg-amber-50 border-amber-100",
@@ -26,12 +27,14 @@ const OrderItemCard = ({ order }: { order: Order }) => {
     };
 
     const handlePress = () => {
-        // router.push(`/(root)/order-detail/${order._id}` as any);
-        console.log("Press order:", order._id);
+        if (order?.id) {
+            console.log("Press order:", order.id);
+            // router.push(`/(root)/order-detail/${order.id}` as any);
+        }
     };
 
     return (
-        <TouchableOpacity 
+        <TouchableOpacity
             onPress={handlePress}
             className="bg-white m-4 mb-2 p-4 rounded-xl border border-neutral-100 shadow-sm"
             style={{ borderRadius: 12 }}
@@ -40,12 +43,12 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                 <View className="flex-row items-center">
                     <Ionicons name="barcode-outline" size={20} color="#4B5563" />
                     <Text className="ml-2 text-sm font-JakartaBold text-neutral-800">
-                        #{order._id.slice(-8).toUpperCase()}
+                        #{order?.id ? order.id.slice(-8).toUpperCase() : "N/A"}
                     </Text>
                 </View>
-                <View className={`px-3 py-1 rounded-full border ${statusColors[order.status as string] || ""}`}>
+                <View className={`px-3 py-1 rounded-full border ${statusColors[order?.status as string] || ""}`}>
                     <Text className="text-sm font-JakartaSemiBold">
-                        {statusLabels[order.status as string] || order.status}
+                        {statusLabels[order?.status as string] || order?.status}
                     </Text>
                 </View>
             </View>
@@ -57,34 +60,29 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                     <Ionicons name="location" size={16} color="#10B981" />
                 </View>
                 <View className="flex-1">
-                    <Text className="text-sm text-neutral-600 font-JakartaMedium mb-4" numberOfLines={1}>
-                        {order.pickup.address}
+                    <Text className="text-neutral-600 font-JakartaMedium mb-4" numberOfLines={1}>
+                        {order?.pickup?.address || "N/A"}
                     </Text>
-                    <Text className="text-sm text-neutral-800 font-JakartaSemiBold" numberOfLines={1}>
-                        {order.dropoff.address}
+                    <Text className="text-neutral-800 font-JakartaSemiBold" numberOfLines={1}>
+                        {order?.dropoff?.address || "N/A"}
                     </Text>
                 </View>
             </View>
 
             <View className="flex-row justify-between items-center pt-4 border-t border-neutral-50">
-                <View className="flex-row items-center">
-                    <Ionicons name="car-outline" size={20} color="#10B981" />
-                    <Text className="ml-2 text-sm font-JakartaBold text-green-600">
-                        {order.vehicleType}
-                    </Text>
-                </View>
+                <VehicleBadge type={order?.vehicleType} />
                 <View className="items-end">
                     <Text className="text-[14px] font-JakartaExtraBold text-neutral-800">
-                        {order.totalPrice.toLocaleString("vi-VN")}đ
+                        {order?.totalPrice ? Number(order.totalPrice).toLocaleString("vi-VN") : "0"}đ
                     </Text>
                     <Text className="text-sm text-neutral-400 font-JakartaMedium">
-                        {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                        {order?.createdAt ? new Date(order.createdAt).toLocaleDateString("vi-VN") : "N/A"}
                     </Text>
                 </View>
             </View>
 
-            {order.status === "DELIVERED" && (
-                <TouchableOpacity 
+            {order?.status === "DELIVERED" && (
+                <TouchableOpacity
                     onPress={handleReorder}
                     className="mt-4 bg-green-600 py-3 rounded-xl items-center"
                 >

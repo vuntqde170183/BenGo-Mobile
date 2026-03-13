@@ -93,7 +93,6 @@ const SignIn = () => {
         router.replace("/(root)/tabs/home");
       }
     } catch (error: any) {
-      console.log("Login error:", error);
       const errorMessage =
         error.message || "Tài khoản hoặc mật khẩu không đúng";
       Alert.alert("Lỗi đăng nhập", errorMessage);

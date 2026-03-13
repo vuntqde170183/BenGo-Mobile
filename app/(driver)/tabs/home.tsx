@@ -27,7 +27,7 @@ const DriverHome = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
-  
+
   const [currentLocation, setCurrentLocation] = useState<LocationState>({
     address: 'Đang tải vị trí...',
     city: 'Đà Nẵng',
@@ -50,7 +50,7 @@ const DriverHome = () => {
   );
 
   const { data: driverStats = { totalEarnings: 0, totalTrips: 0, rating: 5 }, isLoading: isLoadingStats } = useDriverStats(
-    today, 
+    today,
     today
   );
 
@@ -105,13 +105,11 @@ const DriverHome = () => {
   const reverseGeocode = async (latitude: number, longitude: number): Promise<{ address: string; city: string }> => {
     try {
       const apiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
-      console.log('[DriverHome] Reverse geocoding for:', { latitude, longitude });
 
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=vi`
       );
       const data = await response.json();
-      console.log('[DriverHome] Google Geocode Response:', data.status, data.results?.length, 'results');
 
       if (data && data.results && data.results.length > 0) {
         const result = data.results[0];
@@ -168,12 +166,8 @@ const DriverHome = () => {
         return;
       }
 
-      console.log('[DriverHome] Getting position...');
-
-      // 3. Ưu tiên lấy vị trí cuối cùng đã biết (nhanh hơn)
       let location = await Location.getLastKnownPositionAsync({});
 
-      // 4. Nếu không có, mới lấy vị trí hiện tại (chính xác nhưng chậm hơn)
       if (!location) {
         location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Balanced,
@@ -181,10 +175,7 @@ const DriverHome = () => {
       }
 
       const { latitude, longitude } = location.coords;
-      console.log('[DriverHome] Coordinates obtained:', latitude, longitude);
-
       const { address, city } = await reverseGeocode(latitude, longitude);
-      console.log('[DriverHome] Address resolved:', address, city);
 
       setCurrentLocation({
         address,
@@ -199,8 +190,6 @@ const DriverHome = () => {
         updateLocation({ lat: latitude, lng: longitude, heading: location.coords.heading ?? undefined });
       }
     } catch (error: any) {
-      console.warn('[DriverHome] Location error logic handled:', error.message);
-      // Fallback values so UI doesn't hang - Priority Da Nang
       setCurrentLocation(prev => ({
         ...prev,
         address: 'Hải Châu, Đà Nẵng (Fallback)',

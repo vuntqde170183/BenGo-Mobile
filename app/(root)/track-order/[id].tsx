@@ -62,9 +62,6 @@ const TrackOrderScreen = () => {
   };
 
   const handleChat = () => {
-    // Navigate to chat screen if exists
-    // router.push(`/(root)/chat/${order?.driverId?._id}`);
-    console.log("Chat with driver");
   };
 
   const renderStatusTimeline = () => {

@@ -3,7 +3,8 @@ import { fetchAPI } from "@/lib/fetch";
 export type OrderStatus = "PENDING" | "ACCEPTED" | "PICKED_UP" | "DELIVERED" | "CANCELLED";
 
 export interface Order {
-    _id: string;
+    id: string;
+    _id?: string; // Giữ lại dự phòng nếu cần
     pickup: {
         address: string;
         lat: number;

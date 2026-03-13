@@ -8,7 +8,7 @@ const Layout = () => {
 
     return (
         <Tabs screenOptions={{
-            tabBarActiveTintColor: "#22C55E",
+            tabBarActiveTintColor: "#16a34a",
             tabBarInactiveTintColor: "#94a3b8",
             tabBarShowLabel: true,
             tabBarLabelStyle: {

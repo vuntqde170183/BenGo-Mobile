@@ -23,13 +23,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         [isEmail ? 'email' : 'phone']: account,
         password,
       };
-
-      console.log('[AuthContext] Login attempt:', {
-        account,
-        isEmail,
-        timestamp: new Date().toISOString()
-      });
-
       const response = await fetchAPI('/(api)/auth/login', {
         method: 'POST',
         headers: {
@@ -38,14 +31,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify(payload),
       });
 
-      console.log('[AuthContext] Login response:', response);
-
-      // API structure is { data: { accessToken, user }, ... }
       const loginData = response.data;
 
       if (loginData && loginData.accessToken && loginData.user) {
         setAuth(loginData.accessToken, loginData.user);
-        console.log('[AuthContext] Login successful for:', loginData.user.email || loginData.user.phone);
         return loginData.user;
       } else {
         console.error('[AuthContext] Login failed: Invalid response format', response);
