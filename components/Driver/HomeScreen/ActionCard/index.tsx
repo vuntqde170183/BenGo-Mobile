@@ -31,7 +31,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
       <Text className="text-2xl mb-2">{icon}</Text>
       <Text className="text-gray-500 text-base font-JakartaMedium mb-1">{title}</Text>
       <Text className="text-gray-900 text-lg font-JakartaBold mb-1">{value}</Text>
-      <Text className="text-gray-400 text-sm font-Jakarta">{description}</Text>
+      <Text className="text-gray-500 text-sm font-Jakarta">{description}</Text>
     </TouchableOpacity>
   );
 };

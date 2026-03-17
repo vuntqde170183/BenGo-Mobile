@@ -131,7 +131,7 @@ const CustomerProfileScreen = () => {
 
                         <View className="flex-row justify-between items-center">
                             <View>
-                                <Text className="text-white/50 text-[10px] font-JakartaMedium uppercase tracking-widest">
+                                <Text className="text-white/50 text-sm font-JakartaMedium uppercase tracking-widest">
                                     Mã định danh ví
                                 </Text>
                                 <Text className="text-white/80 text-sm font-JakartaBold">

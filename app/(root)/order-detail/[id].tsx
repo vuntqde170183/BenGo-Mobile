@@ -104,7 +104,7 @@ const CustomerOrderDetailScreen = () => {
                                 {currentStatus.label}
                             </Text>
                         </View>
-                        <Text className="text-[10px] font-JakartaMedium text-neutral-400">
+                        <Text className="text-sm font-JakartaMedium text-neutral-400">
                             #{id.slice(-8).toUpperCase()}
                         </Text>
                     </View>

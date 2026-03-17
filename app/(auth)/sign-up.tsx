@@ -176,7 +176,7 @@ const SignUp = () => {
             <Text className="text-2xl text-center text-black font-JakartaBold">
               Đăng ký thành công!
             </Text>
-            <Text className="mt-4 text-base text-center text-gray-400 font-Jakarta">
+            <Text className="mt-4 text-base text-center text-gray-500 font-Jakarta">
               Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để bắt đầu.
             </Text>
             <CustomButton

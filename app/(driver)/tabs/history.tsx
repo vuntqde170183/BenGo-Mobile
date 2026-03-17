@@ -122,7 +122,7 @@ const DriverHistory = () => {
               onPress={() => setTimeFilter(t.value)}
               className={`mr-2 px-4 py-1.5 rounded-full border ${timeFilter === t.value ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`}
             >
-              <Text className={`text-base font-JakartaMedium ${timeFilter === t.value ? 'text-green-600' : 'text-gray-400'}`}>
+              <Text className={`text-base font-JakartaMedium ${timeFilter === t.value ? 'text-green-600' : 'text-gray-500'}`}>
                 {t.label}
               </Text>
             </TouchableOpacity>
@@ -148,7 +148,7 @@ const DriverHistory = () => {
               <View className="w-20 h-20 bg-gray-50 rounded-full items-center justify-center mb-4">
                 <Ionicons name="document-text-outline" size={40} color="#CBD5E1" />
               </View>
-              <Text className="text-gray-400 font-JakartaMedium text-base">Không tìm thấy chuyến đi nào</Text>
+              <Text className="text-gray-500 font-JakartaMedium text-base">Không tìm thấy chuyến đi nào</Text>
             </View>
           ) : null
         )}

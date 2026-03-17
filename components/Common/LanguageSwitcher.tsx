@@ -44,7 +44,7 @@ export const LanguageSwitcher: React.FC = () => {
                     {language.nativeName}
                   </Text>
                   <Text
-                    className={`text-base ${isActive ? "text-emerald-500" : "text-gray-400"}`}
+                    className={`text-base ${isActive ? "text-emerald-500" : "text-gray-500"}`}
                   >
                     {language.name}
                   </Text>

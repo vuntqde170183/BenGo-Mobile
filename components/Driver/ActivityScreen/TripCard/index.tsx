@@ -45,16 +45,16 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
     <TouchableOpacity
       onPress={() => onPress(item.id)}
       activeOpacity={0.7}
-      className="bg-white mx-4 my-3 p-5 rounded-[28px] border border-gray-100 shadow-sm"
+      className="mx-4 my-3 bg-white p-4 rounded-3xl border border-gray-100 shadow-sm"
     >
       {/* Header: ID and Status */}
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
-          <View className="bg-green-50 w-11 h-11 rounded-2xl items-center justify-center mr-3">
+          <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
             <Ionicons name="receipt-outline" size={22} color="#10B981" />
           </View>
           <View>
-            <Text className="text-gray-400 font-JakartaMedium text-sm">Mã đơn hàng</Text>
+            <Text className="text-gray-500 font-JakartaMedium text-sm">Mã đơn hàng</Text>
             <Text className="text-gray-900 font-JakartaBold text-base">#{item.id.slice(-6).toUpperCase()}</Text>
           </View>
         </View>
@@ -79,11 +79,11 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
 
           <View className="flex-1">
             <View className="mb-4">
-              <Text className="text-gray-400 font-JakartaMedium text-sm mb-1">Điểm đón</Text>
+              <Text className="text-gray-500 font-JakartaMedium text-sm mb-1">Điểm đón</Text>
               <Text className="text-gray-800 font-JakartaBold text-base" numberOfLines={1}>{item.pickupAddress}</Text>
             </View>
             <View>
-              <Text className="text-gray-400 font-JakartaMedium text-sm mb-1">Điểm giao</Text>
+              <Text className="text-gray-500 font-JakartaMedium text-sm mb-1">Điểm giao</Text>
               <Text className="text-gray-800 font-JakartaBold text-base" numberOfLines={1}>{item.dropoffAddress}</Text>
             </View>
           </View>
@@ -95,21 +95,21 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
         <View>
           <View className="flex-row items-center mb-1">
             <Ionicons name="time-outline" size={16} color="#94A3B8" />
-            <Text className="text-gray-400 font-JakartaMedium text-sm ml-1.5">Thời gian</Text>
+            <Text className="text-gray-500 font-JakartaMedium text-sm ml-1.5">Thời gian</Text>
           </View>
           <Text className="text-gray-700 font-JakartaBold text-sm">
             {formatDateTime(item.createdAt)}
           </Text>
         </View>
         <View className="items-end">
-          <Text className="text-gray-400 font-JakartaMedium text-sm mb-1">Bạn nhận được</Text>
+          <Text className="text-gray-500 font-JakartaMedium text-sm mb-1">Bạn nhận được</Text>
           <Text className="text-green-600 font-JakartaBold text-2xl">{formatCurrency(item.totalPrice)}</Text>
         </View>
       </View>
 
       {/* Detail hint indicator */}
       <View className="mt-4 pt-2 flex-row justify-center items-center opacity-40">
-        <Text className="text-gray-400 font-JakartaBold text-sm mr-2">Nhấn để xem chi tiết</Text>
+        <Text className="text-gray-500 font-JakartaBold text-sm mr-2">Nhấn để xem chi tiết</Text>
         <Ionicons name="chevron-forward" size={14} color="#94A3B8" />
       </View>
     </TouchableOpacity>

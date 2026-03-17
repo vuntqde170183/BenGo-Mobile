@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({
         </View>
         <View className="ml-3">
           <Text className="text-gray-900 text-base font-JakartaBold leading-tight">{userName || 'Tài xế'}</Text>
-          <Text className={`text-sm font-JakartaMedium ${isOnline ? 'text-green-500' : 'text-gray-400'}`}>
+          <Text className={`text-sm font-JakartaMedium ${isOnline ? 'text-green-500' : 'text-gray-500'}`}>
             {isOnline ? '● Đang trực tuyến' : '○ Ngoại tuyến'}
           </Text>
         </View>

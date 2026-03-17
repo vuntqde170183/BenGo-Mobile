@@ -26,7 +26,7 @@ const EarningsScreen = () => {
         <View className="mt-8">
           <Text className="text-lg font-JakartaBold text-gray-900 mb-4">Thống kê gần đây</Text>
           <View className="items-center justify-center py-10 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
-            <Text className="text-gray-400 font-Jakarta">Chưa có dữ liệu thống kê</Text>
+            <Text className="text-gray-500 font-Jakarta">Chưa có dữ liệu thống kê</Text>
           </View>
         </View>
       </ScrollView>

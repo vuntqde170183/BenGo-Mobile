@@ -76,7 +76,7 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
     return (
       <View className="h-[300px] w-full items-center justify-center bg-gray-50 mb-4 rounded-3xl overflow-hidden px-4">
         <ActivityIndicator size="small" color="#22C55E" />
-        <Text className="text-gray-400 mt-2 text-base font-Jakarta">Đang tải bản đồ...</Text>
+        <Text className="text-gray-500 mt-2 text-base font-Jakarta">Đang tải bản đồ...</Text>
       </View>
     );
   }

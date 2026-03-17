@@ -304,14 +304,14 @@ const DriverHome = () => {
                       {item.pickup?.address || 'Điểm đón hiện tại'}
                     </Text>
                   </View>
-                  <Text className="text-gray-400 text-base font-Jakarta ml-4">Cách bạn {item.distance} km</Text>
+                  <Text className="text-gray-500 text-base font-Jakarta ml-4">Cách bạn {item.distance} km</Text>
                 </View>
                 <Text className="text-green-600 font-JakartaBold text-base">{formatCurrency(item.price)}</Text>
               </TouchableOpacity>
             )}
             ListEmptyComponent={() => (
               <View className="flex-1 items-center justify-center pt-10">
-                <Text className="text-gray-400 font-Jakarta text-base">
+                <Text className="text-gray-500 font-Jakarta text-base">
                   {isOnline ? 'Chưa tìm thấy đơn hàng nào gần đây' : 'Bật trực tuyến để xem đơn hàng'}
                 </Text>
               </View>
@@ -345,15 +345,15 @@ const DriverHome = () => {
 
                 <View className="space-y-4">
                   <View className="flex-row justify-between items-center py-3 border-b border-gray-50">
-                    <Text className="text-gray-400 font-Jakarta text-base">Mã đơn hàng</Text>
+                    <Text className="text-gray-500 font-Jakarta text-base">Mã đơn hàng</Text>
                     <Text className="text-gray-900 font-JakartaBold text-base">#{selectedOrder.orderId.slice(-8)}</Text>
                   </View>
                   <View className="flex-row justify-between items-center py-3 border-b border-gray-50">
-                    <Text className="text-gray-400 font-Jakarta text-base">Khoảng cách</Text>
+                    <Text className="text-gray-500 font-Jakarta text-base">Khoảng cách</Text>
                     <Text className="text-gray-900 font-JakartaBold text-base">{selectedOrder.distance} km</Text>
                   </View>
                   <View className="py-4">
-                    <Text className="text-gray-400 font-Jakarta text-sm uppercase mb-1">Giá cước thanh toán</Text>
+                    <Text className="text-gray-500 font-Jakarta text-sm uppercase mb-1">Giá cước thanh toán</Text>
                     <Text className="text-green-600 text-3xl font-JakartaBold">{formatCurrency(selectedOrder.price)}</Text>
                   </View>
                 </View>
@@ -366,7 +366,7 @@ const DriverHome = () => {
                       setSelectedOrder(null);
                     }}
                   >
-                    <Text className="text-gray-400 font-JakartaBold">BỎ QUA</Text>
+                    <Text className="text-gray-500 font-JakartaBold">BỎ QUA</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className={`flex-[2] h-14 bg-green-500 rounded-2xl items-center justify-center ${isAccepting ? 'opacity-70' : ''}`}

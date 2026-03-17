@@ -32,7 +32,7 @@ const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
     case "secondary":
       return "text-gray-100";
     case "danger":
-      return "text-red-100";
+      return "text-white";
     case "success":
       return "text-green-100";
     default:
@@ -54,7 +54,7 @@ const CustomButton = ({
   <TouchableOpacity
     onPress={onPress}
     disabled={loading || props.disabled}
-    className={`flex flex-row justify-center items-center p-4 py-3 w-full rounded-full ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
+    className={`flex flex-row justify-center items-center p-4 py-3 w-full rounded-full gap-1 ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
     style={[
       { minHeight: 40 },
       !className?.includes("shadow-none") && bgVariant !== "outline" && {

@@ -122,19 +122,19 @@ const TripDetailScreen = () => {
         <View className="p-4">
           {/* Trip Summary */}
           <View className="bg-white p-5 rounded-3xl border border-gray-100 mb-4">
-            <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-4">Thông tin chuyến đi</Text>
+            <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-4">Thông tin chuyến đi</Text>
 
             <View className="space-y-4">
               <View className="flex-row items-center border-l-2 border-green-500 pl-4 py-1">
                 <View className="flex-1">
-                  <Text className="text-gray-400 font-Jakarta text-sm">ĐIỂM ĐÓN</Text>
+                  <Text className="text-gray-500 font-Jakarta text-sm">ĐIỂM ĐÓN</Text>
                   <Text className="text-gray-900 font-JakartaBold text-sm">{order?.pickup?.address || order?.pickupAddress}</Text>
                 </View>
               </View>
 
               <View className="flex-row items-center border-l-2 border-red-500 pl-4 py-1">
                 <View className="flex-1">
-                  <Text className="text-gray-400 font-Jakarta text-sm">ĐIỂM GIAO</Text>
+                  <Text className="text-gray-500 font-Jakarta text-sm">ĐIỂM GIAO</Text>
                   <Text className="text-gray-900 font-JakartaBold text-sm">{order?.dropoff?.address || order?.dropoffAddress}</Text>
                 </View>
               </View>
@@ -143,11 +143,11 @@ const TripDetailScreen = () => {
 
               <View className="flex-row justify-between">
                 <View className="flex-1">
-                  <Text className="text-gray-400 font-Jakarta text-sm">LOẠI XE</Text>
+                  <Text className="text-gray-500 font-Jakarta text-sm">LOẠI XE</Text>
                   <Text className="text-gray-900 font-JakartaBold text-sm">{order?.vehicleType}</Text>
                 </View>
                 <View className="flex-1 items-end">
-                  <Text className="text-gray-400 font-Jakarta text-sm">THỜI GIAN</Text>
+                  <Text className="text-gray-500 font-Jakarta text-sm">THỜI GIAN</Text>
                   <Text className="text-gray-900 font-JakartaBold text-sm">{formatDateTime(order?.createdAt || "")}</Text>
                 </View>
               </View>
@@ -157,7 +157,7 @@ const TripDetailScreen = () => {
           {/* Customer Detail */}
           <View className="bg-white p-5 rounded-3xl border border-gray-100 mb-4">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-gray-400 font-JakartaBold text-sm uppercase">Khách hàng</Text>
+              <Text className="text-gray-500 font-JakartaBold text-sm uppercase">Khách hàng</Text>
               {(order?.status === 'ACCEPTED' || order?.status === 'PICKED_UP') && (
                 <TouchableOpacity className="flex-row items-center bg-green-50 px-3 py-1 rounded-full">
                   <Ionicons name="call" size={12} color="#10B981" />
@@ -181,7 +181,7 @@ const TripDetailScreen = () => {
 
           {/* Financial Detail */}
           <View className="bg-white p-5 rounded-3xl border border-gray-100 mb-4">
-            <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-4">Kê khai tài chính</Text>
+            <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-4">Kê khai tài chính</Text>
 
             <View className="space-y-3">
               <View className="flex-row justify-between">
@@ -203,7 +203,7 @@ const TripDetailScreen = () => {
           {/* Evidence Photos */}
           {order?.goodsImages && order.goodsImages.length > 0 && (
             <View className="bg-white p-5 rounded-3xl border border-gray-100 mb-4">
-              <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-4">Hình ảnh minh chứng</Text>
+              <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-4">Hình ảnh minh chứng</Text>
               <View className="flex-row flex-wrap gap-2">
                 {order.goodsImages.map((img: string, idx: number) => (
                   <Image
