@@ -116,7 +116,7 @@ const CustomerProfileScreen = () => {
                         end={{ x: 1, y: 1 }}
                         className="rounded-[24px] p-6 shadow-xl overflow-hidden"
                     >
-                        <View className="flex-row justify-between items-start mb-6">
+                        <View className="flex-row justify-between items-start mb-4">
                             <View>
                                 <Text className="text-white/70 text-sm font-JakartaMedium mb-1">Số dư ví BenGo</Text>
                                 <Text className="text-white text-3xl font-JakartaBold">
@@ -150,7 +150,7 @@ const CustomerProfileScreen = () => {
                 </View>
 
                 {/* P3: Settings & Actions Menu List */}
-                <View className="px-6 mb-6">
+                <View className="px-6 mb-4">
                     <Text className="text-lg font-JakartaBold text-neutral-800 mb-4 px-2">Cài đặt tài khoản</Text>
                     <View className="bg-white rounded-2xl border border-neutral-50 shadow-sm p-2">
                         <MenuItem

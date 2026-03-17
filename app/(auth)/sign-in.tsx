@@ -103,7 +103,7 @@ const SignIn = () => {
 
   // Navigate to registration guide
   const handleRegister = () => {
-    Alert.alert("Thông báo", "Chuyển đến màn hình hướng dẫn đăng ký");
+    router.push("/(auth)/sign-up");
   };
 
   // Navigate to forgot password
@@ -125,20 +125,20 @@ const SignIn = () => {
             keyboardShouldPersistTaps="handled"
           >
             {/* Logo */}
-            <View className="items-center mt-10 mb-5">
+            <View className="items-center mb-4">
               <Image
                 source={images.signUpCar}
-                className="w-48 h-24"
+                className="h-60 w-auto"
                 resizeMode="contain"
               />
             </View>
 
-            {/* Welcome Text */}
+            {/* Title Text */}
             <View className="items-center mb-8">
               <Text className="text-2xl text-gray-900 font-JakartaBold mb-2">
                 Chào mừng bạn!
               </Text>
-              <Text className="text-base text-gray-500 font-JakartaMedium">
+              <Text className="text-lg text-gray-500 font-JakartaMedium">
                 Đăng nhập để tiếp tục cùng BenGo
               </Text>
             </View>
@@ -179,7 +179,7 @@ const SignIn = () => {
 
               {/* Forgot Password */}
               <TouchableOpacity
-                className="self-end mb-5"
+                className="self-end mb-4"
                 onPress={handleForgotPassword}
               >
                 <Text className="text-primary-500 font-JakartaBold">

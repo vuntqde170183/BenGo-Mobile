@@ -48,7 +48,7 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
       className="bg-white mx-4 my-3 p-5 rounded-[28px] border border-gray-100 shadow-sm"
     >
       {/* Header: ID and Status */}
-      <View className="flex-row justify-between items-center mb-5">
+      <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
           <View className="bg-green-50 w-11 h-11 rounded-2xl items-center justify-center mr-3">
             <Ionicons name="receipt-outline" size={22} color="#10B981" />
@@ -78,7 +78,7 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
           </View>
 
           <View className="flex-1">
-            <View className="mb-5">
+            <View className="mb-4">
               <Text className="text-gray-400 font-JakartaMedium text-sm mb-1">Điểm đón</Text>
               <Text className="text-gray-800 font-JakartaBold text-base" numberOfLines={1}>{item.pickupAddress}</Text>
             </View>

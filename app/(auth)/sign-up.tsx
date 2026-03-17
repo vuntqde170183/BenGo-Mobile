@@ -68,75 +68,89 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-general-500">
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView className="flex-1 bg-general-500">
-            <View className="flex-1 bg-general-500">
-              <View className="relative w-full h-[280px]">
-                <Image
-                  source={images.signUpCar}
-                  className="z-0 w-full h-[250px]"
-                  resizeMode="contain"
-                />
-                <Text className="absolute -bottom-2 w-full text-2xl text-center text black font-JakartaSemiBold">
-                  {t("auth.createAccount")}
-                </Text>
-              </View>
-              <View className="p-4">
-                <InputField
-                  label={t("profile.name")}
-                  placeholder={t("profile.name")}
-                  icon="person-outline"
-                  value={form.name}
-                  onChangeText={(value) => setForm({ ...form, name: value })}
-                />
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            className="px-4 pb-5"
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Logo */}
+            <View className="items-center mb-4">
+              <Image
+                source={images.signUpCar}
+                className="h-60 w-auto"
+                resizeMode="contain"
+              />
+            </View>
 
-                <InputField
-                  label={t("profile.phone") || "Phone"}
-                  placeholder={t("profile.phone") || "0123456789"}
-                  icon="call-outline"
-                  value={form.phone}
-                  keyboardType="phone-pad"
-                  onChangeText={(value) => setForm({ ...form, phone: value })}
-                />
+            {/* Title Text */}
+            <View className="items-center mb-8">
+              <Text className="text-2xl text-gray-900 font-JakartaBold mb-2">
+                {t("auth.createAccount")}
+              </Text>
+              <Text className="text-base text-gray-500 font-JakartaMedium">
+                Đăng ký tài khoản để bắt đầu cùng BenGo
+              </Text>
+            </View>
 
-                <InputField
-                  label={t("auth.email")}
-                  placeholder={t("auth.email")}
-                  icon="mail-outline"
-                  value={form.email}
-                  onChangeText={(value) => setForm({ ...form, email: value })}
-                />
+            {/* Form */}
+            <View className="flex-1">
+              <InputField
+                label={t("profile.name")}
+                placeholder={t("profile.name")}
+                icon="person-outline"
+                value={form.name}
+                onChangeText={(value) => setForm({ ...form, name: value })}
+              />
 
-                <InputField
-                  label={t("auth.password")}
-                  placeholder={t("auth.password")}
-                  icon="lock-closed-outline"
-                  secureTextEntry={true}
-                  value={form.password}
-                  onChangeText={(value) =>
-                    setForm({ ...form, password: value })
-                  }
-                />
+              <InputField
+                label={t("profile.phone") || "Phone"}
+                placeholder={t("profile.phone") || "0123456789"}
+                icon="call-outline"
+                value={form.phone}
+                keyboardType="phone-pad"
+                onChangeText={(value) => setForm({ ...form, phone: value })}
+              />
 
-                <CustomButton
-                  title={t("auth.signUp")}
-                  onPress={onSignUpPress}
-                  loading={loading}
-                  className="mt-4"
-                />
+              <InputField
+                label={t("auth.email")}
+                placeholder={t("auth.email")}
+                icon="mail-outline"
+                value={form.email}
+                onChangeText={(value) => setForm({ ...form, email: value })}
+              />
 
-                <OAuth />
-                <Link
-                  href="/sign-in"
-                  className="mt-4 text-lg text-center text-general-200"
-                >
+              <InputField
+                label={t("auth.password")}
+                placeholder={t("auth.password")}
+                icon="lock-closed-outline"
+                secureTextEntry={true}
+                value={form.password}
+                onChangeText={(value) =>
+                  setForm({ ...form, password: value })
+                }
+              />
+
+              <CustomButton
+                title={t("auth.signUp")}
+                onPress={onSignUpPress}
+                loading={loading}
+                className="mt-4"
+              />
+              <View className="flex-row justify-center items-center mt-4 mb-8">
+                <Text className="text-gray-500 font-JakartaMedium">
                   {t("auth.alreadyHaveAccount")}{" "}
-                  <Text className="text-primary-600">{t("auth.signIn")}</Text>
+                </Text>
+                <Link href="/(auth)/sign-in">
+                  <Text className="text-primary-500 font-JakartaBold">
+                    {t("auth.signIn")}
+                  </Text>
                 </Link>
               </View>
             </View>
