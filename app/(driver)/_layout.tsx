@@ -7,6 +7,7 @@ const Layout = () => {
       <Stack.Screen name="history/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="documents" options={{ headerShown: false }} />
       <Stack.Screen name="update-verification" options={{ headerShown: false }} />
+      <Stack.Screen name="active-trip/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 };

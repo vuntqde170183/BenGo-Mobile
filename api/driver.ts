@@ -156,3 +156,10 @@ export const updateDocuments = async (payload: UpdateDocumentPayload) => {
   });
   return response;
 };
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  return fetchAPI(`/(api)/driver/orders/${id}/update`, {
+    method: "PUT",
+    body: JSON.stringify({ status }),
+  });
+};

@@ -3,10 +3,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
 import {
   Header,
   MapCard,
   SummaryCard,
+  IncomingRequestModal,
   type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
 import { useAuth } from '@/context/AuthContext';
@@ -23,6 +25,7 @@ interface LocationState {
 }
 
 const DriverHome = () => {
+  const router = useRouter();
   const [isOnline, setIsOnline] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -89,19 +92,14 @@ const DriverHome = () => {
   const handleAcceptOrder = async (orderId: string) => {
     try {
       await acceptOrder(orderId);
-      Alert.alert('Thành công', 'Bạn đã nhận chuyến thành công!');
       setShowOrderModal(false);
       setSelectedOrder(null);
+      router.push(`/(driver)/active-trip/${orderId}` as any);
     } catch (error: any) {
       console.error('Accept order error:', error);
       Alert.alert('Lỗi', 'Không thể nhận chuyến vào lúc này');
     }
   };
-
-
-
-
-
   const reverseGeocode = async (latitude: number, longitude: number): Promise<{ address: string; city: string }> => {
     try {
       const apiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
@@ -321,77 +319,20 @@ const DriverHome = () => {
         </View>
       </View>
 
-      <Modal
+      <IncomingRequestModal
         visible={showOrderModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowOrderModal(false)}
-      >
-        <View className="flex-1 justify-end bg-black/50">
-          <View
-            className="bg-white rounded-t-[40px] p-6 pb-10"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: -10 },
-              shadowOpacity: 0.1,
-              shadowRadius: 20,
-              elevation: 20,
-            }}
-          >
-            {selectedOrder && (
-              <>
-                <View className="w-12 h-1.5 bg-gray-100 rounded-full self-center mb-4" />
-                <Text className="text-gray-900 text-xl font-JakartaBold text-center mb-4">Chi tiết đơn hàng</Text>
-
-                <View className="space-y-4">
-                  <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
-                    <Text className="text-gray-500 font-Jakarta text-base">Mã đơn hàng</Text>
-                    <Text className="text-gray-900 font-JakartaBold text-base">#{selectedOrder.orderId.slice(-8)}</Text>
-                  </View>
-                  <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
-                    <Text className="text-gray-500 font-Jakarta text-base">Khoảng cách</Text>
-                    <Text className="text-gray-900 font-JakartaBold text-base">{selectedOrder.distance} km</Text>
-                  </View>
-                  <View className="py-4">
-                    <Text className="text-gray-500 font-Jakarta text-sm uppercase mb-1">Giá cước thanh toán</Text>
-                    <Text className="text-green-600 text-3xl font-JakartaBold">{formatCurrency(selectedOrder.price)}</Text>
-                  </View>
-                </View>
-
-                <View className="flex-row mt-8 gap-4">
-                  <TouchableOpacity
-                    className="flex-1 h-14 bg-gray-50 rounded-2xl items-center justify-center border border-gray-100"
-                    onPress={() => {
-                      setShowOrderModal(false);
-                      setSelectedOrder(null);
-                    }}
-                  >
-                    <Text className="text-gray-500 font-JakartaBold">BỎ QUA</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className={`flex-[2] h-14 bg-green-500 rounded-2xl items-center justify-center ${isAccepting ? 'opacity-70' : ''}`}
-                    style={{
-                      shadowColor: "#000",
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 2,
-                      elevation: 2,
-                    }}
-                    onPress={() => handleAcceptOrder(selectedOrder.orderId)}
-                    disabled={isAccepting}
-                  >
-                    {isAccepting ? (
-                      <ActivityIndicator color="white" />
-                    ) : (
-                      <Text className="text-white font-JakartaBold text-lg">NHẬN CHUYẾN</Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
+        order={selectedOrder}
+        onAccept={handleAcceptOrder}
+        onDecline={() => {
+          setShowOrderModal(false);
+          setSelectedOrder(null);
+        }}
+        onTimeout={() => {
+          setShowOrderModal(false);
+          setSelectedOrder(null);
+        }}
+        isAccepting={isAccepting}
+      />
     </SafeAreaView>
   );
 };

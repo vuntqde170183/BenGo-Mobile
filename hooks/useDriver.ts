@@ -77,3 +77,14 @@ export const useUpdateDriverDocuments = () => {
     },
   });
 };
+
+export const useDriverUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) => DriverApi.updateOrderStatus(id, status),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["driver-orders"] });
+    },
+  });
+};
