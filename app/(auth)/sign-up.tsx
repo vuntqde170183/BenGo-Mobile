@@ -107,7 +107,7 @@ const SignUp = () => {
             </View>
 
             {/* Title Text */}
-            <View className="items-center mb-8">
+            <View className="items-center mb-4">
               <Text className="text-2xl text-gray-700 font-JakartaBold mb-2">
                 {t("auth.createAccount")}
               </Text>
@@ -160,7 +160,7 @@ const SignUp = () => {
                 loading={loading}
                 className="mt-4"
               />
-              <View className="flex-row justify-center items-center mt-4 mb-8">
+              <View className="flex-row justify-center items-center mt-4 mb-4">
                 <Text className="text-gray-500 font-JakartaMedium">
                   {t("auth.alreadyHaveAccount")}{" "}
                 </Text>

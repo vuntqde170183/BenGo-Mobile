@@ -17,19 +17,7 @@ import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import CustomModal from "@/components/Common/CustomModal";
-
-const MenuItem = ({ icon, label, onPress }: { icon: any; label: string; onPress: () => void }) => (
-    <TouchableOpacity
-        onPress={onPress}
-        className="flex-row items-center py-4 border-b border-neutral-50 px-2"
-    >
-        <View className="w-10 h-10 items-center justify-center bg-neutral-50 rounded-xl mr-4">
-            <Ionicons name={icon} size={22} color="#16A34A" />
-        </View>
-        <Text className="flex-1 text-base font-JakartaMedium text-neutral-700">{label}</Text>
-        <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
-    </TouchableOpacity>
-);
+import CustomButton from "@/components/Common/CustomButton";
 
 const CustomerProfileScreen = () => {
     const { logout } = useAuth();
@@ -78,8 +66,8 @@ const CustomerProfileScreen = () => {
                 logout();
                 router.replace("/(auth)/sign-in");
             },
-            "Đồng ý",
-            "Bỏ qua"
+            "Đăng xuất",
+            "Hủy"
         );
     };
 
@@ -92,7 +80,7 @@ const CustomerProfileScreen = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -132,9 +120,9 @@ const CustomerProfileScreen = () => {
                 </View>
 
                 {/* P2: BenGo Wallet Card */}
-                <View className="px-4 mb-8">
+                <View className="px-4 mb-4">
                     <LinearGradient
-                        colors={["#0047AB", "#002B66"]}
+                        colors={["#16A34A", "#15803D"]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         className="rounded-[24px] p-6 shadow-xl overflow-hidden"
@@ -165,51 +153,52 @@ const CustomerProfileScreen = () => {
                                 onPress={() => showAlert("Nạp tiền", "Tính năng nạp tiền qua cổng thanh toán đang được tích hợp.")}
                                 className="bg-white px-4 py-2.5 rounded-full items-center justify-center flex-row shadow-lg"
                             >
-                                <Ionicons name="add-circle" size={18} color="#0047AB" />
-                                <Text className="ml-2 font-JakartaBold text-[#0047AB] text-sm">Nạp tiền</Text>
+                                <Ionicons name="add-circle" size={18} color="#16A34A" />
+                                <Text className="ml-2 font-JakartaBold text-[#16A34A] text-sm">Nạp tiền</Text>
                             </TouchableOpacity>
                         </View>
                     </LinearGradient>
                 </View>
 
-                {/* P3: Settings & Actions Menu List */}
-                <View className="px-4 mb-4">
-                    <Text className="text-lg font-JakartaBold text-gray-700 mb-4 px-2">Cài đặt tài khoản</Text>
-                    <View className="bg-white rounded-2xl border border-neutral-50 shadow-sm p-2">
-                        <MenuItem
-                            icon="location"
+                {/* P3: Action Menu List */}
+                <View className="px-4">
+                    <View className="bg-white rounded-3xl border border-gray-100 shadow-sm">
+                        <MenuActionItem
+                            icon="location-outline"
                             label="Địa chỉ đã lưu"
                             onPress={() => router.push("/(root)/booking-setup")}
                         />
-                        <MenuItem
-                            icon="notifications"
+                        <Divider />
+                        <MenuActionItem
+                            icon="notifications-outline"
                             label="Thông báo"
                             onPress={() => router.push("/(root)/tabs/notifications")}
                         />
-                        <MenuItem
-                            icon="shield-checkmark"
+                        <Divider />
+                        <MenuActionItem
+                            icon="shield-checkmark-outline"
                             label="Bảo mật & Mật khẩu"
                             onPress={() => showAlert("Bảo mật", "Tính năng đổi mật khẩu đang cập nhật")}
                         />
-                        <MenuItem
-                            icon="help-circle-outline"
-                            label="Hỗ trợ khách hàng"
+                        <Divider />
+                        <MenuActionItem
+                            icon="help-buoy-outline"
+                            label="Trung tâm hỗ trợ"
                             onPress={() => Linking.openURL('tel:19001234')}
                         />
                     </View>
                 </View>
 
 
-                {/* P4: Logout Action */}
-                <View className="px-4 pb-10 items-center">
-                    <TouchableOpacity
+                {/* P4: Logout Section */}
+                <View className="px-4 mt-4">
+                    <CustomButton
+                        title="Đăng xuất"
                         onPress={handleSignOut}
-                        className="w-[90%] flex-row items-center justify-center py-4 rounded-2xl border border-red-100 bg-red-50"
-                    >
-                        <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-                        <Text className="ml-3 font-JakartaBold text-red-500 text-sm">Đăng xuất</Text>
-                    </TouchableOpacity>
-                    <Text className="mt-4 text-sm font-JakartaMedium text-neutral-400">Phiên bản 1.0.24 (Stable)</Text>
+                        bgVariant="danger"
+                        textVariant="danger"
+                        IconRight={() => <Ionicons name="log-out-outline" size={24} color="#FFF" />}
+                    />
                 </View>
             </ScrollView>
 
@@ -225,5 +214,43 @@ const CustomerProfileScreen = () => {
         </SafeAreaView>
     );
 };
+
+const MenuActionItem = ({
+    icon,
+    label,
+    onPress,
+    status
+}: {
+    icon: any;
+    label: string;
+    onPress: () => void;
+    status?: string;
+}) => (
+    <TouchableOpacity
+        onPress={onPress}
+        className="flex-row items-center p-4 active:bg-gray-50"
+    >
+        <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
+            <Ionicons name={icon} size={22} color="#16A34A" />
+        </View>
+        <View className="flex-1 flex-row items-center justify-between">
+            <Text className="font-JakartaBold text-gray-700 text-base">{label}</Text>
+            <View className="flex-row items-center">
+                {status && (
+                    <View className={`px-2 py-0.5 rounded-full mr-2 ${status === 'APPROVED' ? 'bg-green-100' : status === 'PENDING' ? 'bg-amber-100' : 'bg-red-100'
+                        }`}>
+                        <Text className={`text-sm font-JakartaBold ${status === 'APPROVED' ? 'text-green-700' : status === 'PENDING' ? 'text-amber-700' : 'text-red-700'
+                            }`}>
+                            {status}
+                        </Text>
+                    </View>
+                )}
+                <Ionicons name="chevron-forward" size={20} color="#CBD5E1" />
+            </View>
+        </View>
+    </TouchableOpacity>
+);
+
+const Divider = () => <View className="h-[1px] bg-gray-50 mx-4" />;
 
 export default CustomerProfileScreen;

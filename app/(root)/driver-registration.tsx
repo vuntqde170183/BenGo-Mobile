@@ -514,7 +514,7 @@ export default function DriverRegistrationScreen() {
             uploadingImage.vehicle ||
             uploadingImage.profile
           }
-          className="mb-8"
+          className="mb-4"
         />
       </ScrollView>
 

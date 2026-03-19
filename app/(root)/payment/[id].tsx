@@ -110,7 +110,7 @@ const PaymentScreen = () => {
                     </View>
 
                     {/* E1: Receipt Card */}
-                    <View className="bg-green-50 rounded-3xl p-6 items-center mb-8 border border-green-100">
+                    <View className="bg-green-50 rounded-3xl p-6 items-center mb-4 border border-green-100">
                         <View className="w-16 h-16 bg-white rounded-full items-center justify-center mb-4 shadow-sm">
                             <Ionicons name="card" size={32} color="#10B981" />
                         </View>
@@ -147,7 +147,7 @@ const PaymentScreen = () => {
 
                             <TouchableOpacity
                                 onPress={() => setPaymentMethod("WALLET")}
-                                className={`flex-row items-center p-4 rounded-2xl mb-8 border-2 ${paymentMethod === "WALLET" ? "border-green-500 bg-green-50" : "border-gray-100"}`}
+                                className={`flex-row items-center p-4 rounded-2xl mb-4 border-2 ${paymentMethod === "WALLET" ? "border-green-500 bg-green-50" : "border-gray-100"}`}
                             >
                                 <View className={`w-10 h-10 rounded-full items-center justify-center ${paymentMethod === "WALLET" ? "bg-green-500" : "bg-gray-100"}`}>
                                     <Ionicons name="wallet" size={20} color={paymentMethod === "WALLET" ? "white" : "#9CA3AF"} />

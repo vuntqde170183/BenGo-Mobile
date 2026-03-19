@@ -152,7 +152,7 @@ const SignIn = () => {
             </View>
 
             {/* Title Text */}
-            <View className="items-center mb-8">
+            <View className="items-center mb-4">
               <Text className="text-2xl text-gray-700 font-JakartaBold mb-2">
                 Chào mừng bạn!
               </Text>
@@ -214,7 +214,7 @@ const SignIn = () => {
               />
 
               {/* Register Link */}
-              <View className="flex-row justify-center items-center mt-4 mb-8">
+              <View className="flex-row justify-center items-center mt-4 mb-4">
                 <Text className="text-gray-500 font-JakartaMedium">Chưa có tài khoản? </Text>
                 <TouchableOpacity onPress={handleRegister}>
                   <Text className="text-green-600 font-JakartaBold">Đăng ký ngay</Text>
