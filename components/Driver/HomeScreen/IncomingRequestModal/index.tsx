@@ -111,7 +111,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
           {/* Footer & Buttons */}
           <View className="pt-2 pb-6 px-4">
             <CustomButton
-              title="CHẤP NHẬN"
+              title="Nhận chuyến"
               onPress={() => onAccept(order.orderId)}
               disabled={isAccepting}
               loading={isAccepting}
