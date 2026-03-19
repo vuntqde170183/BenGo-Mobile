@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
-    Alert,
     ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
@@ -17,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useOrderDetails, usePayOrder, useRateOrder } from "@/hooks/useOrders";
 import { StarRating } from "@/components/Common/StarRating";
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 
 const PaymentScreen = () => {
     const { id } = useLocalSearchParams();
@@ -34,6 +34,24 @@ const PaymentScreen = () => {
     const isPaying = payMutation.isPending;
     const isSubmittingRating = rateMutation.isPending;
 
+    const [alertModal, setAlertModal] = useState({
+        visible: false,
+        title: "",
+        message: "",
+        onConfirm: undefined as (() => void) | undefined
+    });
+
+    const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+        setAlertModal({ visible: true, title, message, onConfirm });
+    };
+
+    const closeAlert = () => {
+        setAlertModal((prev) => ({ ...prev, visible: false }));
+        if (alertModal.onConfirm) {
+            alertModal.onConfirm();
+        }
+    };
+
     useEffect(() => {
         if (order?.paymentStatus === "PAID") {
             setIsPaymentDone(true);
@@ -46,11 +64,11 @@ const PaymentScreen = () => {
                 orderId: id as string,
                 paymentMethod: paymentMethod,
             });
-            Alert.alert("Thành công", "Thanh toán thành công!");
+            showAlert("Thành công", "Thanh toán thành công!");
             setIsPaymentDone(true);
         } catch (error: any) {
             console.error("Payment Error:", error);
-            Alert.alert("Lỗi", error.message || "Đã có lỗi xảy ra trong quá trình thanh toán.");
+            showAlert("Lỗi", error.message || "Đã có lỗi xảy ra trong quá trình thanh toán.");
         }
     };
 
@@ -63,11 +81,10 @@ const PaymentScreen = () => {
                     comment: comment,
                 },
             });
-            Alert.alert("Cảm ơn", "Đánh giá của bạn đã được gửi.");
-            router.replace("/(root)/tabs/home");
+            showAlert("Cảm ơn", "Đánh giá của bạn đã được gửi.", () => router.replace("/(root)/tabs/home"));
         } catch (error) {
             console.error("Rating Error:", error);
-            Alert.alert("Lỗi", "Không thể gửi đánh giá lúc này.");
+            showAlert("Lỗi", "Không thể gửi đánh giá lúc này.");
         }
     };
 
@@ -183,6 +200,13 @@ const PaymentScreen = () => {
                     )}
                 </ScrollView>
             </KeyboardAvoidingView>
+
+            <CustomModal
+                visible={alertModal.visible}
+                title={alertModal.title}
+                message={alertModal.message}
+                onClose={closeAlert}
+            />
         </SafeAreaView>
     );
 };

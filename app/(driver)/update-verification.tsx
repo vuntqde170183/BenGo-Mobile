@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
   Modal,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -22,6 +21,7 @@ import { useUpload } from "@/hooks/useUpload";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/context/AuthContext";
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import InputField from "@/components/Common/InputField";
 
 const ImageUploadBox = ({
@@ -54,7 +54,7 @@ const ImageUploadBox = ({
 
 const SectionTitle = ({ title, icon }: { title: string; icon: any }) => (
   <View className="flex-row items-center my-2">
-    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
+    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
       <Ionicons name={icon} size={22} color="#10B981" />
     </View>
     <Text className="text-green-600 font-JakartaBold text-lg">{title}</Text>
@@ -97,6 +97,24 @@ const UpdateVerificationScreen = () => {
   const [loading, setLoading] = useState(false);
   const [loadingAction, setLoadingAction] = useState("");
 
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
+
   useEffect(() => {
     if (docData?.data?.driverProfile) {
       const p = docData.data.driverProfile;
@@ -119,7 +137,7 @@ const UpdateVerificationScreen = () => {
   const handlePickImage = async (field: "identityFront" | "identityBack" | "licenseImage" | "registrationImage") => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert("Lỗi", "Cần quyền truy cập ảnh để tải tài liệu!");
+      showAlert("Lỗi", "Cần quyền truy cập ảnh để tải tài liệu!");
       return;
     }
 
@@ -144,13 +162,13 @@ const UpdateVerificationScreen = () => {
   const handleSubmit = async () => {
     const error = validate();
     if (error) {
-      Alert.alert("Thiếu thông tin", error);
+      showAlert("Thiếu thông tin", error);
       return;
     }
 
     try {
       if (!effectiveUserId) {
-        Alert.alert("Lỗi", "Không tìm thấy thông tin định danh người dùng.");
+        showAlert("Lỗi", "Không tìm thấy thông tin định danh người dùng.");
         return;
       }
 
@@ -201,12 +219,10 @@ const UpdateVerificationScreen = () => {
         vehicleType: form.vehicleType,
       });
 
-      Alert.alert("Thành công", "Hồ sơ của bạn đã được gửi xét duyệt.", [
-        { text: "OK", onPress: () => router.push("/documents") }
-      ]);
+      showAlert("Thành công", "Hồ sơ của bạn đã được gửi xét duyệt.", () => router.push("/documents"));
     } catch (err) {
       console.error(err);
-      Alert.alert("Lỗi", "Không thể gửi hồ sơ. Vui lòng thử lại!");
+      showAlert("Lỗi", "Không thể gửi hồ sơ. Vui lòng thử lại!");
     } finally {
       setLoading(false);
     }
@@ -215,7 +231,7 @@ const UpdateVerificationScreen = () => {
   const handleUpdateProfile = async () => {
     const error = validate();
     if (error) {
-      Alert.alert("Thiếu thông tin", error);
+      showAlert("Thiếu thông tin", error);
       return;
     }
 
@@ -259,11 +275,11 @@ const UpdateVerificationScreen = () => {
         }
       });
 
-      Alert.alert("Thành công", "Hồ sơ của bạn đã được cập nhật.");
+      showAlert("Thành công", "Hồ sơ của bạn đã được cập nhật.");
       refetch();
     } catch (err) {
       console.error(err);
-      Alert.alert("Lỗi", "Không thể cập nhật hồ sơ. Vui lòng thử lại!");
+      showAlert("Lỗi", "Không thể cập nhật hồ sơ. Vui lòng thử lại!");
     } finally {
       setLoading(false);
     }
@@ -417,6 +433,13 @@ const UpdateVerificationScreen = () => {
           </View>
         </View>
       </Modal>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 };

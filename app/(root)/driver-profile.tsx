@@ -5,7 +5,6 @@ import {
   ScrollView,
   Image,
   RefreshControl,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -15,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 
 import PageHeader from "@/components/Common/PageHeader";
+import CustomModal from "@/components/Common/CustomModal";
 import { fetchAPI } from "@/lib/fetch";
 import { formatCurrencyByLanguage } from "@/lib/currency";
 import { DriverProfile as DriverProfileType } from "@/types/type";
@@ -27,6 +27,24 @@ export default function DriverProfileScreen() {
   const [driverProfile, setDriverProfile] = useState<DriverProfileType | null>(
     null
   );
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   const loadDriverProfile = async () => {
     if (!user?.id) return;
@@ -42,15 +60,10 @@ export default function DriverProfileScreen() {
         setDriverProfile(response.data);
       } else {
         // Not a driver yet, redirect to registration
-        Alert.alert(t("driver.notRegistered"), t("driver.registerFirst"), [
-          {
-            text: "OK",
-            onPress: () => router.replace("/(root)/tabs/profile"),
-          },
-        ]);
+        showAlert(t("driver.notRegistered"), t("driver.registerFirst"), () => router.replace("/(root)/tabs/profile"));
       }
     } catch (error) {
-      Alert.alert(t("common.error"), t("driver.loadError"));
+      showAlert(t("common.error"), t("driver.loadError"));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -370,6 +383,13 @@ export default function DriverProfileScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 }

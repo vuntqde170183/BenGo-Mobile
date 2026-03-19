@@ -1,4 +1,4 @@
-import { View, Text, Alert, Modal, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import {
   IncomingRequestModal,
   type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
+import CustomModal from "@/components/Common/CustomModal";
 import { useAuth } from '@/context/AuthContext';
 import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation } from '@/hooks/useDriver';
 import { PendingOrder } from '@/api/driver';
@@ -30,6 +31,24 @@ const DriverHome = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   const [currentLocation, setCurrentLocation] = useState<LocationState>({
     address: 'Đang tải vị trí...',
@@ -67,7 +86,7 @@ const DriverHome = () => {
   // Toggle online/offline status via API
   const toggleOnlineStatus = async () => {
     if (currentLocation.latitude === 0 && currentLocation.longitude === 0) {
-      Alert.alert('Lỗi', 'Vui lòng chờ xác định vị trí trước khi bật trạng thái');
+      showAlert('Lỗi', 'Vui lòng chờ xác định vị trí trước khi bật trạng thái');
       return;
     }
 
@@ -84,7 +103,7 @@ const DriverHome = () => {
       setIsOnline(newStatus);
     } catch (error: any) {
       console.error('Toggle status error:', error);
-      Alert.alert('Lỗi', 'Không thể cập nhật trạng thái hoạt động');
+      showAlert('Lỗi', 'Không thể cập nhật trạng thái hoạt động');
     }
   };
 
@@ -97,7 +116,7 @@ const DriverHome = () => {
       router.push(`/(driver)/active-trip/${orderId}` as any);
     } catch (error: any) {
       console.error('Accept order error:', error);
-      Alert.alert('Lỗi', 'Không thể nhận chuyến vào lúc này');
+      showAlert('Lỗi', 'Không thể nhận chuyến vào lúc này');
     }
   };
   const reverseGeocode = async (latitude: number, longitude: number): Promise<{ address: string; city: string }> => {
@@ -332,6 +351,13 @@ const DriverHome = () => {
           setSelectedOrder(null);
         }}
         isAccepting={isAccepting}
+      />
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
       />
     </SafeAreaView>
   );

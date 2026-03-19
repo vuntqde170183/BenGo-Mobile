@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert, Linking, ActivityIndicator, Dimensions } from "react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking, ActivityIndicator, Dimensions } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { useOrderDetails, useCancelOrder } from "@/hooks/useOrders";
 import VehicleBadge from "@/components/Common/VehicleBadge";
+import CustomModal from "@/components/Common/CustomModal";
 import { formatCurrency } from "@/lib/utils"; // Assuming a helper exists or I'll use toLocaleString
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: any }> = {
@@ -21,6 +22,34 @@ const CustomerOrderDetailScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: order, isLoading } = useOrderDetails(id);
     const { mutateAsync: cancelOrder, isPending: isCancelling } = useCancelOrder();
+
+    const [alertModal, setAlertModal] = useState({
+        visible: false,
+        title: "",
+        message: "",
+        primaryButtonText: "Đóng",
+        secondaryButtonText: "",
+        onConfirm: undefined as (() => void) | undefined,
+        onCancel: undefined as (() => void) | undefined
+    });
+
+    const showAlert = (title: string, message: string, onConfirm?: () => void, primaryButtonText = "Đóng", secondaryButtonText = "", onCancel?: () => void) => {
+        setAlertModal({ visible: true, title, message, onConfirm, primaryButtonText, secondaryButtonText, onCancel });
+    };
+
+    const closeAlert = () => {
+        setAlertModal((prev) => ({ ...prev, visible: false }));
+        if (alertModal.onConfirm) {
+            alertModal.onConfirm();
+        }
+    };
+
+    const handleSecondaryPress = () => {
+        setAlertModal((prev) => ({ ...prev, visible: false }));
+        if (alertModal.onCancel) {
+            alertModal.onCancel();
+        }
+    };
 
     if (isLoading) {
         return (
@@ -44,25 +73,19 @@ const CustomerOrderDetailScreen = () => {
     const currentStatus = statusConfig[order.status] || statusConfig.PENDING;
 
     const handleCancel = () => {
-        Alert.alert(
+        showAlert(
             "Xác nhận hủy đơn",
             "Bạn có chắc chắn muốn hủy đơn hàng này không?",
-            [
-                { text: "Bỏ qua", style: "cancel" },
-                {
-                    text: "Đồng ý",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            await cancelOrder({ orderId: id, reason: "Người dùng yêu cầu hủy" });
-                            Alert.alert("Thành công", "Đơn hàng của bạn đã được hủy.");
-                            router.back();
-                        } catch (error) {
-                            Alert.alert("Lỗi", "Không thể hủy đơn hàng lúc này.");
-                        }
-                    }
+            async () => {
+                try {
+                    await cancelOrder({ orderId: id, reason: "Người dùng yêu cầu hủy" });
+                    showAlert("Thành công", "Đơn hàng của bạn đã được hủy.", () => router.back());
+                } catch (error) {
+                    showAlert("Lỗi", "Không thể hủy đơn hàng lúc này.");
                 }
-            ]
+            },
+            "Đồng ý",
+            "Bỏ qua"
         );
     };
 
@@ -72,7 +95,7 @@ const CustomerOrderDetailScreen = () => {
 
     const handleChat = (driverId: string) => {
         // router.push(`/(root)/chat/${driverId}`);
-        Alert.alert("Thông báo", "Tính năng Chat đang được phát triển.");
+        showAlert("Thông báo", "Tính năng Chat đang được phát triển.");
     };
 
     const handleReorder = () => {
@@ -189,7 +212,7 @@ const CustomerOrderDetailScreen = () => {
                             {order.specialNote || "Không có ghi chú"}
                         </Text>
                         <View className="mt-4">
-                            <VehicleBadge type={order.vehicleType} />
+                            <VehicleBadge vehicleType={order.vehicleType} />
                         </View>
                     </View>
                 </View>
@@ -309,6 +332,16 @@ const CustomerOrderDetailScreen = () => {
                     </TouchableOpacity>
                 )}
             </View>
+
+            <CustomModal
+                visible={alertModal.visible}
+                title={alertModal.title}
+                message={alertModal.message}
+                onClose={closeAlert}
+                primaryButtonText={alertModal.primaryButtonText}
+                secondaryButtonText={alertModal.secondaryButtonText}
+                onSecondaryPress={handleSecondaryPress}
+            />
         </SafeAreaView>
     );
 };

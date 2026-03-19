@@ -50,7 +50,7 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
       {/* Header: ID and Status */}
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
-          <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
+          <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
             <Ionicons name="receipt-outline" size={22} color="#10B981" />
           </View>
           <View>

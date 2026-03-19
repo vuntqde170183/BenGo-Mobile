@@ -56,7 +56,7 @@ const DocumentCategoryCard = ({
     onPress={onPress}
     className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm mb-4 flex-row items-center"
   >
-    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-4">
+    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-4 border border-green-200">
       <Ionicons name={icon} size={24} color="#10B981" />
     </View>
     <View className="flex-1">

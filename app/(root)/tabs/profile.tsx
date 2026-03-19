@@ -5,7 +5,6 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    Alert,
     ActivityIndicator,
     RefreshControl,
     Dimensions,
@@ -17,6 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import CustomModal from "@/components/Common/CustomModal";
 
 const MenuItem = ({ icon, label, onPress }: { icon: any; label: string; onPress: () => void }) => (
     <TouchableOpacity
@@ -36,6 +36,34 @@ const CustomerProfileScreen = () => {
     const { data: profile, isLoading, refetch } = useProfile();
     const [refreshing, setRefreshing] = useState(false);
 
+    const [alertModal, setAlertModal] = useState({
+        visible: false,
+        title: "",
+        message: "",
+        primaryButtonText: "Đóng",
+        secondaryButtonText: "",
+        onConfirm: undefined as (() => void) | undefined,
+        onCancel: undefined as (() => void) | undefined
+    });
+
+    const showAlert = (title: string, message: string, onConfirm?: () => void, primaryButtonText = "Đóng", secondaryButtonText = "", onCancel?: () => void) => {
+        setAlertModal({ visible: true, title, message, onConfirm, primaryButtonText, secondaryButtonText, onCancel });
+    };
+
+    const closeAlert = () => {
+        setAlertModal((prev) => ({ ...prev, visible: false }));
+        if (alertModal.onConfirm) {
+            alertModal.onConfirm();
+        }
+    };
+
+    const handleSecondaryPress = () => {
+        setAlertModal((prev) => ({ ...prev, visible: false }));
+        if (alertModal.onCancel) {
+            alertModal.onCancel();
+        }
+    };
+
     const onRefresh = async () => {
         setRefreshing(true);
         await refetch();
@@ -43,20 +71,15 @@ const CustomerProfileScreen = () => {
     };
 
     const handleSignOut = () => {
-        Alert.alert(
+        showAlert(
             "Đăng xuất",
             "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?",
-            [
-                { text: "Bỏ qua", style: "cancel" },
-                {
-                    text: "Đồng ý",
-                    style: "destructive",
-                    onPress: () => {
-                        logout();
-                        router.replace("/(auth)/sign-in");
-                    },
-                },
-            ]
+            () => {
+                logout();
+                router.replace("/(auth)/sign-in");
+            },
+            "Đồng ý",
+            "Bỏ qua"
         );
     };
 
@@ -86,7 +109,7 @@ const CustomerProfileScreen = () => {
                                 className="w-20 h-20 rounded-full border-2 border-white shadow-sm bg-gray-100"
                             />
                             <TouchableOpacity
-                                onPress={() => Alert.alert("Chỉnh sửa", "Tính năng đổi ảnh đang cập nhật")}
+                                onPress={() => showAlert("Chỉnh sửa", "Tính năng đổi ảnh đang cập nhật")}
                                 className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md border border-gray-100"
                             >
                                 <Ionicons name="brush" size={12} color="#16A34A" />
@@ -139,7 +162,7 @@ const CustomerProfileScreen = () => {
                                 </Text>
                             </View>
                             <TouchableOpacity
-                                onPress={() => Alert.alert("Nạp tiền", "Tính năng nạp tiền qua cổng thanh toán đang được tích hợp.")}
+                                onPress={() => showAlert("Nạp tiền", "Tính năng nạp tiền qua cổng thanh toán đang được tích hợp.")}
                                 className="bg-white px-6 py-2.5 rounded-full items-center justify-center flex-row shadow-lg"
                             >
                                 <Ionicons name="add-circle" size={18} color="#0047AB" />
@@ -166,7 +189,7 @@ const CustomerProfileScreen = () => {
                         <MenuItem
                             icon="shield-checkmark"
                             label="Bảo mật & Mật khẩu"
-                            onPress={() => Alert.alert("Bảo mật", "Tính năng đổi mật khẩu đang cập nhật")}
+                            onPress={() => showAlert("Bảo mật", "Tính năng đổi mật khẩu đang cập nhật")}
                         />
                         <MenuItem
                             icon="help-circle-outline"
@@ -189,6 +212,16 @@ const CustomerProfileScreen = () => {
                     <Text className="mt-4 text-xs font-JakartaMedium text-neutral-400">Phiên bản 1.0.24 (Stable)</Text>
                 </View>
             </ScrollView>
+
+            <CustomModal
+                visible={alertModal.visible}
+                title={alertModal.title}
+                message={alertModal.message}
+                onClose={closeAlert}
+                primaryButtonText={alertModal.primaryButtonText}
+                secondaryButtonText={alertModal.secondaryButtonText}
+                onSecondaryPress={handleSecondaryPress}
+            />
         </SafeAreaView>
     );
 };

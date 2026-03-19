@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Alert, Dimensions } from "react-native";
+import { View, Dimensions } from "react-native";
 import { useAuth } from "@/context/AuthContext";
 import { useLocationStore } from "@/store";
 import { router } from "expo-router";
@@ -12,6 +12,7 @@ import { useCustomerProfile } from "@/hooks/useCustomer";
 import BackgroundMap from "@/components/Customer/HomeScreen/BackgroundMap";
 import FloatingSearchBar from "@/components/Customer/HomeScreen/FloatingSearchBar";
 import AddressShortcuts from "@/components/Customer/HomeScreen/AddressShortcuts";
+import CustomModal from "@/components/Common/CustomModal";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -19,6 +20,24 @@ export default function HomeScreen() {
   const { setUserLocation, setDestinationLocation } = useLocationStore();
 
   const { data: userData } = useCustomerProfile(user?.id || null);
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   const handleSearchPress = () => {
     router.push("/(root)/search-destination");
@@ -33,11 +52,11 @@ export default function HomeScreen() {
           longitude: address.lng,
           address: address.fullAddress,
         });
-        router.push("/(root)/confirm-ride");
+        router.push("/(root)/confirm-ride" as any);
         return;
       }
     }
-    Alert.alert("Thông báo", "Địa chỉ này chưa được thiết lập trong hồ sơ.");
+    showAlert("Thông báo", "Địa chỉ này chưa được thiết lập trong hồ sơ.");
   };
 
 
@@ -83,6 +102,13 @@ export default function HomeScreen() {
           savedAddresses={userData?.savedAddresses}
         />
       </View>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </GestureHandlerRootView>
   );
 }

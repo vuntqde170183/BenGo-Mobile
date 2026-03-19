@@ -1,12 +1,11 @@
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import InputField from "@/components/Common/InputField";
-import OAuth from "@/components/Common/OAuth";
 import { icons, images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Alert,
   Image,
   Modal,
   ScrollView,
@@ -32,9 +31,27 @@ const SignUp = () => {
     phone: "",
   });
 
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
+
   const onSignUpPress = async () => {
     if (!form.name || !form.email || !form.password) {
-      Alert.alert(t("common.error"), t("auth.missingFields") || "Vui lòng nhập đầy đủ thông tin");
+      showAlert(t("common.error"), t("auth.missingFields") || "Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
@@ -58,7 +75,7 @@ const SignUp = () => {
 
       setShowSuccessModal(true);
     } catch (err: any) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         err.message || t("errors.somethingWentWrong")
       );
@@ -190,6 +207,13 @@ const SignUp = () => {
           </View>
         </View>
       </Modal>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 };

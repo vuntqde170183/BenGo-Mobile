@@ -4,7 +4,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
   ActivityIndicator,
   RefreshControl,
   Platform,
@@ -19,12 +18,41 @@ import { useDriverDocuments, useDriverToggleStatus } from "@/hooks/useDriver";
 import { fetchAPI } from "@/lib/fetch";
 import { useState, useCallback } from "react";
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import { User, DriverProfile, DriverDocument } from "@/types/type";
 
 const ProfileScreen = () => {
   const { user, logout, token } = useAuth();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    primaryButtonText: "Đóng",
+    secondaryButtonText: "",
+    onConfirm: undefined as (() => void) | undefined,
+    onCancel: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void, primaryButtonText = "Đóng", secondaryButtonText = "", onCancel?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm, primaryButtonText, secondaryButtonText, onCancel });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
+
+  const handleSecondaryPress = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onCancel) {
+      alertModal.onCancel();
+    }
+  };
 
   const {
     data: profileData,
@@ -47,32 +75,27 @@ const ProfileScreen = () => {
   }, [refetchProfile, refetchDocs]);
 
   const handleLogout = () => {
-    Alert.alert(
+    showAlert(
       "Đăng xuất",
       "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?",
-      [
-        { text: "Hủy", style: "cancel" },
-        {
-          text: "Đăng xuất",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await fetchAPI("/(api)/driver/status", {
-                method: "PUT",
-                body: JSON.stringify({
-                  isOnline: false,
-                  location: { lat: 0, lng: 0 }
-                }),
-              });
-              logout();
-              router.replace("/(auth)/sign-in");
-            } catch (error) {
-              logout();
-              router.replace("/(auth)/sign-in");
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await fetchAPI("/(api)/driver/status", {
+            method: "PUT",
+            body: JSON.stringify({
+              isOnline: false,
+              location: { lat: 0, lng: 0 }
+            }),
+          });
+          logout();
+          router.replace("/(auth)/sign-in");
+        } catch (error) {
+          logout();
+          router.replace("/(auth)/sign-in");
+        }
+      },
+      "Đăng xuất",
+      "Hủy"
     );
   };
 
@@ -122,7 +145,7 @@ const ProfileScreen = () => {
               </View>
               <TouchableOpacity
                 className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md"
-                onPress={() => Alert.alert("Thông báo", "Chức năng cập nhật ảnh đang phát triển")}
+                onPress={() => showAlert("Thông báo", "Chức năng cập nhật ảnh đang phát triển")}
               >
                 <Ionicons name="camera" size={18} color="#22C55E" />
               </TouchableOpacity>
@@ -182,7 +205,7 @@ const ProfileScreen = () => {
             <MenuActionItem
               icon="person-circle-outline"
               label="Chỉnh sửa hồ sơ"
-              onPress={() => Alert.alert("Thông báo", "Chuyển đến màn hình Chỉnh sửa hồ sơ")}
+              onPress={() => showAlert("Thông báo", "Chuyển đến màn hình Chỉnh sửa hồ sơ")}
             />
             <Divider />
             <MenuActionItem
@@ -195,13 +218,13 @@ const ProfileScreen = () => {
             <MenuActionItem
               icon="settings-outline"
               label="Cài đặt ứng dụng"
-              onPress={() => Alert.alert("Thông báo", "Chuyển đến màn hình Cài đặt")}
+              onPress={() => showAlert("Thông báo", "Chuyển đến màn hình Cài đặt")}
             />
             <Divider />
             <MenuActionItem
               icon="help-buoy-outline"
               label="Trung tâm hỗ trợ"
-              onPress={() => Alert.alert("Thông báo", "Chuyển đến Trung tâm hỗ trợ")}
+              onPress={() => showAlert("Thông báo", "Chuyển đến Trung tâm hỗ trợ")}
             />
           </View>
 
@@ -216,6 +239,16 @@ const ProfileScreen = () => {
           />
         </View>
       </ScrollView>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+        primaryButtonText={alertModal.primaryButtonText}
+        secondaryButtonText={alertModal.secondaryButtonText}
+        onSecondaryPress={handleSecondaryPress}
+      />
     </SafeAreaView>
   );
 };
@@ -235,7 +268,7 @@ const MenuActionItem = ({
     onPress={onPress}
     className="flex-row items-center p-4 active:bg-gray-50"
   >
-    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
+    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
       <Ionicons name={icon} size={22} color="#10B981" />
     </View>
     <View className="flex-1 flex-row items-center justify-between">

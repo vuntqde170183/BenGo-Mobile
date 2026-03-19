@@ -83,7 +83,7 @@ const EarningsScreen = () => {
 
     return (
       <View key={String(item.id)} className="flex-row items-center py-4 border-b border-gray-100">
-        <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
+        <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
           <Ionicons name="add-circle" size={24} color="#10B981" />
         </View>
         <View className="flex-1">

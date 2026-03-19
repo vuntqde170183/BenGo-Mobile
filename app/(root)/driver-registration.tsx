@@ -5,7 +5,6 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -16,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 
 import PageHeader from "@/components/Common/PageHeader";
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import InputField from "@/components/Common/InputField";
 import { icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
@@ -25,6 +25,24 @@ export default function DriverRegistrationScreen() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   const [form, setForm] = useState({
     phone: "",
@@ -158,7 +176,7 @@ export default function DriverRegistrationScreen() {
         return updatedForm;
       });
     } catch (error: any) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         `Lỗi khi tải ảnh ${type} lên: ${error.message}`
       );
@@ -177,7 +195,7 @@ export default function DriverRegistrationScreen() {
       uploadingImage.vehicle ||
       uploadingImage.profile
     ) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         "Vui lòng đợi các ảnh tải lên hoàn tất trước khi gửi đơn."
       );
@@ -195,7 +213,7 @@ export default function DriverRegistrationScreen() {
     }
 
     if (missingFields.length > 0) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         `${t("driver.missingFields")}:\n• ${missingFields.join("\n• ")}`
       );
@@ -215,7 +233,7 @@ export default function DriverRegistrationScreen() {
     }
 
     if (missingPhotos.length > 0) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         `${t("driver.missingPhotos")}:\n• ${missingPhotos.join("\n• ")}`
       );
@@ -252,14 +270,9 @@ export default function DriverRegistrationScreen() {
         );
       }
 
-      Alert.alert(t("common.success"), t("driver.registrationSuccess"), [
-        {
-          text: "OK",
-          onPress: () => router.replace("/(root)/tabs/profile"),
-        },
-      ]);
+      showAlert(t("common.success"), t("driver.registrationSuccess"), () => router.replace("/(root)/tabs/profile"));
     } catch (error: any) {
-      Alert.alert(
+      showAlert(
         t("common.error"),
         error.message || t("driver.registrationFailed")
       );
@@ -504,6 +517,13 @@ export default function DriverRegistrationScreen() {
           className="mb-8"
         />
       </ScrollView>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 }

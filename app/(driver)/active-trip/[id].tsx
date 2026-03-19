@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Image, Linking, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Image, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import * as Location from 'expo-location';
 
 import { useDriverOrderDetail, useDriverUpdateOrderStatus } from '@/hooks/useDriver';
 import SwipeButton from '@/components/Common/SwipeButton';
+import CustomModal from '@/components/Common/CustomModal';
 
 const GOOGLE_MAPS_APIKEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY || '';
 
@@ -21,6 +22,24 @@ const ActiveTripScreen = () => {
   const { mutateAsync: updateStatus, isPending } = useDriverUpdateOrderStatus();
 
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   useEffect(() => {
     let locationSubscription: Location.LocationSubscription;
@@ -77,12 +96,10 @@ const ActiveTripScreen = () => {
         await updateStatus({ id: id as string, status: 'PICKED_UP' });
       } else if (isHeadingToDropoff) {
         await updateStatus({ id: id as string, status: 'DELIVERED' });
-        Alert.alert('Thành công', 'Chuyến đi đã hoàn thành!', [
-          { text: 'Về trang chủ', onPress: () => router.replace('/(driver)/tabs/home') }
-        ]);
+        showAlert('Thành công', 'Chuyến đi đã hoàn thành!', () => router.replace('/(driver)/tabs/home'));
       }
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể cập nhật trạng thái');
+      showAlert('Lỗi', 'Không thể cập nhật trạng thái');
     }
   };
 
@@ -179,7 +196,7 @@ const ActiveTripScreen = () => {
           <View className="flex-row gap-3">
             <TouchableOpacity
               className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center"
-              onPress={() => Alert.alert("Sắp ra mắt", "Chức năng nhắn tin đang được phát triển")}
+              onPress={() => showAlert("Sắp ra mắt", "Chức năng nhắn tin đang được phát triển")}
             >
               <Ionicons name="chatbubbles" size={24} color="#3B82F6" />
             </TouchableOpacity>
@@ -237,6 +254,13 @@ const ActiveTripScreen = () => {
           </TouchableOpacity>
         )}
       </View>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 };

@@ -1,11 +1,11 @@
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import InputField from "@/components/Common/InputField";
 import { icons, images } from "@/constants";
 import { useAuth } from "@/context/AuthContext";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   Image,
   ScrollView,
   Text,
@@ -27,6 +27,24 @@ const SignIn = () => {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ account?: string; password?: string }>({});
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   // Kiểm tra input là email hay số điện thoại
   const isEmail = (input: string): boolean => {
@@ -95,7 +113,7 @@ const SignIn = () => {
     } catch (error: any) {
       const errorMessage =
         error.message || "Tài khoản hoặc mật khẩu không đúng";
-      Alert.alert("Lỗi đăng nhập", errorMessage);
+      showAlert("Lỗi đăng nhập", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +126,7 @@ const SignIn = () => {
 
   // Navigate to forgot password
   const handleForgotPassword = () => {
-    Alert.alert("Thông báo", "Chuyển đến màn hình quên mật khẩu");
+    showAlert("Thông báo", "Chuyển đến màn hình quên mật khẩu");
   };
 
   return (
@@ -217,6 +235,13 @@ const SignIn = () => {
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 };

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -20,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useLocationStore } from "@/store";
 import { fetchAPI } from "@/lib/fetch";
 import CustomButton from "@/components/Common/CustomButton";
+import CustomModal from "@/components/Common/CustomModal";
 import TextArea from "@/components/Common/TextArea";
 import { useUpload } from "@/hooks/useUpload";
 
@@ -45,6 +45,24 @@ const BookingSetupScreen = () => {
   const [note, setNote] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState(VEHICLE_TYPES[1].id); // Default VAN
+
+  const [alertModal, setAlertModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+    setAlertModal({ visible: true, title, message, onConfirm });
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, visible: false }));
+    if (alertModal.onConfirm) {
+      alertModal.onConfirm();
+    }
+  };
 
   const [estimation, setEstimation] = useState<{
     distance: number;
@@ -115,14 +133,14 @@ const BookingSetupScreen = () => {
         }
       } catch (error) {
         console.error("[BookingSetup] Upload Error:", error);
-        Alert.alert("Lỗi upload", "Không thể tải ảnh lên. Vui lòng thử lại.");
+        showAlert("Lỗi upload", "Không thể tải ảnh lên. Vui lòng thử lại.");
       }
     }
   };
 
   const handleCreateOrder = async () => {
     if (!goodsName || !goodsWeight || images.length === 0) {
-      Alert.alert("Thiếu thông tin", "Vui lòng nhập tên hàng, khối lượng và thêm ít nhất 1 ảnh hàng hóa.");
+      showAlert("Thiếu thông tin", "Vui lòng nhập tên hàng, khối lượng và thêm ít nhất 1 ảnh hàng hóa.");
       return;
     }
 
@@ -140,15 +158,13 @@ const BookingSetupScreen = () => {
       });
 
       if (response && response.data) {
-        Alert.alert("Thành công", "Đơn hàng của bạn đã được tạo.");
-        router.push("/(root)/tabs/activities");
+        showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => router.push("/(root)/tabs/activities"));
       } else {
         // Fallback for demo
-        Alert.alert("Đặt đơn thành công", "Đơn hàng của bạn đang được tìm tài xế.");
-        router.push("/(root)/tabs/activities");
+        showAlert("Đặt đơn thành công", "Đơn hàng của bạn đang được tìm tài xế.", () => router.push("/(root)/tabs/activities"));
       }
     } catch (error) {
-      Alert.alert("Lỗi", "Không thể tạo đơn hàng lúc này. Vui lòng thử lại.");
+      showAlert("Lỗi", "Không thể tạo đơn hàng lúc này. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }
@@ -337,6 +353,13 @@ const BookingSetupScreen = () => {
           />
         </View>
       </KeyboardAvoidingView>
+
+      <CustomModal
+        visible={alertModal.visible}
+        title={alertModal.title}
+        message={alertModal.message}
+        onClose={closeAlert}
+      />
     </SafeAreaView>
   );
 };
