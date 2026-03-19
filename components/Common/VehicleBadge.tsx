@@ -52,7 +52,7 @@ const VehicleBadge = ({ vehicleType }: VehicleBadgeProps) => {
   const config = getVehicleConfig(vehicleType);
 
   return (
-    <View className={`flex-row items-center px-3 py-1 rounded-full border ${config.bgColor} ${config.borderColor}`}>
+    <View className={`flex-row w-fit items-center px-3 py-1 rounded-full border ${config.bgColor} ${config.borderColor}`}>
       <Ionicons name={config.icon} size={14} color={config.iconColor} />
       <Text className={`ml-1.5 font-JakartaBold text-sm ${config.textColor}`}>
         {config.label}

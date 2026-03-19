@@ -11,7 +11,7 @@ const EmptyState = () => (
         <View className="w-24 h-24 bg-neutral-50 rounded-full items-center justify-center mb-4">
             <Ionicons name="document-text-outline" size={48} color="#9CA3AF" />
         </View>
-        <Text className="text-lg font-JakartaBold text-neutral-800 text-center">
+        <Text className="text-lg font-JakartaBold text-gray-700 text-center">
             Bạn chưa có đơn hàng nào
         </Text>
         <Text className="font-JakartaMedium text-neutral-400 text-center mt-2">

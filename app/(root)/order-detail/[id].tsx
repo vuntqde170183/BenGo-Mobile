@@ -8,6 +8,7 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { useOrderDetails, useCancelOrder } from "@/hooks/useOrders";
 import VehicleBadge from "@/components/Common/VehicleBadge";
 import CustomModal from "@/components/Common/CustomModal";
+import CustomButton from "@/components/Common/CustomButton";
 import { formatCurrency } from "@/lib/utils"; // Assuming a helper exists or I'll use toLocaleString
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: any }> = {
@@ -62,7 +63,7 @@ const CustomerOrderDetailScreen = () => {
     if (!order) {
         return (
             <View className="flex-1 justify-center items-center bg-white p-6">
-                <Text className="text-lg font-JakartaBold text-neutral-800">Không tìm thấy đơn hàng</Text>
+                <Text className="text-lg font-JakartaBold text-gray-700">Không tìm thấy đơn hàng</Text>
                 <TouchableOpacity onPress={() => router.back()} className="mt-4 bg-green-600 px-4 py-3 rounded-full">
                     <Text className="text-white font-JakartaBold">Quay lại</Text>
                 </TouchableOpacity>
@@ -110,11 +111,11 @@ const CustomerOrderDetailScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
             {/* Header */}
-            <View className="flex-row items-center px-4 py-3 border-b border-gray-100">
+            <View className="flex-row items-center px-4 py-4 border-b border-gray-100 bg-white">
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={24} color="black" />
                 </TouchableOpacity>
-                <Text className="ml-4 text-lg font-JakartaBold">Chi tiết đơn hàng</Text>
+                <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">Chi tiết đơn hàng</Text>
             </View>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
@@ -127,14 +128,14 @@ const CustomerOrderDetailScreen = () => {
                                 {currentStatus.label}
                             </Text>
                         </View>
-                        <Text className="text-sm font-JakartaMedium text-neutral-400">
+                        <Text className="text-lg font-JakartaMedium text-neutral-400">
                             #{id.slice(-8).toUpperCase()}
                         </Text>
                     </View>
                 </View>
 
                 {/* CD3: Route Map Summary */}
-                <View style={{ height: Dimensions.get('window').height * 0.45, width: '100%' }}>
+                <View style={{ height: Dimensions.get('window').height * 0.4, width: '100%' }}>
                     <MapView
                         style={{ flex: 1 }}
                         initialRegion={{
@@ -171,106 +172,119 @@ const CustomerOrderDetailScreen = () => {
                     </MapView>
                 </View>
 
-                {/* CD4: Address Info Card */}
-                <View className="mx-5 mt-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                    <View className="flex-row items-center mb-4">
-                        <Ionicons name="radio-button-on" size={20} color="#3B82F6" />
-                        <View className="ml-3 flex-1">
-                            <Text className="text-neutral-400 font-JakartaMedium">Điểm lấy hàng</Text>
-                            <Text className="font-JakartaSemiBold text-neutral-800">{order.pickup.address}</Text>
+                {/* Unified Context Card: Address + Goods + Driver */}
+                <View className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    {/* Address Information */}
+                    <View className="mb-4">
+                        <View className="flex-row items-center mb-4">
+                            <View className="bg-green-600 w-8 h-8 rounded-full items-center justify-center mr-2 border border-green-200">
+                                <Ionicons name="location" size={18} color="#ffffff" />
+                            </View>
+                            <Text className="text-lg font-JakartaBold text-green-600">Địa điểm</Text>
+                        </View>
+
+                        <View className="flex-1 mb-2">
+                            <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Điểm lấy hàng</Text>
+                            <Text className="font-JakartaBold text-gray-400">{order.pickup.address}</Text>
+                        </View>
+                        <View className="flex-1">
+                            <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Điểm giao hàng</Text>
+                            <Text className="font-JakartaBold text-gray-400">{order.dropoff.address}</Text>
                         </View>
                     </View>
-                    <View className="flex-row items-center">
-                        <Ionicons name="location" size={20} color="#EF4444" />
-                        <View className="ml-3 flex-1">
-                            <Text className="text-neutral-400 font-JakartaMedium">Điểm giao hàng</Text>
-                            <Text className="font-JakartaSemiBold text-neutral-800">{order.dropoff.address}</Text>
+                    {/* Goods Information */}
+                    <View className="mb-4">
+                        <View className="flex-row items-center mb-4">
+                            <View className="bg-green-600 w-8 h-8 rounded-full items-center justify-center mr-2 border border-green-200">
+                                <Ionicons name="information-circle" size={18} color="#ffffff" />
+                            </View>
+                            <Text className="text-lg font-JakartaBold text-green-600">Thông tin hàng hóa</Text>
                         </View>
-                    </View>
-                </View>
 
-                {/* CD5: Goods Section */}
-                <View className="mx-4 mt-4">
-                    <View className="flex-row items-center mb-4">
-                        <Text className="text-lg font-JakartaBold text-primary-600">Thông tin hàng hóa</Text>
-                    </View>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+                            {order.goodsImages?.map((img, index) => (
+                                <Image
+                                    key={index}
+                                    source={{ uri: img }}
+                                    className="w-24 h-24 rounded-2xl mr-3 bg-gray-100"
+                                    resizeMode="cover"
+                                />
+                            ))}
+                        </ScrollView>
 
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-                        {order.goodsImages?.map((img, index) => (
-                            <Image
-                                key={index}
-                                source={{ uri: img }}
-                                className="w-24 h-24 rounded-xl mr-3 bg-gray-100"
-                                resizeMode="cover"
-                            />
-                        ))}
-                    </ScrollView>
-
-                    <View className="mt-4 p-4 bg-white rounded-2xl border border-gray-100">
-                        <Text className="text-sm text-neutral-500 font-JakartaBold mb-1">Ghi chú:</Text>
-                        <Text className="text-sm text-neutral-700 font-JakartaMedium">
+                        <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Ghi chú:</Text>
+                        <Text className="text-lg text-neutral-700 font-JakartaMedium mb-4 italic">
                             {order.specialNote || "Không có ghi chú"}
                         </Text>
-                        <View className="mt-4">
+                        <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Phương tiện vận chuyển:</Text>
+                        <View className="flex-row items-center">
                             <VehicleBadge vehicleType={order.vehicleType} />
                         </View>
                     </View>
+
+                    {/* Driver Information (Conditional) */}
+                    {(order.driver || order.driverId) && (
+                        <>
+                            <View className="h-[1px] bg-gray-50 my-6" />
+                            <View className="flex-row items-center mb-4">
+                                <View className="bg-green-600 w-8 h-8 rounded-full items-center justify-center mr-2 border border-green-200">
+                                    <Ionicons name="person" size={16} color="#ffffff" />
+                                </View>
+                                <Text className="text-base font-JakartaBold text-gray-700">Tài xế nhận đơn</Text>
+                            </View>
+                            <View className="flex-row items-center">
+                                <Image
+                                    source={{ uri: order.driver?.avatar || order.driverId?.avatar || "https://avatar.iran.liara.run/public/boy" }}
+                                    className="w-14 h-14 rounded-full bg-gray-50"
+                                />
+                                <View className="ml-4 flex-1">
+                                    <Text className="text-base font-JakartaBold text-gray-700">
+                                        {order.driver?.name || order.driverId?.name}
+                                    </Text>
+                                    <Text className="text-lg font-JakartaMedium text-neutral-500">
+                                        {order.driver?.licensePlate || order.driverId?.licensePlate}
+                                    </Text>
+                                </View>
+                                <View className="flex-row">
+                                    <TouchableOpacity
+                                        onPress={() => handleChat((order.driver?._id || order.driverId?._id)!)}
+                                        className="w-10 h-10 bg-green-50 rounded-full items-center justify-center mr-2"
+                                    >
+                                        <Ionicons name="chatbubble-ellipses" size={20} color="#16A34A" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => handleCall((order.driver?.phone || order.driverId?.phone)!)}
+                                        className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center"
+                                    >
+                                        <Ionicons name="call" size={20} color="#2563EB" />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </>
+                    )}
                 </View>
 
-                {/* CD6: Driver Info Card */}
-                {(order.driver || order.driverId) && (
-                    <View className="mx-4 mt-4 p-4 bg-white rounded-2xl border border-gray-100">
-                        <Text className="text-base font-JakartaBold text-neutral-800 mb-4">Tài xế nhận đơn</Text>
-                        <View className="flex-row items-center">
-                            <Image
-                                source={{ uri: order.driver?.avatar || order.driverId?.avatar || "https://avatar.iran.liara.run/public/boy" }}
-                                className="w-14 h-14 rounded-full bg-gray-100"
-                            />
-                            <View className="ml-4 flex-1">
-                                <Text className="text-base font-JakartaBold text-neutral-800">
-                                    {order.driver?.name || order.driverId?.name}
-                                </Text>
-                                <Text className="text-sm font-JakartaMedium text-neutral-500">
-                                    {order.driver?.licensePlate || order.driverId?.licensePlate}
-                                </Text>
-                            </View>
-                            <View className="flex-row">
-                                <TouchableOpacity
-                                    onPress={() => handleChat((order.driver?._id || order.driverId?._id)!)}
-                                    className="w-10 h-10 bg-green-50 rounded-full items-center justify-center mr-2"
-                                >
-                                    <Ionicons name="chatbubble-ellipses" size={20} color="#16A34A" />
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => handleCall((order.driver?.phone || order.driverId?.phone)!)}
-                                    className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center"
-                                >
-                                    <Ionicons name="call" size={20} color="#2563EB" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                )}
-
-                {/* CD7: Payment Summary */}
-                <View className="mx-4 mt-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                {/* Payment Summary Section */}
+                <View className="mx-4 mt-4 mb-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <View className="flex-row items-center mb-4">
-                        <Ionicons name="receipt-outline" size={20} color="#16A34A" />
-                        <Text className="ml-2 text-base font-JakartaBold text-neutral-800">Chi tiết thanh toán</Text>
+                        <View className="bg-green-600 w-8 h-8 rounded-full items-center justify-center mr-2 border border-green-200">
+                            <Ionicons name="receipt" size={16} color="#ffffff" />
+                        </View>
+                        <Text className="text-lg font-JakartaBold text-green-600">Chi tiết thanh toán</Text>
                     </View>
 
                     <View className="space-y-3">
                         <View className="flex-row justify-between">
-                            <Text className="text-sm font-JakartaMedium text-neutral-500">Giá cước ({order.distanceKm}km)</Text>
-                            <Text className="text-sm font-JakartaSemiBold text-neutral-800">{order.totalPrice.toLocaleString("vi-VN")}đ</Text>
+                            <Text className="text-lg font-JakartaMedium text-neutral-500">Giá cước ({order.distanceKm}km)</Text>
+                            <Text className="text-lg font-JakartaBold text-gray-700">{order.totalPrice.toLocaleString("vi-VN")}đ</Text>
                         </View>
                         <View className="flex-row justify-between">
-                            <Text className="text-sm font-JakartaMedium text-neutral-500">Giảm giá</Text>
-                            <Text className="text-sm font-JakartaSemiBold text-green-600">-0đ</Text>
+                            <Text className="text-lg font-JakartaMedium text-neutral-500">Giảm giá</Text>
+                            <Text className="text-lg font-JakartaBold text-green-600">-0đ</Text>
                         </View>
-                        <View className="h-[1px] bg-neutral-50 my-2" />
+                        <View className="h-[1px] bg-gray-50 my-2" />
                         <View className="flex-row justify-between items-center">
-                            <Text className="text-base font-JakartaBold text-neutral-800">Tổng cộng</Text>
+                            <Text className="text-base font-JakartaBold text-gray-700">Tổng cộng</Text>
                             <Text className="text-xl font-JakartaExtraBold text-green-600">
                                 {order.totalPrice.toLocaleString("vi-VN")}đ
                             </Text>
@@ -281,7 +295,7 @@ const CustomerOrderDetailScreen = () => {
                                 size={16}
                                 color="#6B7280"
                             />
-                            <Text className="ml-2 text-sm font-JakartaMedium text-neutral-500">
+                            <Text className="ml-2 text-lg font-JakartaMedium text-neutral-500">
                                 Thanh toán bằng {order.paymentMethod === "CASH" ? "Tiền mặt" : "Ví BenGo"}
                             </Text>
                         </View>
@@ -289,47 +303,45 @@ const CustomerOrderDetailScreen = () => {
                 </View>
             </ScrollView>
 
-            {/* CD8: Action Button Group */}
+            {/* Action Buttons */}
             <View className="p-5 border-t border-gray-100 bg-white flex-row gap-3">
                 {(order.status === "PENDING" || order.status === "ACCEPTED") && (
-                    <TouchableOpacity
+                    <CustomButton
+                        title="Hủy đơn"
                         onPress={handleCancel}
-                        disabled={isCancelling}
-                        className="flex-1 py-4 rounded-2xl border border-red-500 items-center justify-center"
-                    >
-                        {isCancelling ? (
-                            <ActivityIndicator size="small" color="#EF4444" />
-                        ) : (
-                            <Text className="text-red-500 font-JakartaBold text-sm">Hủy đơn</Text>
-                        )}
-                    </TouchableOpacity>
+                        bgVariant="red"
+                        textVariant="red"
+                        loading={isCancelling}
+                        className="flex-1"
+                    />
                 )}
 
                 {order.status === "DELIVERED" && (
-                    <TouchableOpacity
+                    <CustomButton
+                        title="Đánh giá tài xế"
                         onPress={handleRate}
-                        className="flex-1 py-4 rounded-2xl bg-amber-500 items-center justify-center"
-                    >
-                        <Text className="text-white font-JakartaBold text-sm">Đánh giá tài xế</Text>
-                    </TouchableOpacity>
+                        bgVariant="amber"
+                        textVariant="amber"
+                        className="flex-1"
+                    />
                 )}
 
                 {(order.status === "DELIVERED" || order.status === "CANCELLED") && (
-                    <TouchableOpacity
+                    <CustomButton
+                        title="Đặt lại chuyến"
                         onPress={handleReorder}
-                        className="flex-1 py-4 rounded-2xl bg-green-600 items-center justify-center"
-                    >
-                        <Text className="text-white font-JakartaBold text-sm">Đặt lại chuyến</Text>
-                    </TouchableOpacity>
+                        bgVariant="primary"
+                        className="flex-1"
+                    />
                 )}
 
                 {order.status === "PICKED_UP" && (
-                    <TouchableOpacity
+                    <CustomButton
+                        title="Theo dõi lộ trình"
                         onPress={() => router.push(`/(root)/track-order/${id}`)}
-                        className="flex-1 py-4 rounded-2xl bg-blue-600 items-center justify-center"
-                    >
-                        <Text className="text-white font-JakartaBold text-sm">Theo dõi lộ trình</Text>
-                    </TouchableOpacity>
+                        bgVariant="primary"
+                        className="flex-1"
+                    />
                 )}
             </View>
 

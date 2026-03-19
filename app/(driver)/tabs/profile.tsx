@@ -158,13 +158,13 @@ const ProfileScreen = () => {
             <View className="flex-row items-center mt-2 gap-2">
               <View className="flex-row items-center px-3 py-1 bg-amber-100 rounded-full border border-amber-200">
                 <Ionicons name="ribbon" size={14} color="#D97706" />
-                <Text className="text-amber-700 font-JakartaBold ml-1 text-xs">
+                <Text className="text-amber-700 font-JakartaBold ml-1 text-sm">
                   {rank.toUpperCase()}
                 </Text>
               </View>
               <View className="flex-row items-center px-3 py-1 bg-green-100 rounded-full border border-green-200">
                 <Ionicons name="star" size={14} color="#EAB308" />
-                <Text className="text-green-700 font-JakartaBold ml-1 text-xs">
+                <Text className="text-green-700 font-JakartaBold ml-1 text-sm">
                   {rating.toFixed(1)}
                 </Text>
               </View>

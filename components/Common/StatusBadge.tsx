@@ -66,7 +66,7 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
   };
 
   return (
-    <View className={`px-3 py-1 rounded-full border ${config.container}`}>
+    <View className={`px-3 py-1 rounded-full border self-start w-fit ${config.container}`}>
       <Text className={`font-JakartaBold text-sm ${config.text}`}>
         {config.label}
       </Text>

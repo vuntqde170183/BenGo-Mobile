@@ -105,7 +105,7 @@ const PaymentScreen = () => {
                 <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
                     {/* Header */}
                     <View className="py-6 items-center">
-                        <Text className="text-2xl font-JakartaBold text-neutral-800">Hoàn tất dịch vụ</Text>
+                        <Text className="text-2xl font-JakartaBold text-gray-700">Hoàn tất dịch vụ</Text>
                         <Text className="text-neutral-500 font-JakartaMedium mt-1">Cảm ơn bạn đã sử dụng BenGo</Text>
                     </View>
 
@@ -185,7 +185,7 @@ const PaymentScreen = () => {
                                     onChangeText={setComment}
                                     multiline
                                     numberOfLines={4}
-                                    className="w-full bg-neutral-50 mt-8 p-4 rounded-2xl border border-gray-100 text-neutral-800 font-JakartaMedium h-32"
+                                    className="w-full bg-neutral-50 mt-8 p-4 rounded-2xl border border-gray-100 text-gray-700 font-JakartaMedium h-32"
                                     textAlignVertical="top"
                                 />
 

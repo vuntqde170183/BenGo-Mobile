@@ -37,7 +37,7 @@ const OrderItemCard = ({ order }: { order: Order }) => {
             <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row items-center">
                     <Ionicons name="barcode-outline" size={20} color="#4B5563" />
-                    <Text className="ml-2 text-sm font-JakartaBold text-neutral-800">
+                    <Text className="ml-2 text-sm font-JakartaBold text-gray-700">
                         #{order?.id ? order.id.slice(-8).toUpperCase() : "N/A"}
                     </Text>
                 </View>
@@ -54,7 +54,7 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                     <Text className="text-neutral-600 font-JakartaMedium mb-4" numberOfLines={1}>
                         {order?.pickup?.address || "N/A"}
                     </Text>
-                    <Text className="text-neutral-800 font-JakartaSemiBold" numberOfLines={1}>
+                    <Text className="text-gray-700 font-JakartaSemiBold" numberOfLines={1}>
                         {order?.dropoff?.address || "N/A"}
                     </Text>
                 </View>
@@ -63,7 +63,7 @@ const OrderItemCard = ({ order }: { order: Order }) => {
             <View className="flex-row justify-between items-center pt-4 border-t border-neutral-50">
                 <VehicleBadge vehicleType={order?.vehicleType} />
                 <View className="items-end">
-                    <Text className="text-[14px] font-JakartaExtraBold text-neutral-800">
+                    <Text className="text-[14px] font-JakartaExtraBold text-gray-700">
                         {order?.totalPrice ? Number(order.totalPrice).toLocaleString("vi-VN") : "0"}đ
                     </Text>
                     <Text className="text-sm text-neutral-400 font-JakartaMedium">

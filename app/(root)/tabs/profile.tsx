@@ -116,13 +116,13 @@ const CustomerProfileScreen = () => {
                             </TouchableOpacity>
                         </View>
                         <View className="ml-4 flex-1">
-                            <Text className="text-[20px] font-JakartaBold text-neutral-800" numberOfLines={1}>
+                            <Text className="text-[20px] font-JakartaBold text-gray-700" numberOfLines={1}>
                                 {profile?.name || "Người dùng BenGo"}
                             </Text>
                             <View className="flex-row items-center mt-1">
                                 <View className="bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 flex-row items-center">
                                     <Ionicons name="ribbon" size={12} color="#D97706" />
-                                    <Text className="ml-1 text-xs font-JakartaBold text-amber-600">
+                                    <Text className="ml-1 text-sm font-JakartaBold text-amber-600">
                                         Thành viên Vàng
                                     </Text>
                                 </View>
@@ -174,7 +174,7 @@ const CustomerProfileScreen = () => {
 
                 {/* P3: Settings & Actions Menu List */}
                 <View className="px-4 mb-4">
-                    <Text className="text-lg font-JakartaBold text-neutral-800 mb-4 px-2">Cài đặt tài khoản</Text>
+                    <Text className="text-lg font-JakartaBold text-gray-700 mb-4 px-2">Cài đặt tài khoản</Text>
                     <View className="bg-white rounded-2xl border border-neutral-50 shadow-sm p-2">
                         <MenuItem
                             icon="location"
@@ -209,7 +209,7 @@ const CustomerProfileScreen = () => {
                         <Ionicons name="log-out-outline" size={20} color="#EF4444" />
                         <Text className="ml-3 font-JakartaBold text-red-500 text-sm">Đăng xuất</Text>
                     </TouchableOpacity>
-                    <Text className="mt-4 text-xs font-JakartaMedium text-neutral-400">Phiên bản 1.0.24 (Stable)</Text>
+                    <Text className="mt-4 text-sm font-JakartaMedium text-neutral-400">Phiên bản 1.0.24 (Stable)</Text>
                 </View>
             </ScrollView>
 

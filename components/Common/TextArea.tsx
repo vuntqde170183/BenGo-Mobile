@@ -39,7 +39,7 @@ const TextArea = React.forwardRef<TextInput, TextAreaProps>(
                 paddingHorizontal: 16,
                 fontFamily: "Jakarta-Medium",
                 fontSize: 16,
-                color: "#1F2937", // text-neutral-800
+                color: "#1F2937", // text-gray-700
               },
             ]}
             placeholderTextColor="#9CA3AF"

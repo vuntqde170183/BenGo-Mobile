@@ -54,9 +54,9 @@ const CustomButton = ({
   <TouchableOpacity
     onPress={onPress}
     disabled={loading || props.disabled}
-    className={`flex flex-row justify-center items-center px-4 w-full rounded-full gap-1 flex-shrink-0 ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
+    className={`flex flex-row justify-center items-center px-4 w-full rounded-xl gap-1 flex-shrink-0 ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
     style={[
-      { height: 44 },
+      { height: 48 },
       props.style,
     ]}
     {...props}

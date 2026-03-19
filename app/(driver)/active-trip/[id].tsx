@@ -189,7 +189,7 @@ const ActiveTripScreen = () => {
               <Text className="text-gray-700 font-JakartaBold text-lg">{order.customerId?.name || 'Khách hàng'}</Text>
               <View className="flex-row items-center mt-1">
                 <Ionicons name="star" size={14} color="#F59E0B" />
-                <Text className="text-gray-700 font-JakartaSemiBold text-xs ml-1">5.0</Text>
+                <Text className="text-gray-700 font-JakartaSemiBold text-sm ml-1">5.0</Text>
               </View>
             </View>
           </View>
@@ -216,7 +216,7 @@ const ActiveTripScreen = () => {
               <Ionicons name="radio-button-on" size={20} color="#3B82F6" />
             </View>
             <View className="flex-1">
-              <Text className="text-gray-500 font-Jakarta text-xs mb-1 uppercase">Từ</Text>
+              <Text className="text-gray-500 font-Jakarta text-sm mb-1 uppercase">Từ</Text>
               <Text className="text-gray-700 font-JakartaSemiBold text-[15px]">{order.pickup.address}</Text>
             </View>
           </View>
@@ -228,7 +228,7 @@ const ActiveTripScreen = () => {
               <Ionicons name="pin" size={20} color="#DC2626" />
             </View>
             <View className="flex-1">
-              <Text className="text-gray-500 font-Jakarta text-xs mb-1 uppercase">Đến</Text>
+              <Text className="text-gray-500 font-Jakarta text-sm mb-1 uppercase">Đến</Text>
               <Text className="text-gray-700 font-JakartaSemiBold text-[15px]">{order.dropoff.address}</Text>
             </View>
           </View>

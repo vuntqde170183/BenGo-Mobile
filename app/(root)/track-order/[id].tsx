@@ -115,7 +115,7 @@ const TrackOrderScreen = () => {
   if (!order) {
     return (
       <View className="flex-1 justify-center items-center bg-white p-6">
-        <Text className="text-lg font-JakartaBold text-neutral-800">Không tìm thấy đơn hàng</Text>
+        <Text className="text-lg font-JakartaBold text-gray-700">Không tìm thấy đơn hàng</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4 bg-green-500 px-4 py-3 rounded-xl">
           <Text className="text-white font-JakartaBold">Quay lại</Text>
         </TouchableOpacity>

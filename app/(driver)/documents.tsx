@@ -125,7 +125,7 @@ const DocumentManagementScreen = () => {
 
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 bg-white border-b border-gray-100">
-        <TouchableOpacity onPress={() => router.back()} className="p-1">
+        <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="#111827" />
         </TouchableOpacity>
         <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">
