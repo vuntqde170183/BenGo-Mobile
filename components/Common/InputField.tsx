@@ -28,14 +28,14 @@ const InputField = forwardRef<TextInput, InputFieldProps>(({
     <View className="my-2 w-full">
       {label && (
         <Text
-          className={`text-lg font-JakartaSemiBold mb-2 text-green-600 ${labelStyle}`}
+          className={`text-lg font-JakartaSemiBold mb-2 text-gray-700 ${labelStyle}`}
         >
           {label}
         </Text>
       )}
       <View
         className={`flex flex-row justify-start items-center relative 
-        bg-gray-100 rounded-full border ${error ? "border-red-500" : "border-gray-300"} focus:border-green-500  ${containerStyle}`}
+        bg-white rounded-full border ${error ? "border-red-500" : "border-gray-300"} focus:border-green-500  ${containerStyle}`}
       >
         {icon &&
           (typeof icon === "string" && !icon.startsWith("http") ? (

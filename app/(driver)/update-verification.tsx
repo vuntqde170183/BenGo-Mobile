@@ -19,7 +19,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { useDriverDocuments, useUpdateDriverDocuments } from "@/hooks/useDriver";
 import { useUpload } from "@/hooks/useUpload";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/context/AuthContext";
 import CustomButton from "@/components/Common/CustomButton";
 import InputField from "@/components/Common/InputField";
@@ -34,11 +34,11 @@ const ImageUploadBox = ({
   onPress: () => void
 }) => (
   <View className="mb-4">
-    <Text className="text-gray-600 font-JakartaSemiBold mb-2 ml-1">{label}</Text>
+    <Text className="text-gray-700 font-JakartaSemiBold mb-2 ml-1">{label}</Text>
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
-      className={`h-40 w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 overflow-hidden items-center justify-center`}
+      className={`h-40 w-full rounded-2xl border-2 border-dashed border-gray-300 bg-white overflow-hidden items-center justify-center`}
     >
       {imageUri ? (
         <Image source={{ uri: imageUri }} className="w-full h-full" resizeMode="cover" />
@@ -57,7 +57,7 @@ const SectionTitle = ({ title, icon }: { title: string; icon: any }) => (
     <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3">
       <Ionicons name={icon} size={22} color="#10B981" />
     </View>
-    <Text className="text-gray-900 font-JakartaBold text-lg">{title}</Text>
+    <Text className="text-green-600 font-JakartaBold text-lg">{title}</Text>
   </View>
 );
 
@@ -73,6 +73,7 @@ const UpdateVerificationScreen = () => {
   const profileStatus = docData?.data?.driverProfile?.status || profileData?.status || "PENDING";
 
   const { mutateAsync: updateDocs } = useUpdateDriverDocuments();
+  const { mutateAsync: updateProfile } = useUpdateProfile();
   const { uploadImage, isUploading } = useUpload();
 
   useEffect(() => {
@@ -137,7 +138,6 @@ const UpdateVerificationScreen = () => {
     if (!form.identityNumber || !form.identityFront || !form.identityBack) return "Vui lòng cung cấp đầy đủ thông tin Định danh & ảnh 2 mặt CCCD.";
     if (!form.licenseNumber || !form.licenseImage) return "Vui lòng cung cấp Số GPLX và ảnh chụp.";
     if (!form.plateNumber || !form.vehicleType || !form.registrationImage) return "Vui lòng cung cấp thông tin Phương tiện & ảnh Đăng ký xe.";
-    if (!form.bankName || !form.accountNumber || !form.accountHolder) return "Vui lòng hoàn thiện thông tin Ngân hàng.";
     return null;
   };
 
@@ -212,6 +212,63 @@ const UpdateVerificationScreen = () => {
     }
   };
 
+  const handleUpdateProfile = async () => {
+    const error = validate();
+    if (error) {
+      Alert.alert("Thiếu thông tin", error);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setLoadingAction("Đang tải ảnh lên...");
+
+      const uploadIfNeeded = async (uri: string | null) => {
+        if (!uri) return null;
+        if (uri.startsWith("http")) return uri;
+        const res = await uploadImage(uri);
+        return res?.url || null;
+      };
+
+      const identityFrontUrl = await uploadIfNeeded(form.identityFront);
+      const identityBackUrl = await uploadIfNeeded(form.identityBack);
+      const licenseUrl = await uploadIfNeeded(form.licenseImage);
+      const registrationUrl = await uploadIfNeeded(form.registrationImage);
+
+      setLoadingAction("Đang cập nhật hồ sơ...");
+
+      await updateProfile({
+        phone: profileData?.phone,
+        email: profileData?.email,
+        name: profileData?.name,
+        avatar: profileData?.avatar,
+        driverProfile: {
+          vehicleType: form.vehicleType,
+          plateNumber: form.plateNumber,
+          licenseImage: licenseUrl || undefined,
+          identityNumber: form.identityNumber,
+          identityFrontImage: identityFrontUrl || undefined,
+          identityBackImage: identityBackUrl || undefined,
+          drivingLicenseNumber: form.licenseNumber,
+          vehicleRegistrationImage: registrationUrl || undefined,
+          bankInfo: {
+            bankName: form.bankName,
+            accountNumber: form.accountNumber,
+            accountHolder: form.accountHolder,
+          },
+        }
+      });
+
+      Alert.alert("Thành công", "Hồ sơ của bạn đã được cập nhật.");
+      refetch();
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Lỗi", "Không thể cập nhật hồ sơ. Vui lòng thử lại!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (docsLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
@@ -221,7 +278,7 @@ const UpdateVerificationScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -229,7 +286,7 @@ const UpdateVerificationScreen = () => {
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <Ionicons name="chevron-back" size={28} color="#111827" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-900 pr-8">
+        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700 pr-8">
           Cập nhật hồ sơ
         </Text>
       </View>
@@ -335,21 +392,27 @@ const UpdateVerificationScreen = () => {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {profileStatus !== "APPROVED" && (
-        <View className="p-4 bg-white border-t border-gray-100 shadow-2xl">
+      <View className="p-4 bg-gray-100 border-t border-gray-100">
+        {profileStatus !== "APPROVED" ? (
           <CustomButton
-            title="GỬI YÊU CẦU DUYỆT"
+            title="Gửi yêu cầu duyệt"
             onPress={handleSubmit}
             loading={loading || isUploading}
           />
-        </View>
-      )}
+        ) : (
+          <CustomButton
+            title="Cập nhật hồ sơ"
+            onPress={handleUpdateProfile}
+            loading={loading || isUploading}
+          />
+        )}
+      </View>
 
       <Modal visible={loading} transparent>
         <View className="flex-1 bg-black/40 items-center justify-center">
           <View className="bg-white p-6 rounded-3xl items-center shadow-lg">
             <ActivityIndicator size="large" color="#0047AB" />
-            <Text className="font-JakartaBold text-lg mt-4 text-gray-900">{loadingAction}</Text>
+            <Text className="font-JakartaBold text-lg mt-4 text-gray-700">{loadingAction}</Text>
             <Text className="font-Jakarta text-gray-500 mt-1">Vui lòng không đóng ứng dụng</Text>
           </View>
         </View>

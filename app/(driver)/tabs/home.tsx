@@ -281,7 +281,7 @@ const DriverHome = () => {
         {/* Bottom List of Orders */}
         <View className="h-1/3 bg-white border-t border-gray-100">
           <View className="px-4 py-3 border-b border-gray-100 flex-row justify-between items-center">
-            <Text className="text-gray-900 font-JakartaBold text-lg">Đơn hàng khả dụng ({pendingOrders.length})</Text>
+            <Text className="text-gray-700 font-JakartaBold text-lg">Đơn hàng khả dụng ({pendingOrders.length})</Text>
             <TouchableOpacity onPress={() => refetchOrders()}>
               <Ionicons name="refresh" size={24} color="#10B981" />
             </TouchableOpacity>
@@ -298,7 +298,7 @@ const DriverHome = () => {
                 <View className="flex-1 mr-4">
                   <View className="flex-row items-center mb-1">
                     <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                    <Text className="text-gray-900 font-JakartaBold text-base flex-1" numberOfLines={1}>
+                    <Text className="text-gray-700 font-JakartaBold text-base flex-1" numberOfLines={1}>
                       {item.pickup?.address || 'Điểm đón hiện tại'}
                     </Text>
                   </View>

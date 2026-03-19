@@ -76,7 +76,7 @@ const TripDetailScreen = () => {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-900">
+        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">
           {" "}
           Chi tiết đơn #{order?.id?.slice(-6).toUpperCase() || "KHÔNG RÕ"}
         </Text>
@@ -126,7 +126,7 @@ const TripDetailScreen = () => {
           )}
 
           <View className="absolute bottom-4 left-4 bg-white/90 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
-            <Text className="text-gray-900 font-JakartaBold text-sm">
+            <Text className="text-gray-700 font-JakartaBold text-sm">
               {order?.distanceKm || 0} km
             </Text>
           </View>
@@ -159,7 +159,7 @@ const TripDetailScreen = () => {
                       ĐIỂM ĐÓN
                     </Text>
                     <Text
-                      className="text-gray-900 font-JakartaBold text-sm"
+                      className="text-gray-700 font-JakartaBold text-sm"
                       numberOfLines={2}
                     >
                       {order?.pickup?.address ||
@@ -172,7 +172,7 @@ const TripDetailScreen = () => {
                       ĐIỂM GIAO
                     </Text>
                     <Text
-                      className="text-gray-900 font-JakartaBold text-sm"
+                      className="text-gray-700 font-JakartaBold text-sm"
                       numberOfLines={2}
                     >
                       {order?.dropoff?.address ||
@@ -197,7 +197,7 @@ const TripDetailScreen = () => {
                 <Text className="text-gray-500 font-JakartaBold text-sm mb-1">
                   THỜI GIAN
                 </Text>
-                <Text className="text-gray-900 font-JakartaBold text-sm">
+                <Text className="text-gray-700 font-JakartaBold text-sm">
                   {formatDateTime(order?.createdAt || "")}
                 </Text>
               </View>
@@ -232,7 +232,7 @@ const TripDetailScreen = () => {
                 />
               </View>
               <View className="ml-4">
-                <Text className="text-gray-900 font-JakartaBold text-base">
+                <Text className="text-gray-700 font-JakartaBold text-base">
                   {order?.customerId?.name || "Khách hàng BenGo"}
                 </Text>
                 <Text className="text-gray-500 font-JakartaMedium text-sm">
@@ -255,7 +255,7 @@ const TripDetailScreen = () => {
                 <Text className="text-gray-500 font-JakartaMedium text-base">
                   Giá cước đơn hàng
                 </Text>
-                <Text className="text-gray-900 font-JakartaBold text-base">
+                <Text className="text-gray-700 font-JakartaBold text-base">
                   {formatCurrency(order?.totalPrice || 0)}
                 </Text>
               </View>
@@ -269,7 +269,7 @@ const TripDetailScreen = () => {
               </View>
               <View className="h-[1px] bg-gray-100 my-2" />
               <View className="flex-row justify-between items-center pt-1">
-                <Text className="text-gray-900 font-JakartaBold text-base">
+                <Text className="text-gray-700 font-JakartaBold text-base">
                   Thu nhập thực nhận
                 </Text>
                 <Text className="text-green-600 font-JakartaBold text-2xl">

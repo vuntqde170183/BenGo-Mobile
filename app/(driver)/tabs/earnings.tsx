@@ -87,7 +87,7 @@ const EarningsScreen = () => {
           <Ionicons name="add-circle" size={24} color="#10B981" />
         </View>
         <View className="flex-1">
-          <Text className="text-gray-900 font-JakartaBold text-base">
+          <Text className="text-gray-700 font-JakartaBold text-base">
             Thu nhập đơn #{orderId}
           </Text>
           <Text className="text-gray-500 font-Jakarta text-sm">
@@ -118,7 +118,7 @@ const EarningsScreen = () => {
         }
       >
         <View className="px-4 py-4">
-          <Text className="text-2xl font-JakartaBold text-gray-900 mb-4">
+          <Text className="text-2xl font-JakartaBold text-gray-700 mb-4">
             Thu nhập
           </Text>
 
@@ -170,7 +170,7 @@ const EarningsScreen = () => {
           {/* Chart Section */}
           <View className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm mb-4">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-gray-900 font-JakartaBold text-lg">
+              <Text className="text-gray-700 font-JakartaBold text-lg">
                 Thống kê doanh thu
               </Text>
               <Text className="text-gray-500 font-Jakarta text-sm">
@@ -232,7 +232,7 @@ const EarningsScreen = () => {
           {/* Transaction List */}
           <View className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-gray-900 font-JakartaBold text-lg">
+              <Text className="text-gray-700 font-JakartaBold text-lg">
                 Lịch sử giao dịch
               </Text>
               <TouchableOpacity>

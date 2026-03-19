@@ -81,7 +81,7 @@ const DriverHistory = () => {
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
       {/* Header & Search */}
       <View className="px-4 py-2">
-        <Text className="text-2xl font-JakartaBold text-gray-900 mb-4">Hoạt động</Text>
+        <Text className="text-2xl font-JakartaBold text-gray-700 mb-4">Hoạt động</Text>
 
         <InputField
           icon="search-outline"

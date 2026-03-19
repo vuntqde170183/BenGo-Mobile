@@ -24,7 +24,7 @@ const ToggleCard: React.FC<ToggleCardProps> = ({ isOnline, onToggle }) => {
           <FontAwesome5 name="car" size={20} color="#10B981" />
         </View>
         <View className="flex-1">
-          <Text className="text-gray-900 text-base font-JakartaBold">Chế độ nhận đơn</Text>
+          <Text className="text-gray-700 text-base font-JakartaBold">Chế độ nhận đơn</Text>
           <Text className="text-gray-500 text-base font-Jakarta">
             {isOnline ? 'Bạn đang sẵn sàng nhận đơn hàng' : 'Bật để bắt đầu nhận đơn'}
           </Text>

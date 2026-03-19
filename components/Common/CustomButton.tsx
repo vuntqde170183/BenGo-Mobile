@@ -11,7 +11,7 @@ const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
     case "success":
       return "bg-green-500";
     case "outline":
-      return "bg-green-50 border-primary-500 border-[1px]";
+      return "bg-green-50 border-green-600 border-[1px]";
     case "amber":
       return "bg-amber-50 border-amber-500 border-[1px]";
     case "red":
@@ -24,7 +24,7 @@ const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
 const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
   switch (variant) {
     case "primary":
-      return "text-primary-500";
+      return "text-green-600";
     case "amber":
       return "text-amber-600";
     case "red":
@@ -54,9 +54,9 @@ const CustomButton = ({
   <TouchableOpacity
     onPress={onPress}
     disabled={loading || props.disabled}
-    className={`flex flex-row justify-center items-center p-4 py-3 w-full rounded-full gap-1 ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
+    className={`flex flex-row justify-center items-center px-4 w-full rounded-full gap-1 flex-shrink-0 ${getBgVariantStyle(bgVariant)} ${className} ${loading ? "opacity-70" : ""}`}
     style={[
-      { minHeight: 40 },
+      { height: 44 },
       !className?.includes("shadow-none") && bgVariant !== "outline" && {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },

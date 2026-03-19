@@ -135,7 +135,7 @@ const SignIn = () => {
 
             {/* Title Text */}
             <View className="items-center mb-8">
-              <Text className="text-2xl text-gray-900 font-JakartaBold mb-2">
+              <Text className="text-2xl text-gray-700 font-JakartaBold mb-2">
                 Chào mừng bạn!
               </Text>
               <Text className="text-lg text-gray-500 font-JakartaMedium">
@@ -182,7 +182,7 @@ const SignIn = () => {
                 className="self-end mb-4"
                 onPress={handleForgotPassword}
               >
-                <Text className="text-primary-500 font-JakartaBold">
+                <Text className="text-green-600 font-JakartaBold">
                   Quên mật khẩu?
                 </Text>
               </TouchableOpacity>
@@ -199,7 +199,7 @@ const SignIn = () => {
               <View className="flex-row justify-center items-center mt-4 mb-8">
                 <Text className="text-gray-500 font-JakartaMedium">Chưa có tài khoản? </Text>
                 <TouchableOpacity onPress={handleRegister}>
-                  <Text className="text-primary-500 font-JakartaBold">Đăng ký ngay</Text>
+                  <Text className="text-green-600 font-JakartaBold">Đăng ký ngay</Text>
                 </TouchableOpacity>
               </View>
             </View>

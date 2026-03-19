@@ -165,7 +165,7 @@ const BookingSetupScreen = () => {
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color="black" />
           </TouchableOpacity>
-          <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-900">Thông tin đơn hàng</Text>
+          <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">Thông tin đơn hàng</Text>
         </View>
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>

@@ -288,7 +288,7 @@ export default function DriverProfileScreen() {
                 <Text className="text-base text-gray-500 font-JakartaMedium">
                   {t("driver.vehicleType")}
                 </Text>
-                <Text className="text-base font-JakartaBold text-gray-900 capitalize">
+                <Text className="text-base font-JakartaBold text-gray-700 capitalize">
                   {driverProfile.vehicle_type}
                 </Text>
               </View>
@@ -302,7 +302,7 @@ export default function DriverProfileScreen() {
                 <Text className="text-base text-gray-500 font-JakartaMedium">
                   {t("booking.seats")}
                 </Text>
-                <Text className="text-base font-JakartaBold text-gray-900">
+                <Text className="text-base font-JakartaBold text-gray-700">
                   {driverProfile.car_seats} {t("booking.seats")}
                 </Text>
               </View>
@@ -316,7 +316,7 @@ export default function DriverProfileScreen() {
                 <Text className="text-base text-gray-500 font-JakartaMedium">
                   {t("driver.licenseNumber")}
                 </Text>
-                <Text className="text-base font-JakartaBold text-gray-900">
+                <Text className="text-base font-JakartaBold text-gray-700">
                   {driverProfile.license_number}
                 </Text>
               </View>
@@ -348,7 +348,7 @@ export default function DriverProfileScreen() {
                 <Text className="text-base text-gray-500 font-JakartaMedium">
                   {t("profile.email")}
                 </Text>
-                <Text className="text-base font-JakartaBold text-gray-900">
+                <Text className="text-base font-JakartaBold text-gray-700">
                   {driverProfile.email || user?.email}
                 </Text>
               </View>
@@ -362,7 +362,7 @@ export default function DriverProfileScreen() {
                 <Text className="text-base text-gray-500 font-JakartaMedium">
                   {t("profile.phone")}
                 </Text>
-                <Text className="text-base font-JakartaBold text-gray-900">
+                <Text className="text-base font-JakartaBold text-gray-700">
                   {driverProfile.phone}
                 </Text>
               </View>

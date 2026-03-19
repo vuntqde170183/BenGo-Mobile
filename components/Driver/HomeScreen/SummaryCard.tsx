@@ -23,11 +23,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
         elevation: 2,
       }}
     >
-      <Text className="text-gray-900 font-Jakarta">
+      <Text className="text-gray-700 font-Jakarta">
         Thu nhập hôm nay: <Text className="font-JakartaBold">{formatCurrency(totalEarnings)}</Text>
       </Text>
       <View className="w-px h-4 bg-gray-200" />
-      <Text className="text-gray-900 font-JakartaBold">{totalTrips} chuyến</Text>
+      <Text className="text-gray-700 font-JakartaBold">{totalTrips} chuyến</Text>
     </View>
   );
 };

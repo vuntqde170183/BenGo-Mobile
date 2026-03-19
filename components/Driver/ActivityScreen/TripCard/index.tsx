@@ -55,7 +55,7 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
           </View>
           <View>
             <Text className="text-gray-500 font-JakartaBold text-sm">Mã đơn hàng</Text>
-            <Text className="text-gray-900 font-JakartaBold text-base">#{item.id.slice(-6).toUpperCase()}</Text>
+            <Text className="text-gray-700 font-JakartaBold text-base">#{item.id.slice(-6).toUpperCase()}</Text>
           </View>
         </View>
         <View className={`${statusInfo.bg} px-3 py-1.5 rounded-xl flex-row items-center`}>

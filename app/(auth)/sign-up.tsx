@@ -91,7 +91,7 @@ const SignUp = () => {
 
             {/* Title Text */}
             <View className="items-center mb-8">
-              <Text className="text-2xl text-gray-900 font-JakartaBold mb-2">
+              <Text className="text-2xl text-gray-700 font-JakartaBold mb-2">
                 {t("auth.createAccount")}
               </Text>
               <Text className="text-base text-gray-500 font-JakartaMedium">
@@ -148,7 +148,7 @@ const SignUp = () => {
                   {t("auth.alreadyHaveAccount")}{" "}
                 </Text>
                 <Link href="/(auth)/sign-in">
-                  <Text className="text-primary-500 font-JakartaBold">
+                  <Text className="text-green-600 font-JakartaBold">
                     {t("auth.signIn")}
                   </Text>
                 </Link>

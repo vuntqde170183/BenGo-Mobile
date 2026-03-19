@@ -20,7 +20,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
     if (visible && order) {
       setTimeLeft(30);
       progressAnim.setValue(0);
-      
+
       Animated.timing(progressAnim, {
         toValue: 1,
         duration: 30000,
@@ -87,7 +87,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
                 <View className="absolute left-[11px] top-6 w-0.5 h-10 bg-gray-200" />
                 <View className="flex-1 pt-0.5">
                   <Text className="text-gray-500 font-Jakarta text-xs mb-0.5">ĐIỂM ĐÓN</Text>
-                  <Text className="text-gray-900 font-JakartaSemiBold text-base" numberOfLines={2}>
+                  <Text className="text-gray-700 font-JakartaSemiBold text-base" numberOfLines={2}>
                     {order.pickup?.address || 'Địa chỉ đón khách'}
                   </Text>
                 </View>
@@ -99,7 +99,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
                 </View>
                 <View className="flex-1 pt-0.5">
                   <Text className="text-gray-500 font-Jakarta text-xs mb-0.5">ĐIỂM ĐẾN</Text>
-                  <Text className="text-gray-900 font-JakartaSemiBold text-base" numberOfLines={2}>
+                  <Text className="text-gray-700 font-JakartaSemiBold text-base" numberOfLines={2}>
                     {order.destination?.address || 'Địa chỉ trả khách'}
                   </Text>
                 </View>
@@ -122,7 +122,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
                 </View>
               )}
             </TouchableOpacity>
-            
+
             <TouchableOpacity onPress={onDecline} disabled={isAccepting} className="mt-4 items-center">
               <Text className="text-gray-400 font-JakartaSemiBold text-base">Bỏ qua chuyến này</Text>
             </TouchableOpacity>
@@ -130,14 +130,14 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
 
           {/* Progress Bar Container */}
           <View className="h-1.5 w-full bg-gray-100 absolute bottom-0">
-            <Animated.View 
-              className="h-full bg-green-500" 
+            <Animated.View
+              className="h-full bg-green-500"
               style={{
                 width: progressAnim.interpolate({
                   inputRange: [0, 1],
                   outputRange: ['100%', '0%']
                 })
-              }} 
+              }}
             />
           </View>
         </View>

@@ -60,7 +60,7 @@ const DocumentCategoryCard = ({
       <Ionicons name={icon} size={24} color="#10B981" />
     </View>
     <View className="flex-1">
-      <Text className="text-gray-900 font-JakartaBold text-base">{title}</Text>
+      <Text className="text-gray-700 font-JakartaBold text-base">{title}</Text>
       <View className="flex-row items-center mt-1">
         <StatusBadge status={status} />
       </View>
@@ -128,7 +128,7 @@ const DocumentManagementScreen = () => {
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <Ionicons name="chevron-back" size={24} color="#111827" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-900">
+        <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">
           Quản lý giấy tờ
         </Text>
         <View className="w-8" />
@@ -170,7 +170,7 @@ const DocumentManagementScreen = () => {
         )}
 
         {/* C2: Document Item Cards */}
-        <Text className="text-gray-900 font-JakartaBold text-lg mb-4 ml-1">Chi tiết giấy tờ</Text>
+        <Text className="text-gray-700 font-JakartaBold text-lg mb-4 ml-1">Chi tiết giấy tờ</Text>
 
         <DocumentCategoryCard
           title="Thông tin Định danh"
@@ -202,19 +202,6 @@ const DocumentManagementScreen = () => {
 
         <View className="h-40" />
       </ScrollView>
-
-      {/* C3: Update Button */}
-      <View
-        className="bg-white border-t border-gray-100 shadow-xl p-4"
-        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-      >
-        <CustomButton
-          title="CẬP NHẬT NGAY"
-          onPress={() => router.push("/update-verification")}
-          disabled={profileStatus === "APPROVED"}
-          style={profileStatus === "APPROVED" ? { backgroundColor: "#D1D5DB" } : {}}
-        />
-      </View>
     </SafeAreaView>
   );
 };

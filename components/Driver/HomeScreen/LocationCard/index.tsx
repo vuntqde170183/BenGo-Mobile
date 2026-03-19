@@ -37,7 +37,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
           elevation: 2,
         }}
       >
-        <Text className="text-gray-900 text-base font-JakartaSemiBold mb-1" numberOfLines={2}>
+        <Text className="text-gray-700 text-base font-JakartaSemiBold mb-1" numberOfLines={2}>
           {address}
         </Text>
         {city ? <Text className="text-gray-500 text-base font-JakartaMedium mb-4">{city}</Text> : null}

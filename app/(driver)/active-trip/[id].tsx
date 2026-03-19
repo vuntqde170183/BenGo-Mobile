@@ -100,7 +100,7 @@ const ActiveTripScreen = () => {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
-          showsUserLocation={false} 
+          showsUserLocation={false}
         >
           {location && (
             <Marker coordinate={driverCoord} anchor={{ x: 0.5, y: 0.5 }}>
@@ -129,15 +129,15 @@ const ActiveTripScreen = () => {
             />
           )}
         </MapView>
-        
+
         {/* Back Button Overlay */}
-        <TouchableOpacity 
+        <TouchableOpacity
           className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full items-center justify-center shadow-lg"
           onPress={() => router.replace('/(driver)/tabs/home')}
         >
           <Ionicons name="chevron-back" size={24} color="#111827" />
         </TouchableOpacity>
-        
+
         {/* Progress Timeline Overlay */}
         <View className="absolute top-4 mx-16 bg-white rounded-2xl p-3 shadow-lg flex-row items-center justify-between">
           <View className="items-center flex-1">
@@ -158,8 +158,8 @@ const ActiveTripScreen = () => {
       </View>
 
       {/* Bottom Information Card */}
-      <View 
-        className="bg-white rounded-t-3xl pt-6 px-5 pb-8" 
+      <View
+        className="bg-white rounded-t-3xl pt-6 px-5 pb-8"
         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, marginTop: -20 }}
       >
         {/* Customer Info */}
@@ -169,21 +169,21 @@ const ActiveTripScreen = () => {
               <Image source={{ uri: `https://api.dicebear.com/9.x/avataaars/png?seed=${order.customerId?.name || 'Customer'}` }} className="w-full h-full" />
             </View>
             <View>
-              <Text className="text-gray-900 font-JakartaBold text-lg">{order.customerId?.name || 'Khách hàng'}</Text>
+              <Text className="text-gray-700 font-JakartaBold text-lg">{order.customerId?.name || 'Khách hàng'}</Text>
               <View className="flex-row items-center mt-1">
                 <Ionicons name="star" size={14} color="#F59E0B" />
-                <Text className="text-gray-600 font-JakartaSemiBold text-xs ml-1">5.0</Text>
+                <Text className="text-gray-700 font-JakartaSemiBold text-xs ml-1">5.0</Text>
               </View>
             </View>
           </View>
           <View className="flex-row gap-3">
-            <TouchableOpacity 
+            <TouchableOpacity
               className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center"
               onPress={() => Alert.alert("Sắp ra mắt", "Chức năng nhắn tin đang được phát triển")}
             >
               <Ionicons name="chatbubbles" size={24} color="#3B82F6" />
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               className="w-12 h-12 rounded-full bg-green-50 items-center justify-center"
               onPress={() => Linking.openURL(`tel:${order.customerId?.phone}`)}
             >
@@ -200,7 +200,7 @@ const ActiveTripScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-gray-500 font-Jakarta text-xs mb-1 uppercase tracking-wider">Từ</Text>
-              <Text className="text-gray-900 font-JakartaSemiBold text-[15px]">{order.pickup.address}</Text>
+              <Text className="text-gray-700 font-JakartaSemiBold text-[15px]">{order.pickup.address}</Text>
             </View>
           </View>
 
@@ -212,7 +212,7 @@ const ActiveTripScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-gray-500 font-Jakarta text-xs mb-1 uppercase tracking-wider">Đến</Text>
-              <Text className="text-gray-900 font-JakartaSemiBold text-[15px]">{order.dropoff.address}</Text>
+              <Text className="text-gray-700 font-JakartaSemiBold text-[15px]">{order.dropoff.address}</Text>
             </View>
           </View>
         </View>
@@ -223,17 +223,17 @@ const ActiveTripScreen = () => {
             <ActivityIndicator color="#10B981" />
           </View>
         ) : !isCompleted ? (
-          <SwipeButton 
-            title={isHeadingToPickup ? "VUỐT ĐỂ LẤY HÀNG" : "VUỐT ĐỂ GIAO HÀNG"} 
+          <SwipeButton
+            title={isHeadingToPickup ? "VUỐT ĐỂ LẤY HÀNG" : "VUỐT ĐỂ GIAO HÀNG"}
             color={isHeadingToPickup ? "#F97316" : "#3B82F6"} // Orange for pickup, Blue for delivery
-            onSwipeSuccess={handleSwipeSuccess} 
+            onSwipeSuccess={handleSwipeSuccess}
           />
         ) : (
-          <TouchableOpacity 
-              className="h-[56px] justify-center items-center bg-green-500 rounded-full"
-              onPress={() => router.replace('/(driver)/tabs/home')}
+          <TouchableOpacity
+            className="h-[56px] justify-center items-center bg-green-500 rounded-full"
+            onPress={() => router.replace('/(driver)/tabs/home')}
           >
-             <Text className="text-white font-JakartaBold text-base">HOÀN THÀNH CHUYẾN ĐI</Text>
+            <Text className="text-white font-JakartaBold text-base">HOÀN THÀNH CHUYẾN ĐI</Text>
           </TouchableOpacity>
         )}
       </View>

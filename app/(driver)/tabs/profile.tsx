@@ -128,7 +128,7 @@ const ProfileScreen = () => {
               </TouchableOpacity>
             </View>
 
-            <Text className="text-2xl font-JakartaBold text-gray-900 mt-4">
+            <Text className="text-2xl font-JakartaBold text-gray-700 mt-4">
               {user?.name || "Tài xế BenGo"}
             </Text>
 
@@ -157,7 +157,7 @@ const ProfileScreen = () => {
             <View className="flex-1 items-center">
               <Ionicons name="car" size={24} color="#3B82F6" />
               <Text className="text-gray-500 text-sm mt-1 font-Jakarta">Số chuyến</Text>
-              <Text className="text-gray-900 font-JakartaBold mt-1">{driverStats.totalTrips || 0}</Text>
+              <Text className="text-gray-700 font-JakartaBold mt-1">{driverStats.totalTrips || 0}</Text>
             </View>
 
             <View className="w-[1px] h-10 bg-gray-100" />
@@ -165,7 +165,7 @@ const ProfileScreen = () => {
             <View className="flex-1 items-center">
               <Ionicons name="checkmark-circle-outline" size={24} color="#10B981" />
               <Text className="text-gray-500 text-sm mt-1 font-Jakarta">Tỷ lệ nhận</Text>
-              <Text className="text-gray-900 font-JakartaBold mt-1">{driverStats.acceptanceRate || 0}%</Text>
+              <Text className="text-gray-700 font-JakartaBold mt-1">{driverStats.acceptanceRate || 0}%</Text>
             </View>
 
             <View className="w-[1px] h-10 bg-gray-100" />
@@ -173,7 +173,7 @@ const ProfileScreen = () => {
             <View className="flex-1 items-center">
               <Ionicons name="time-outline" size={24} color="#F59E0B" />
               <Text className="text-gray-500 text-sm mt-1 font-Jakarta">Thâm niên</Text>
-              <Text className="text-gray-900 font-JakartaBold mt-1">{driverStats.seniority || "New"}</Text>
+              <Text className="text-gray-700 font-JakartaBold mt-1">{driverStats.seniority || "New"}</Text>
             </View>
           </View>
 

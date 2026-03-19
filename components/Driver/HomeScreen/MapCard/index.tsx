@@ -143,7 +143,7 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
                   elevation: 2,
                 }}
               >
-                <Text className="text-sm font-JakartaBold text-gray-900">{formatCurrency(order.price)}</Text>
+                <Text className="text-sm font-JakartaBold text-gray-700">{formatCurrency(order.price)}</Text>
               </View>
               <View
                 className="w-3 h-3 bg-green-500 rounded-full border-2 border-white"

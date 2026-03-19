@@ -28,7 +28,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, stats }) => {
         {stats.map((stat, index) => (
           <React.Fragment key={index}>
             <View className="items-center flex-1">
-              <Text className="text-gray-900 text-base font-JakartaBold mb-1">{stat.value}</Text>
+              <Text className="text-gray-700 text-base font-JakartaBold mb-1">{stat.value}</Text>
               <Text className="text-gray-500 text-[9px] font-JakartaMedium text-center">{stat.label}</Text>
             </View>
             {index < stats.length - 1 && (
