@@ -106,7 +106,7 @@ const ActiveTripScreen = () => {
   const currentStep = isHeadingToPickup ? 1 : isHeadingToDropoff ? 2 : 3;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
       {/* Map Section */}
       <View className="flex-1 relative">
         <MapView

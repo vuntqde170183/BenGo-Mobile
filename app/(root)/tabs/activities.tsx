@@ -21,7 +21,7 @@ const EmptyState = () => (
 );
 
 const ActivitiesScreen = () => {
-    const [selectedTab, setSelectedTab] = useState<"ONGOING" | "HISTORY">("ONGOING");
+
 
     const { data, isLoading, refetch } = useOrderHistory({
         status: "ALL",
@@ -39,44 +39,12 @@ const ActivitiesScreen = () => {
 
     const orderData = Array.isArray(data) ? data : [];
 
-    // Log để debug trạng thái PENDING theo yêu cầu
-    console.log(`[Activities] Tab: ${selectedTab} | Total Orders fetched:`, orderData.length);
-    if (orderData.length > 0) {
-        const pendingOrders = orderData.filter(o => o?.status === "PENDING");
-        console.log(`[Activities] PENDING orders found:`, pendingOrders.length);
-        if (pendingOrders.length > 0) {
-            console.log(`[Activities] Found PENDING order with ID: ${pendingOrders[0].id}`);
-        }
-    }
-
-    const filteredData = selectedTab === "ONGOING"
-        ? orderData.filter(o => ["PENDING", "ACCEPTED", "PICKED_UP"].includes(o?.status))
-        : orderData.filter(o => ["DELIVERED", "CANCELLED"].includes(o?.status));
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
             {/* Header */}
             <View className="flex-row items-center px-4 py-4 border-b border-gray-100 bg-white">
-                <Text className="ml-4 text-xl font-JakartaBold">Hoạt động</Text>
-            </View>
-
-            <View className="flex-row px-4 mb-4">
-                <TouchableOpacity
-                    onPress={() => setSelectedTab("ONGOING")}
-                    className={`flex-1 py-3 items-center border-b-2 ${selectedTab === "ONGOING" ? "border-green-600" : "border-transparent"}`}
-                >
-                    <Text className={`font-JakartaBold ${selectedTab === "ONGOING" ? "text-green-600" : "text-neutral-400"}`}>
-                        Đang diễn ra
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab("HISTORY")}
-                    className={`flex-1 py-3 items-center border-b-2 ${selectedTab === "HISTORY" ? "border-green-600" : "border-transparent"}`}
-                >
-                    <Text className={`font-JakartaBold ${selectedTab === "HISTORY" ? "text-green-600" : "text-neutral-400"}`}>
-                        Lịch sử
-                    </Text>
-                </TouchableOpacity>
+                <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">Tất cả đơn hàng</Text>
             </View>
 
             {isLoading && !refreshing ? (
@@ -86,8 +54,9 @@ const ActivitiesScreen = () => {
                 </View>
             ) : (
                 <FlatList
-                    data={filteredData}
+                    data={orderData}
                     className="flex-1"
+                    showsVerticalScrollIndicator={false}
                     keyExtractor={(item) => item?.id || Math.random().toString()}
                     renderItem={({ item }) => <OrderItemCard order={item} />}
                     refreshControl={
@@ -95,9 +64,8 @@ const ActivitiesScreen = () => {
                     }
                     contentContainerStyle={{
                         flexGrow: 1,
-                        backgroundColor: "#F9FAFB",
                         paddingBottom: 100,
-                        paddingHorizontal: 20,
+                        paddingHorizontal: 16,
                         paddingTop: 16
                     }}
                     ListEmptyComponent={EmptyState}

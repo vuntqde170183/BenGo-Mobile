@@ -92,7 +92,7 @@ const CustomerProfileScreen = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}

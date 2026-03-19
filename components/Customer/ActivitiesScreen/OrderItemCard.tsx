@@ -4,22 +4,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Order } from "@/api/orders";
 import VehicleBadge from "@/components/Common/VehicleBadge";
+import StatusBadge from "@/components/Common/StatusBadge";
 
-const statusColors: Record<string, string> = {
-    PENDING: "text-amber-600 bg-amber-50 border-amber-100",
-    ACCEPTED: "text-blue-600 bg-blue-50 border-blue-100",
-    PICKED_UP: "text-indigo-600 bg-indigo-50 border-indigo-100",
-    DELIVERED: "text-green-600 bg-green-50 border-green-100",
-    CANCELLED: "text-red-600 bg-red-50 border-red-100",
-};
 
-const statusLabels: Record<string, string> = {
-    PENDING: "Chờ xác nhận",
-    ACCEPTED: "Đã nhận",
-    PICKED_UP: "Đang giao",
-    DELIVERED: "Hoàn thành",
-    CANCELLED: "Đã hủy",
-};
 
 const OrderItemCard = ({ order }: { order: Order }) => {
     const handleReorder = () => {
@@ -27,7 +14,6 @@ const OrderItemCard = ({ order }: { order: Order }) => {
     };
 
     const handlePress = () => {
-        console.log("[OrderItemCard] handlePress called, ID:", order?.id);
         if (order?.id) {
             router.push(`/order-detail/${order.id}` as any);
         } else {
@@ -55,11 +41,7 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                         #{order?.id ? order.id.slice(-8).toUpperCase() : "N/A"}
                     </Text>
                 </View>
-                <View className={`px-3 py-1 rounded-full border ${statusColors[order?.status as string] || ""}`}>
-                    <Text className="text-sm font-JakartaSemiBold">
-                        {statusLabels[order?.status as string] || order?.status}
-                    </Text>
-                </View>
+                <StatusBadge status={order?.status as string} />
             </View>
 
             <View className="flex-row mb-4">
@@ -79,7 +61,7 @@ const OrderItemCard = ({ order }: { order: Order }) => {
             </View>
 
             <View className="flex-row justify-between items-center pt-4 border-t border-neutral-50">
-                <VehicleBadge type={order?.vehicleType} />
+                <VehicleBadge vehicleType={order?.vehicleType} />
                 <View className="items-end">
                     <Text className="text-[14px] font-JakartaExtraBold text-neutral-800">
                         {order?.totalPrice ? Number(order.totalPrice).toLocaleString("vi-VN") : "0"}đ

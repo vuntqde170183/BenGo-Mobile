@@ -108,7 +108,7 @@ const CustomerOrderDetailScreen = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
             {/* Header */}
             <View className="flex-row items-center px-4 py-3 border-b border-gray-100">
                 <TouchableOpacity onPress={() => router.back()}>
