@@ -137,9 +137,9 @@ const ProfileScreen = () => {
 
           <View className="absolute top-24 left-0 right-0 items-center">
             <View className="relative">
-              <View className="w-[100px] h-[100px] rounded-full bg-white p-1 shadow-lg">
+              <View className="w-[100px] h-[100px] rounded-full bg-gray-100 p-1 shadow-lg items-center justify-center overflow-hidden border-2 border-white">
                 <Image
-                  source={{ uri: `https://api.dicebear.com/9.x/bottts/png?seed=${user?.name || 'Felix'}` }}
+                  source={{ uri: profileData?.avatar || `https://api.dicebear.com/9.x/avataaars/png?seed=${user?.name || 'Driver'}` }}
                   className="w-full h-full rounded-full"
                 />
               </View>

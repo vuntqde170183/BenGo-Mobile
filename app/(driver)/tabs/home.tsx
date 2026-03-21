@@ -417,12 +417,11 @@ const Header: React.FC<HeaderProps> = ({
       }}
     >
       <View className="flex-row items-center">
-        <View className="w-12 h-12 items-center justify-center bg-green-50 rounded-full overflow-hidden">
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} className="w-full h-full" />
-          ) : (
-            <Ionicons name="person" size={24} color="#10B981" />
-          )}
+        <View className="w-14 h-14 bg-gray-100 rounded-full items-center justify-center mr-3 overflow-hidden">
+          <Image 
+            source={{ uri: avatarUrl || `https://api.dicebear.com/9.x/avataaars/png?seed=${userName || 'Driver'}` }} 
+            className="w-full h-full" 
+          />
         </View>
         <View className="ml-3">
           <Text className="text-gray-700 text-base font-JakartaBold leading-tight">{userName || 'Tài xế'}</Text>

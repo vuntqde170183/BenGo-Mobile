@@ -56,6 +56,16 @@ const statusConfig: Record<string, { label: string; container: string; text: str
     container: "bg-amber-50 border-amber-100",
     text: "text-amber-600",
   },
+  PAID: {
+    label: "Đã thanh toán",
+    container: "bg-green-50 border-green-100",
+    text: "text-green-600",
+  },
+  UNPAID: {
+    label: "Chưa thanh toán",
+    container: "bg-red-50 border-red-100",
+    text: "text-red-600",
+  },
 };
 
 const StatusBadge = ({ status }: StatusBadgeProps) => {

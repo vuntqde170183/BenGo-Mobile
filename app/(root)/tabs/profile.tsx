@@ -92,10 +92,12 @@ const CustomerProfileScreen = () => {
                 <View className="px-4 py-4 flex-row items-center justify-between">
                     <View className="flex-row items-center flex-1">
                         <View className="relative">
-                            <Image
-                                source={{ uri: profile?.avatar || "https://avatar.iran.liara.run/public/boy" }}
-                                className="w-20 h-20 rounded-full border-2 border-white shadow-sm bg-gray-100"
-                            />
+                            <View className="w-20 h-20 bg-gray-100 rounded-full items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                <Image
+                                    source={{ uri: profile?.avatar || `https://api.dicebear.com/9.x/avataaars/png?seed=${profile?.name || 'Customer'}` }}
+                                    className="w-full h-full"
+                                />
+                            </View>
                             <TouchableOpacity
                                 onPress={() => showAlert("Chỉnh sửa", "Tính năng đổi ảnh đang cập nhật")}
                                 className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md border border-gray-100"
