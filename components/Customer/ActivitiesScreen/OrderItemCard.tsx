@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image, Pressable } from "react-native";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Order } from "@/api/orders";
 import VehicleBadge from "@/components/Common/VehicleBadge";
 import StatusBadge from "@/components/Common/StatusBadge";
+
 const OrderItemCard = ({ order }: { order: Order }) => {
     const handleReorder = () => {
         router.push("/(root)/booking-setup");
@@ -18,18 +19,46 @@ const OrderItemCard = ({ order }: { order: Order }) => {
         }
     };
 
+    const formatDateTime = (dateStr: string) => {
+        try {
+            if (!dateStr) return "Không rõ";
+            const date = new Date(dateStr);
+            return `${date.getHours().toString().padStart(2, "0")}:${date
+                .getMinutes()
+                .toString()
+                .padStart(2, "0")} - ${date.getDate().toString().padStart(2, "0")}/${(
+                    date.getMonth() + 1
+                )
+                    .toString()
+                    .padStart(2, "0")}/${date.getFullYear()}`;
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
     return (
         <Pressable
             onPress={handlePress}
-            className="bg-white p-4 mb-4 rounded-3xl border border-gray-100"
-            style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
+            className="my-2 bg-white p-4 rounded-3xl border border-gray-100"
+            style={({ pressed }) => ({
+                backgroundColor: pressed ? "#F9FAFB" : "white",
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+                elevation: 1
+            })}
         >
+            {/* Header: ID and Status */}
             <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row items-center">
-                    <Ionicons name="barcode-outline" size={20} color="#4B5563" />
-                    <Text className="ml-2 text-sm font-JakartaBold text-gray-700">
-                        #{order?.id ? order.id.slice(-8).toUpperCase() : "N/A"}
-                    </Text>
+                    <View className="bg-green-50 w-12 h-12 rounded-2xl items-center justify-center mr-3 border border-green-200">
+                        <Ionicons name="receipt-outline" size={22} color="#10B981" />
+                    </View>
+                    <View>
+                        <Text className="text-gray-500 font-JakartaBold text-sm">Mã đơn hàng</Text>
+                        <Text className="text-gray-700 font-JakartaBold text-base uppercase">#{order?.id ? order.id.slice(-8).toUpperCase() : "N/A"}</Text>
+                    </View>
                 </View>
                 <StatusBadge status={order?.status as string} />
             </View>
@@ -49,24 +78,14 @@ const OrderItemCard = ({ order }: { order: Order }) => {
 
                     <View className="flex-1">
                         <View className="mb-4">
-                            <Text className="text-gray-500 font-JakartaBold mb-1">
-                                Điểm đón
-                            </Text>
-                            <Text
-                                className="text-gray-700 font-JakartaBold"
-                                numberOfLines={2}
-                            >
+                            <Text className="text-gray-500 font-JakartaBold mb-1 uppercase text-xs">Điểm đón</Text>
+                            <Text className="text-gray-700 font-JakartaBold text-sm" numberOfLines={2}>
                                 {order?.pickup?.address || "Không xác định"}
                             </Text>
                         </View>
                         <View>
-                            <Text className="text-gray-500 font-JakartaBold mb-1">
-                                Điểm giao
-                            </Text>
-                            <Text
-                                className="text-gray-700 font-JakartaBold"
-                                numberOfLines={2}
-                            >
+                            <Text className="text-gray-500 font-JakartaBold mb-1 uppercase text-xs">Điểm giao</Text>
+                            <Text className="text-gray-700 font-JakartaBold text-sm" numberOfLines={2}>
                                 {order?.dropoff?.address || "Không xác định"}
                             </Text>
                         </View>
@@ -74,28 +93,42 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                 </View>
             </View>
 
-            <View className="flex-row justify-between items-center pt-4 border-t border-neutral-50">
-                <VehicleBadge vehicleType={order?.vehicleType} />
+            {/* Footer: Time and Price */}
+            <View className="flex-row justify-between items-end pt-5 border-t border-gray-100">
+                <View>
+                    <View className="flex-row items-center mb-2">
+                        <VehicleBadge vehicleType={order?.vehicleType} />
+                    </View>
+                    <View className="flex-row items-center">
+                        <Ionicons name="time-outline" size={16} color="#94A3B8" />
+                        <Text className="text-gray-500 font-JakartaBold text-[11px] ml-1">
+                            {formatDateTime(order?.createdAt || "")}
+                        </Text>
+                    </View>
+                </View>
                 <View className="items-end">
-                    <Text className="text-[14px] font-JakartaExtraBold text-gray-700">
+                    <Text className="text-gray-500 font-JakartaBold text-xs mb-1">Tổng phí</Text>
+                    <Text className="text-green-600 font-JakartaExtraBold text-2xl">
                         {order?.totalPrice ? Number(order.totalPrice).toLocaleString("vi-VN") : "0"}đ
-                    </Text>
-                    <Text className="text-sm text-neutral-400 font-JakartaMedium">
-                        {order?.createdAt ?
-                            `${new Date(order.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false })} - ${new Date(order.createdAt).toLocaleDateString("vi-VN")}`
-                            : "N/A"}
                     </Text>
                 </View>
             </View>
 
+            {/* Reorder Button for Delivered orders */}
             {order?.status === "DELIVERED" && (
                 <TouchableOpacity
                     onPress={handleReorder}
-                    className="mt-4 bg-green-600 py-3 rounded-xl items-center"
+                    className="mt-4 bg-green-50 py-3 rounded-2xl items-center border border-green-100"
                 >
-                    <Text className="text-white font-JakartaBold text-sm">Đặt lại</Text>
+                    <Text className="text-green-600 font-JakartaBold text-sm">Đặt lại chuyến này</Text>
                 </TouchableOpacity>
             )}
+
+            {/* Detail hint indicator */}
+            <View className="mt-4 pt-2 flex-row justify-center items-center opacity-40">
+                <Text className="text-primary font-JakartaBold text-base mr-2">Nhấn để xem chi tiết</Text>
+                <Ionicons name="chevron-forward" size={14} color="#94A3B8" />
+            </View>
         </Pressable>
     );
 };

@@ -80,10 +80,15 @@ const CustomerOrderDetailScreen = () => {
             "Bạn có chắc chắn muốn hủy đơn hàng này không?",
             async () => {
                 try {
-                    await cancelOrder({ orderId: id, reason: "Người dùng yêu cầu hủy" });
+                    console.log("[OrderDetail] Attempting to cancel order:", id);
+                    const res = await cancelOrder({ orderId: id, reason: "Người dùng yêu cầu hủy" });
+                    console.log("[OrderDetail] Cancel Success Response:", res);
                     showAlert("Thành công", "Đơn hàng của bạn đã được hủy.", () => router.back());
-                } catch (error) {
-                    showAlert("Lỗi", "Không thể hủy đơn hàng lúc này.");
+                } catch (error: any) {
+                    console.error("[OrderDetail] Cancel Error Details:", error);
+                    console.error("[OrderDetail] Error Message:", error?.message);
+                    console.error("[OrderDetail] Error Data:", error?.response?.data);
+                    showAlert("Lỗi", `Không thể hủy đơn hàng. Lỗi: ${error?.message || "Lỗi hệ thống"}`);
                 }
             },
             "Đồng ý",
