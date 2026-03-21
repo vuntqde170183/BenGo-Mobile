@@ -48,6 +48,7 @@ export interface Order {
         avatar?: string;
         licensePlate?: string;
         rating?: number;
+        currentLocation?: { lat: number; lng: number };
     } | null;
 }
 

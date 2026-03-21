@@ -21,15 +21,8 @@ const OrderItemCard = ({ order }: { order: Order }) => {
     return (
         <Pressable
             onPress={handlePress}
-            className="bg-white p-4 mb-4 rounded-2xl border border-gray-100"
-            style={({ pressed }) => ({
-                backgroundColor: pressed ? "#F9FAFB" : "white",
-                elevation: 3,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 4,
-            })}
+            className="bg-white p-4 mb-4 rounded-3xl border border-gray-100"
+            style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
         >
             <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row items-center">

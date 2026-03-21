@@ -45,7 +45,8 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
     <TouchableOpacity
       onPress={() => onPress(item.id)}
       activeOpacity={0.7}
-      className="mx-4 my-3 bg-white p-4 rounded-3xl border border-gray-100 shadow-sm"
+      className="mx-4 my-3 bg-white p-4 rounded-3xl border border-gray-100"
+      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
     >
       {/* Header: ID and Status */}
       <View className="flex-row justify-between items-center mb-4">

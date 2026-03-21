@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Linking, ActivityIndic
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 
 import { useOrderDetails, useCancelOrder } from "@/hooks/useOrders";
 import VehicleBadge from "@/components/Common/VehicleBadge";
@@ -110,7 +111,7 @@ const CustomerOrderDetailScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
             {/* Header */}
-            <View className="flex-row items-center px-4 py-4 border-b border-gray-100 bg-white shadow-sm">
+            <View className="flex-row items-center px-4 py-4 border-b border-gray-100 bg-white">
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={24} color="black" />
                 </TouchableOpacity>
@@ -166,19 +167,21 @@ const CustomerOrderDetailScreen = () => {
                                 <Ionicons name="location" size={20} color="#EF4444" />
                             </View>
                         </Marker>
-                        <Polyline
-                            coordinates={[
-                                { latitude: Number(order.pickup.lat), longitude: Number(order.pickup.lng) },
-                                { latitude: Number(order.dropoff.lat), longitude: Number(order.dropoff.lng) }
-                            ]}
-                            strokeColor="#16A34A"
+                        <MapViewDirections
+                            origin={{ latitude: Number(order.pickup.lat), longitude: Number(order.pickup.lng) }}
+                            destination={{ latitude: Number(order.dropoff.lat), longitude: Number(order.dropoff.lng) }}
+                            apikey={process.env.EXPO_PUBLIC_GOOGLE_API_KEY || ""}
                             strokeWidth={3}
+                            strokeColor="#16A34A"
                         />
                     </MapView>
                 </View>
 
                 {/* Card 1: Lộ trình vận chuyển */}
-                <View className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <View
+                    className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100"
+                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
+                >
                     <View className="flex-row items-center mb-4">
                         <View className="bg-green-600 w-6 h-6 rounded-full items-center justify-center mr-2 border border-green-200">
                             <Ionicons name="location" size={14} color="#ffffff" />
@@ -228,7 +231,10 @@ const CustomerOrderDetailScreen = () => {
                 </View>
 
                 {/* Card 2: Chi tiết hàng hóa */}
-                <View className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <View
+                    className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100"
+                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}
+                >
                     <View className="flex-row items-center mb-4">
                         <View className="bg-green-600 w-6 h-6 rounded-full items-center justify-center mr-2 border border-green-200">
                             <Ionicons name="cube" size={14} color="#ffffff" />
@@ -263,7 +269,10 @@ const CustomerOrderDetailScreen = () => {
                 </View>
 
                 {/* Card 3: Thông tin các bên */}
-                <View className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <View
+                    className="mx-4 mt-4 p-4 bg-white rounded-3xl border border-gray-100"
+                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}
+                >
                     {/* Header: Contacts */}
                     <View className="flex-row items-center mb-4">
                         <View className="bg-green-600 w-6 h-6 rounded-full items-center justify-center mr-2 border border-green-200">
@@ -340,7 +349,10 @@ const CustomerOrderDetailScreen = () => {
                 </View>
 
                 {/* Card 4: Thông tin thanh toán */}
-                <View className="mx-4 mt-4 mb-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <View
+                    className="mx-4 mt-4 mb-4 p-4 bg-white rounded-3xl border border-gray-100"
+                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}
+                >
                     <View className="flex-row items-center mb-4">
                         <View className="bg-green-600 w-6 h-6 rounded-full items-center justify-center mr-2 border border-green-200">
                             <Ionicons name="receipt" size={12} color="#ffffff" />
@@ -420,7 +432,7 @@ const CustomerOrderDetailScreen = () => {
                     />
                 )}
 
-                {order.status === "PICKED_UP" && (
+                {(order.status === "ACCEPTED" || order.status === "PICKED_UP") && (
                     <CustomButton
                         title="Theo dõi lộ trình"
                         onPress={() => router.push(`/(root)/track-order/${id}`)}

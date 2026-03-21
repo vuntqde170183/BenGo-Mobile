@@ -157,7 +157,14 @@ const BookingSetupScreen = () => {
       });
 
       if (response && response.data) {
-        showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => router.push("/(root)/tabs/activities"));
+        const orderId = response.data.id || response.data._id;
+        showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => {
+          if (orderId) {
+            router.push(`/order-detail/${orderId}`);
+          } else {
+            router.push("/(root)/tabs/activities");
+          }
+        });
       } else {
         // Fallback for demo
         showAlert("Đặt đơn thành công", "Đơn hàng của bạn đang được tìm tài xế.", () => router.push("/(root)/tabs/activities"));

@@ -10,7 +10,8 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import { useDriverOrderDetail } from "@/hooks/useDriver";
 import VehicleBadge from "@/components/Common/VehicleBadge";
 
@@ -112,14 +113,12 @@ const TripDetailScreen = () => {
                   <Ionicons name="location" size={20} color="#EF4444" />
                 </View>
               </Marker>
-              <Polyline
-                coordinates={[
-                  { latitude: pickupLat, longitude: pickupLng },
-                  { latitude: dropoffLat, longitude: dropoffLng },
-                ]}
-                strokeColor="#10B981"
+              <MapViewDirections
+                origin={{ latitude: pickupLat, longitude: pickupLng }}
+                destination={{ latitude: dropoffLat, longitude: dropoffLng }}
+                apikey={process.env.EXPO_PUBLIC_GOOGLE_API_KEY || ""}
                 strokeWidth={3}
-                lineDashPattern={[5, 5]}
+                strokeColor="#10B981"
               />
             </MapView>
           )}
