@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import {
   MapCard,
   IncomingRequestModal,
+  HotspotFinder,
   type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
 import { Switch } from 'react-native-switch';
@@ -14,7 +15,9 @@ import { Image } from 'react-native';
 import CustomModal from "@/components/Common/CustomModal";
 import { useAuth } from '@/context/AuthContext';
 import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation, useDriverActiveOrder } from '@/hooks/useDriver';
+import { useHotspot } from '@/hooks/useHotspot';
 import { PendingOrder } from '@/api/driver';
+import { HotspotLocation } from '@/api/hotspot';
 
 interface LocationState {
   address: string;
@@ -31,6 +34,7 @@ const DriverHome = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [showHotspotModal, setShowHotspotModal] = useState(false);
 
   const [alertModal, setAlertModal] = useState({
     visible: false,
@@ -82,6 +86,17 @@ const DriverHome = () => {
   const { mutateAsync: toggleStatus, isPending: isTogglingStatus } = useDriverToggleStatus();
   const { mutateAsync: acceptOrder, isPending: isAccepting } = useDriverAcceptOrder();
   const { mutate: updateLocation } = useDriverUpdateLocation();
+
+  // Hotspot
+  const {
+    hotspots,
+    summary: hotspotSummary,
+    isLoading: isLoadingHotspots,
+    error: hotspotError,
+    analyzedAt: hotspotAnalyzedAt,
+    fetchHotspots,
+    clearHotspots,
+  } = useHotspot();
 
 
 
@@ -251,6 +266,15 @@ const DriverHome = () => {
     setShowOrderModal(true);
   };
 
+  const handleSearchHotspots = (radius?: number) => {
+    fetchHotspots(currentLocation.latitude, currentLocation.longitude, radius);
+  };
+
+  const handleSelectHotspot = (hotspot: HotspotLocation) => {
+    setShowHotspotModal(false);
+    // Hotspot markers are already shown on the map through the hotspots state
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
       <Header
@@ -305,7 +329,32 @@ const DriverHome = () => {
           <MapCard
             orders={pendingOrders}
             onOrderPress={handleOrderPress}
+            hotspots={hotspots}
+            onHotspotPress={(h) => {
+              // Could show detail or navigate
+            }}
           />
+
+          {/* Hotspot FAB */}
+          <TouchableOpacity
+            className="absolute left-5 bottom-5 h-12 bg-white rounded-full items-center justify-center border border-orange-200 flex-row px-4"
+            style={{
+              shadowColor: "#F97316",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 6,
+              elevation: 4,
+            }}
+            onPress={() => setShowHotspotModal(true)}
+          >
+            <Ionicons name="flame" size={20} color="#F97316" />
+            <Text className="text-orange-600 font-JakartaBold text-xs ml-1.5">Điểm nóng</Text>
+            {hotspots.length > 0 && (
+              <View className="ml-1.5 w-5 h-5 bg-orange-500 rounded-full items-center justify-center">
+                <Text className="text-white text-[10px] font-JakartaBold">{hotspots.length}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
           {/* Recenter FAB */}
           <TouchableOpacity
@@ -377,6 +426,18 @@ const DriverHome = () => {
           setSelectedOrder(null);
         }}
         isAccepting={isAccepting}
+      />
+
+      <HotspotFinder
+        visible={showHotspotModal}
+        onClose={() => setShowHotspotModal(false)}
+        hotspots={hotspots}
+        summary={hotspotSummary}
+        isLoading={isLoadingHotspots}
+        error={hotspotError}
+        analyzedAt={hotspotAnalyzedAt}
+        onSearch={handleSearchHotspots}
+        onSelectHotspot={handleSelectHotspot}
       />
 
       <CustomModal

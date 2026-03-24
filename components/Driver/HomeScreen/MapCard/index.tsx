@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { HotspotLocation } from '@/api/hotspot';
 
 export interface MarkerLocation {
   id: string;
@@ -18,10 +19,23 @@ interface MapCardProps {
   showUserLocation?: boolean;
 }
 
-const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: any) => void }> = ({
+const CROWD_COLORS = {
+  high: '#EF4444',
+  medium: '#F59E0B',
+  low: '#10B981',
+};
+
+const MapCard: React.FC<MapCardProps & {
+  orders?: any[],
+  onOrderPress?: (order: any) => void,
+  hotspots?: HotspotLocation[],
+  onHotspotPress?: (hotspot: HotspotLocation) => void,
+}> = ({
   fixedMarkers = [],
   orders = [],
   onOrderPress,
+  hotspots = [],
+  onHotspotPress,
   showUserLocation = true,
 }) => {
   const mapRef = useRef<MapView>(null);
@@ -158,6 +172,54 @@ const MapCard: React.FC<MapCardProps & { orders?: any[], onOrderPress?: (order: 
             </View>
           </Marker>
         ))}
+
+        {/* Hotspot Markers */}
+        {hotspots.map((hotspot, index) => {
+          const crowdColor = CROWD_COLORS[hotspot.crowdLevel] || CROWD_COLORS.medium;
+          return (
+            <Marker
+              key={`hotspot-${hotspot.id}`}
+              coordinate={{
+                latitude: hotspot.latitude,
+                longitude: hotspot.longitude,
+              }}
+              onPress={() => onHotspotPress && onHotspotPress(hotspot)}
+            >
+              <View className="items-center">
+                <View
+                  className="px-2 py-1 rounded-lg mb-1"
+                  style={{
+                    backgroundColor: crowdColor + '20',
+                    borderWidth: 1,
+                    borderColor: crowdColor,
+                    shadowColor: crowdColor,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }}
+                >
+                  <Text style={{ color: crowdColor, fontSize: 10, fontWeight: 'bold' }} numberOfLines={1}>
+                    {hotspot.name}
+                  </Text>
+                </View>
+                <View
+                  className="w-8 h-8 rounded-full items-center justify-center"
+                  style={{
+                    backgroundColor: crowdColor,
+                    shadowColor: crowdColor,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+                    elevation: 5,
+                  }}
+                >
+                  <Ionicons name="flame" size={16} color="white" />
+                </View>
+              </View>
+            </Marker>
+          );
+        })}
       </MapView>
     </View>
   );
