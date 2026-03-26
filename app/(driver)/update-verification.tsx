@@ -45,7 +45,7 @@ const ImageUploadBox = ({
       ) : (
         <View className="items-center">
           <Ionicons name="camera-outline" size={40} color="#94A3B8" />
-          <Text className="text-slate-400 font-JakartaMedium text-sm mt-2">Nhấn để tải ảnh</Text>
+          <Text className="text-gray-400 font-JakartaMedium text-sm mt-2">Nhấn để tải ảnh</Text>
         </View>
       )}
     </TouchableOpacity>

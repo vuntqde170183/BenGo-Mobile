@@ -25,7 +25,6 @@ export interface UpdateProfilePayload {
 
 export const getProfile = async (): Promise<User> => {
   const response = await fetchAPI("/(api)/auth/profile");
-  console.log("DEBUG: getProfile response raw", JSON.stringify(response, null, 2));
   return response.data ?? response;
 };
 

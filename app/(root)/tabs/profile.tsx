@@ -23,13 +23,6 @@ const CustomerProfileScreen = () => {
     const { logout } = useAuth();
     const { data: profile, isLoading, error, refetch } = useProfile();
     const [refreshing, setRefreshing] = useState(false);
-    
-    console.log("DEBUG: Profile Component Render", { 
-        hasProfile: !!profile, 
-        isLoading, 
-        error: error?.message,
-        profileData: profile 
-    });
 
     const [alertModal, setAlertModal] = useState({
         visible: false,
@@ -247,11 +240,11 @@ const MenuActionItem = ({
                 {status && (
                     <View className={`px-2 py-0.5 rounded-full mr-2 ${status === 'APPROVED' ? 'bg-green-100' : status === 'PENDING' ? 'bg-amber-100' : 'bg-red-100'
                         }`}>
-                    <Text className={`text-sm font-JakartaBold ${status === 'APPROVED' ? 'text-green-700' : status === 'PENDING' ? 'text-amber-700' : 'text-red-700'
-                        }`}>
-                        {status}
-                    </Text>
-                </View>
+                        <Text className={`text-sm font-JakartaBold ${status === 'APPROVED' ? 'text-green-700' : status === 'PENDING' ? 'text-amber-700' : 'text-red-700'
+                            }`}>
+                            {status}
+                        </Text>
+                    </View>
                 )}
                 <Ionicons name="chevron-forward" size={20} color="#CBD5E1" />
             </View>

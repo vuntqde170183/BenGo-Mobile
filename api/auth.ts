@@ -1,13 +1,15 @@
 import { fetchAPI } from "@/lib/fetch";
 
-export interface UserRegistrationData {
+export interface RegisterPayload {
+    phone: string;
+    password: string;
     name: string;
     email: string;
-    clerkId: string;
+    type: "CUSTOMER" | "DRIVER";
 }
 
-export const registerUser = async (data: UserRegistrationData) => {
-    return fetchAPI("/(api)/user", {
+export const register = async (data: RegisterPayload) => {
+    return fetchAPI("/(api)/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
     });

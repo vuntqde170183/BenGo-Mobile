@@ -2,9 +2,8 @@ import CustomButton from "@/components/Common/CustomButton";
 import CustomModal from "@/components/Common/CustomModal";
 import InputField from "@/components/Common/InputField";
 import { icons, images } from "@/constants";
-import { fetchAPI } from "@/lib/fetch";
 import { Link, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Modal,
@@ -18,11 +17,14 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { useRegister } from "@/hooks/useAuthActions";
+import { useAuth } from "@/context/AuthContext";
 
 const SignUp = () => {
   const { t } = useTranslation();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { setAuth } = useAuth();
+  const { mutate: register, isPending: loading } = useRegister();
 
   const [form, setForm] = useState({
     name: "",
@@ -50,38 +52,34 @@ const SignUp = () => {
   };
 
   const onSignUpPress = async () => {
-    if (!form.name || !form.email || !form.password) {
-      showAlert(t("common.error"), t("auth.missingFields") || "Vui lòng nhập đầy đủ thông tin");
+    if (!form.name || !form.phone || !form.password || !form.email) {
+      showAlert(t("common.error"), "Vui lòng nhập đầy đủ Tên, Số điện thoại, Email và Mật khẩu");
       return;
     }
 
-    setLoading(true);
-    try {
-      // Direct call to register user in our database
-      const response = await fetchAPI("/(api)/user", {
-        method: "POST",
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          clerkId: `user_${Date.now()}`, // Generating a mock ID since we don't have Clerk
-          phone: form.phone,
-          password: form.password, // Ideally hashed on server
-        }),
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
+    register({
+      name: form.name,
+      phone: form.phone,
+      email: form.email,
+      password: form.password,
+      type: "CUSTOMER"
+    }, {
+      onSuccess: (res: any) => {
+        const registrationData = res.data;
+        if (registrationData && registrationData.accessToken && registrationData.user) {
+          setAuth(registrationData.accessToken, registrationData.user);
+          setShowSuccessModal(true);
+        } else {
+          setShowSuccessModal(true);
+        }
+      },
+      onError: (err: any) => {
+        showAlert(
+          t("common.error"),
+          err.message || "Đăng ký thất bại. Vui lòng thử lại sau."
+        );
       }
-
-      setShowSuccessModal(true);
-    } catch (err: any) {
-      showAlert(
-        t("common.error"),
-        err.message || t("errors.somethingWentWrong")
-      );
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (
@@ -109,7 +107,7 @@ const SignUp = () => {
             {/* Title Text */}
             <View className="items-center mb-4">
               <Text className="text-2xl text-gray-700 font-JakartaBold mb-2">
-                {t("auth.createAccount")}
+                Tạo tài khoản
               </Text>
               <Text className="text-base text-gray-500 font-JakartaMedium">
                 Đăng ký tài khoản để bắt đầu cùng BenGo
@@ -194,13 +192,13 @@ const SignUp = () => {
               Đăng ký thành công!
             </Text>
             <Text className="mt-4 text-base text-center text-gray-500 font-Jakarta">
-              Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để bắt đầu.
+              Chào mừng bạn đến với BenGo. Tài khoản của bạn đã sẵn sàng.
             </Text>
             <CustomButton
-              title={t("auth.signIn")}
+              title="Bắt đầu ngay"
               onPress={() => {
                 setShowSuccessModal(false);
-                router.replace("/(auth)/sign-in");
+                router.replace("/(root)/tabs/home");
               }}
               className="mt-4"
             />
