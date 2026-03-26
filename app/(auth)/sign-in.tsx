@@ -113,7 +113,7 @@ const SignIn = () => {
     } catch (error: any) {
       const errorMessage =
         error.message || "Tài khoản hoặc mật khẩu không đúng";
-      showAlert("Lỗi đăng nhập", errorMessage);
+      showAlert("Lỗi đăng nhập", errorMessage?.message);
     } finally {
       setIsLoading(false);
     }

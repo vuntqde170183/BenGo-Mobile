@@ -17,7 +17,8 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             }
         }
 
-        const isFormData = options?.body instanceof FormData;
+        // React Native's FormData often has a _parts property
+        const isFormData = options?.body instanceof FormData || (options?.body && typeof options.body === 'object' && '_parts' in options.body);
 
         const headers: Record<string, string> = {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -69,6 +70,7 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             }
         }
     } catch (error) {
+        console.error(`🔥 [fetchAPI] Error:`, error);
         throw error;
     }
 };

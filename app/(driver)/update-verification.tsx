@@ -82,7 +82,7 @@ const UpdateVerificationScreen = () => {
 
   const { mutateAsync: updateDocs } = useUpdateDriverDocuments();
   const { mutateAsync: updateProfile } = useUpdateProfile();
-  const { uploadImage, isUploading } = useUpload();
+  const { uploadImage, isUploading: isGlobalUploading } = useUpload();
   const [form, setForm] = useState({
     identityNumber: "",
     identityFront: null as string | null,
@@ -97,7 +97,7 @@ const UpdateVerificationScreen = () => {
     accountHolder: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingAction, setLoadingAction] = useState("");
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
@@ -197,7 +197,7 @@ const UpdateVerificationScreen = () => {
         return;
       }
 
-      setLoading(true);
+      setIsSubmitting(true);
       setLoadingAction("Đang gửi hồ sơ...");
 
       const payloadDocs = {
@@ -209,13 +209,23 @@ const UpdateVerificationScreen = () => {
 
       console.log("🛠️ [DriverVerification] Submit Documents Payloads:", JSON.stringify(payloadDocs, null, 2));
 
-      // Execute all updates
-      await Promise.all([
-        updateDocs(payloadDocs.identityFront as any),
-        updateDocs(payloadDocs.identityBack as any),
-        updateDocs(payloadDocs.license as any),
-        updateDocs(payloadDocs.vehicle as any)
-      ]);
+      // Sequential submission with delay for Render Free Tier
+      const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+      setLoadingAction("Đang gửi Định danh mặt trước...");
+      await updateDocs(payloadDocs.identityFront as any);
+      await sleep(1000);
+
+      setLoadingAction("Đang gửi Định danh mặt sau...");
+      await updateDocs(payloadDocs.identityBack as any);
+      await sleep(1000);
+
+      setLoadingAction("Đang gửi bằng lái xe...");
+      await updateDocs(payloadDocs.license as any);
+      await sleep(1000);
+
+      setLoadingAction("Đang gửi đăng ký xe...");
+      await updateDocs(payloadDocs.vehicle as any);
 
       console.log("🎉 [DriverVerification] All Documents Submitted Successfully");
       showAlert("Thành công", "Hồ sơ của bạn đã được gửi xét duyệt.", () => router.push("/(driver)/documents"));
@@ -223,7 +233,7 @@ const UpdateVerificationScreen = () => {
       console.error("🔥 [DriverVerification] Error in handleSubmit:", err);
       showAlert("Lỗi", "Không thể gửi hồ sơ. Vui lòng thử lại!");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -237,7 +247,7 @@ const UpdateVerificationScreen = () => {
     }
 
     try {
-      setLoading(true);
+      setIsSubmitting(true);
       setLoadingAction("Đang cập nhật hồ sơ...");
 
       const profileUpdatePayload = {
@@ -271,7 +281,7 @@ const UpdateVerificationScreen = () => {
       console.error("🔥 [DriverVerification] Error in updateProfile:", err);
       showAlert("Lỗi", "Không thể cập nhật hồ sơ. Vui lòng thử lại!");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -406,13 +416,12 @@ const UpdateVerificationScreen = () => {
         <CustomButton
           title="Gửi yêu cầu duyệt"
           onPress={handleSubmit}
-          loading={loading || isUploading}
+          loading={isSubmitting}
         />
-
       </View>
       )}
 
-      <Modal visible={loading} transparent>
+      <Modal visible={isSubmitting} transparent>
         <View className="flex-1 bg-black/40 items-center justify-center">
           <View className="bg-white p-4 rounded-3xl items-center shadow-lg">
             <ActivityIndicator size="large" color="#0047AB" />

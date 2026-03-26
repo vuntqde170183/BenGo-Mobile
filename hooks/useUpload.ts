@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { fetchAPI } from "@/lib/fetch";
+import { useAuthStore } from "@/store";
 import { Platform } from "react-native";
 
 export interface UploadResponse {
@@ -12,44 +12,64 @@ export interface UploadResponse {
 }
 
 export const useUpload = () => {
+  const { token } = useAuthStore.getState();
+
   const uploadMutation = useMutation({
     mutationFn: async (uri: string): Promise<UploadResponse> => {
+      console.log(`🚀 [useUpload] Fetch-based upload: ${uri.substring(0, 40)}...`);
+
+      const filename = uri.split("/").pop() || `image_${Date.now()}.jpg`;
+      const extension = filename.split(".").pop()?.toLowerCase() || "jpg";
+      const type = extension === "jpg" ? "image/jpeg" : `image/${extension}`;
+
       const formData = new FormData();
-
-      const lastSlashIndex = uri.lastIndexOf("/");
-      const filename = uri.substring(lastSlashIndex + 1) || `image_${Date.now()}.jpg`;
-      const extension = filename.split(".").pop()?.toLowerCase();
-      const type = extension ? `image/${extension === "jpg" ? "jpeg" : extension}` : "image/jpeg";
-
-      console.log(`📤 [useUpload] Preparing FormData: ${filename} (${type})`);
-
+      // Use suggested URI logic
+      const finalUri = Platform.OS === "android" ? uri : uri.replace("file://", "");
+      
       // @ts-ignore
       formData.append("file", {
-        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+        uri: finalUri,
         name: filename,
         type: type,
       });
 
-      const response = await fetchAPI("/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL || "https://bengo-backend.onrender.com/api/v1";
+      const url = `${baseUrl}/upload`;
 
-      // The API returns { data: { data: { url: ... }, ... }, ... }
-      if (response && response.data && response.data.data) {
-        return response.data.data;
+      try {
+        console.log(`📡 [useUpload] Calling fetch to: ${url}`);
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log(`📡 [useUpload] Response Status: ${response.status}`);
+        
+        const responseData = await response.json();
+        
+        if (response.ok) {
+           const result = responseData.data?.data || responseData.data || responseData;
+           console.log(`✅ [useUpload] Success:`, !!result);
+           return result;
+        } else {
+           console.warn("⚠️ [useUpload] Upload Failed:", JSON.stringify(responseData));
+           throw new Error(responseData.message || `Lỗi server ${response.status}`);
+        }
+      } catch (err: any) {
+        console.error("🔥 [useUpload] Final Fetch Error:", err);
+        throw err;
       }
-      
-      if (response && response.data) {
-        return response.data;
-      }
-      return response;
     },
   });
 
   return {
     uploadImage: uploadMutation.mutateAsync,
     isUploading: uploadMutation.isPending,
-    uploadError: uploadMutation.error ? uploadMutation.error.message : null,
+    uploadError: uploadMutation.error ? (uploadMutation.error as any).message : null,
   };
 };
