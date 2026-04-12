@@ -58,7 +58,6 @@ class RideStatusUpdater {
         await this.updateRideStatus(ride.ride_id, 'completed');
       }
     } catch (error) {
-      console.error(error);
     }
   }
 
@@ -77,7 +76,6 @@ class RideStatusUpdater {
         }),
       });
     } catch (error) {
-      console.error(error);
     }
   }
 

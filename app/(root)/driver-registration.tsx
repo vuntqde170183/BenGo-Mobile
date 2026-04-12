@@ -82,7 +82,6 @@ export default function DriverRegistrationScreen() {
           });
         }
       } catch (error: any) {
-        console.error("Error fetching driver data:", error);
       }
     };
 

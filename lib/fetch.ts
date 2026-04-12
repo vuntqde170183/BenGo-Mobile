@@ -30,7 +30,6 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
         }
 
         console.log(`📡 [fetchAPI] Request: ${options?.method || 'GET'} ${finalUrl}`);
-
         const response = await fetch(finalUrl, {
             ...options,
             headers,
@@ -40,7 +39,6 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             const errorText = await response.text();
 
             if (response.status === 401) {
-                console.warn("🚨 [fetchAPI] 401 Unauthorized detected! Logging out...");
                 useAuthStore.getState().logout();
 
                 setTimeout(() => {

@@ -57,9 +57,6 @@ const PaymentScreen = () => {
   };
 
   useEffect(() => {
-    console.log("[payment][debug] route param id:", id);
-    console.log("[payment][debug] loading:", loading);
-    console.log("[payment][debug] order:", order);
     if (order?.paymentStatus === "PAID") {
       setIsPaymentDone(true);
     }
@@ -67,35 +64,19 @@ const PaymentScreen = () => {
 
   const handlePayment = async () => {
     try {
-      console.log("[payment][debug] handlePayment start:", {
-        orderId: id,
-        paymentMethod,
-        orderStatus: order?.status,
-        paymentStatus: order?.paymentStatus,
-      });
       await payMutation.mutateAsync({
         orderId: id as string,
-        paymentMethod,
-      });
-      console.log("[payment][debug] handlePayment success:", {
-        orderId: id,
         paymentMethod,
       });
       showAlert("Thành công", "Thanh toán thành công!");
       setIsPaymentDone(true);
     } catch (error: any) {
-      console.error("[payment][debug] handlePayment failed:", error);
       showAlert("Lỗi", error.message || "Đã có lỗi xảy ra trong quá trình thanh toán.");
     }
   };
 
   const handleSubmitRating = async () => {
     try {
-      console.log("[payment][debug] handleSubmitRating start:", {
-        orderId: id,
-        rating,
-        comment,
-      });
       await rateMutation.mutateAsync({
         orderId: id as string,
         rating: {
@@ -103,13 +84,8 @@ const PaymentScreen = () => {
           comment,
         },
       });
-      console.log("[payment][debug] handleSubmitRating success:", {
-        orderId: id,
-        rating,
-      });
       showAlert("Cảm ơn", "Đánh giá của bạn đã được gửi.", () => router.replace("/(root)/tabs/home"));
     } catch (error) {
-      console.error("[payment][debug] handleSubmitRating failed:", error);
       showAlert("Lỗi", "Không thể gửi đánh giá lúc này.");
     }
   };
@@ -117,7 +93,6 @@ const PaymentScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
       <PageHeader title="Hoàn tất dịch vụ" onBackPress={handleBack} />
-
       {loading ? (
         <View className="flex-1 justify-center items-center bg-white">
           <ActivityIndicator size="large" color="#10B981" />
@@ -154,14 +129,12 @@ const PaymentScreen = () => {
 
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("CASH")}
-                  className={`flex-row items-center p-4 rounded-2xl mb-4 border-2 ${
-                    paymentMethod === "CASH" ? "border-green-500 bg-green-50" : "border-gray-100"
-                  }`}
+                  className={`flex-row items-center p-4 rounded-2xl mb-4 border-2 ${paymentMethod === "CASH" ? "border-green-500 bg-green-50" : "border-gray-100"
+                    }`}
                 >
                   <View
-                    className={`w-10 h-10 rounded-full items-center justify-center ${
-                      paymentMethod === "CASH" ? "bg-green-500" : "bg-gray-100"
-                    }`}
+                    className={`w-10 h-10 rounded-full items-center justify-center ${paymentMethod === "CASH" ? "bg-green-500" : "bg-gray-100"
+                      }`}
                   >
                     <Ionicons
                       name="cash"
@@ -170,9 +143,8 @@ const PaymentScreen = () => {
                     />
                   </View>
                   <Text
-                    className={`ml-4 flex-1 font-JakartaBold ${
-                      paymentMethod === "CASH" ? "text-green-600" : "text-neutral-500"
-                    }`}
+                    className={`ml-4 flex-1 font-JakartaBold ${paymentMethod === "CASH" ? "text-green-600" : "text-neutral-500"
+                      }`}
                   >
                     Tiền mặt
                   </Text>
@@ -181,14 +153,12 @@ const PaymentScreen = () => {
 
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("WALLET")}
-                  className={`flex-row items-center p-4 rounded-2xl mb-4 border-2 ${
-                    paymentMethod === "WALLET" ? "border-green-500 bg-green-50" : "border-gray-100"
-                  }`}
+                  className={`flex-row items-center p-4 rounded-2xl mb-4 border-2 ${paymentMethod === "WALLET" ? "border-green-500 bg-green-50" : "border-gray-100"
+                    }`}
                 >
                   <View
-                    className={`w-10 h-10 rounded-full items-center justify-center ${
-                      paymentMethod === "WALLET" ? "bg-green-500" : "bg-gray-100"
-                    }`}
+                    className={`w-10 h-10 rounded-full items-center justify-center ${paymentMethod === "WALLET" ? "bg-green-500" : "bg-gray-100"
+                      }`}
                   >
                     <Ionicons
                       name="wallet"
@@ -198,9 +168,8 @@ const PaymentScreen = () => {
                   </View>
                   <View className="ml-4 flex-1">
                     <Text
-                      className={`font-JakartaBold ${
-                        paymentMethod === "WALLET" ? "text-green-600" : "text-neutral-500"
-                      }`}
+                      className={`font-JakartaBold ${paymentMethod === "WALLET" ? "text-green-600" : "text-neutral-500"
+                        }`}
                     >
                       Ví BenGo
                     </Text>
@@ -223,7 +192,7 @@ const PaymentScreen = () => {
                   Trải nghiệm của bạn với tài xế {order?.driverId?.name} thế nào?
                 </Text>
 
-                <StarRating rating={rating} onRatingChange={setRating} size={40}/>
+                <StarRating rating={rating} onRatingChange={setRating} size={40} />
 
                 <TextArea
                   placeholder="Nhận xét của bạn (không bắt buộc)"

@@ -12,7 +12,6 @@ export const sendRideConfirmationEmail = async (
 ): Promise<{ success: boolean; messageId?: string; error?: string }> => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('⚠️ Email service not configured. Skipping email send.');
       return {
         success: false,
         error: 'Email service not configured'
@@ -32,7 +31,6 @@ export const sendRideConfirmationEmail = async (
       messageId: info.messageId
     };
   } catch (error) {
-    console.error('Error sending email:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -47,10 +45,9 @@ export const sendVerificationEmail = async (
 ): Promise<{ success: boolean; messageId?: string; error?: string }> => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('⚠️ Email service not configured. Skipping email send.');
-      return { 
-        success: false, 
-        error: 'Email service not configured' 
+      return {
+        success: false,
+        error: 'Email service not configured'
       };
     }
 
@@ -62,15 +59,14 @@ export const sendVerificationEmail = async (
       html: getVerificationEmailHTML(name, otp),
     });
 
-    return { 
-      success: true, 
-      messageId: info.messageId 
+    return {
+      success: true,
+      messageId: info.messageId
     };
   } catch (error) {
-    console.error('Error sending verification email:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 };

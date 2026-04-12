@@ -50,9 +50,7 @@ export function formatDate(dateString: string): string {
   return `${day < 10 ? "0" + day : day} ${month} ${year}`;
 }
 
-/**
- * Format date to Vietnamese format (dd/MM/yyyy) in Vietnam timezone
- */
+
 export function formatDateVN(dateString: string): string {
   try {
     const date = new Date(dateString);
@@ -62,24 +60,19 @@ export function formatDateVN(dateString: string): string {
   }
 }
 
-/**
- * Format time (minutes or timestamp) to HH:mm in Vietnam timezone
- */
 export function formatTimeVN(minutes: number): string {
-  // If it's a timestamp (milliseconds), convert to Date
   if (minutes > 1000000) {
     try {
       const date = new Date(minutes);
       return formatInTimeZone(date, VIETNAM_TIMEZONE, 'HH:mm');
     } catch (error) {
-      console.error('Error formatting time:', error);
     }
   }
-  
+
   // Otherwise treat as minutes
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  
+
   return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
 }
 

@@ -18,12 +18,10 @@ class PushNotificationService {
 
   async registerForPushNotifications(userId?: string, driverId?: number) {
     if (!Device.isDevice) {
-      console.warn("⚠️ Push notifications only work on physical devices");
       return null;
     }
 
     try {
-      // Request permissions
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -34,11 +32,9 @@ class PushNotificationService {
       }
 
       if (finalStatus !== "granted") {
-        console.warn("⚠️ Push notification permission denied");
         return null;
       }
 
-      // Get Expo Push Token
       const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
       if (!projectId) {
         return null;
@@ -78,7 +74,6 @@ class PushNotificationService {
         }),
       });
     } catch (error) {
-      console.error(error);
     }
   }
 

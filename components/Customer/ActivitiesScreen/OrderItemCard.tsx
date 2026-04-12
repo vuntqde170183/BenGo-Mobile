@@ -15,8 +15,6 @@ const OrderItemCard = ({ order }: { order: Order }) => {
     const handlePress = () => {
         if (order?.id) {
             router.push(`/order-detail/${order.id}` as any);
-        } else {
-            console.warn("[OrderItemCard] No ID found in order object");
         }
     };
 

@@ -21,7 +21,6 @@ export async function POST(request: Request) {
       }
     );
   } catch (error) {
-    console.error("API Error (send-verification):", error);
     return new Response(
       JSON.stringify({
         success: false,

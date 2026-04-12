@@ -21,29 +21,28 @@ const languageDetector = {
         callback(savedLanguage);
         return;
       }
-      
+
       // Nếu chưa có, dùng ngôn ngữ thiết bị
       const locales = Localization.getLocales();
       const deviceLanguage = locales[0]?.languageCode || 'en';
-      
+
       // Map device language to supported languages
       const languageMap: { [key: string]: string } = {
         'vi': 'vi',
         'en': 'en',
       };
-      
+
       const supportedLanguage = languageMap[deviceLanguage] || 'en';
       callback(supportedLanguage);
     } catch (error) {
       callback('en');
     }
   },
-  init: () => {},
+  init: () => { },
   cacheUserLanguage: async (language: string) => {
     try {
       await AsyncStorage.setItem(LANGUAGE_KEY, language);
     } catch (error) {
-      console.error(error);
     }
   },
 };

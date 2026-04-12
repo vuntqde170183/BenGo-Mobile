@@ -95,7 +95,7 @@ const DriverHome = () => {
   const calculatedTodayStats = useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
     const transactions = todayOrdersData?.data?.data || [];
-    
+
     const filtered = transactions.filter((order: any) => {
       if (!order.createdAt) return false;
       return format(new Date(order.createdAt), "yyyy-MM-dd") === today;
@@ -437,7 +437,12 @@ const DriverHome = () => {
             )}
             ListEmptyComponent={() => (
               <View className="flex-1 items-center justify-center pt-10">
-                <Text className="text-gray-500 font-Jakarta text-base">
+                <Ionicons
+                  name={isOnline ? "search-outline" : "cloud-offline-outline"}
+                  size={60}
+                  color="#9CA3AF"
+                />
+                <Text className="text-gray-500 font-Jakarta text-base mt-2">
                   {isOnline ? 'Chưa tìm thấy đơn hàng nào gần đây' : 'Bật trực tuyến để xem đơn hàng'}
                 </Text>
               </View>
@@ -566,19 +571,19 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
   };
 
   return (
-    <View className="mx-5 my-3">
+    <View className="mx-4 my-3">
       <LinearGradient
         colors={["#059669", "#10B981"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         className="flex-row items-center shadow-md"
-        style={{ padding: 16, borderRadius: 16, elevation: 8 }}
+        style={{ padding: 14, borderRadius: 16, elevation: 8 }}
       >
         <View className="bg-white/20 p-3 rounded-2xl mr-4">
           <Ionicons name="calendar-outline" size={24} color="white" />
         </View>
         <View className="flex-1">
-          <Text className="text-white/80 font-JakartaSemiBold text-xs uppercase tracking-widest mb-0.5">Thu nhập hôm nay</Text>
+          <Text className="text-white/80 font-JakartaSemiBold text-sm uppercase mb-0.5">Thu nhập hôm nay: {format(new Date(), "dd/MM/yyyy")}</Text>
           <Text className="text-white font-JakartaExtraBold text-2xl">{formatCurrency(totalEarnings)}</Text>
         </View>
         <View className="bg-white/20 px-3 py-1.5 rounded-2xl items-center border border-white/10">

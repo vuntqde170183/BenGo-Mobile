@@ -20,14 +20,11 @@ class RideStatusPoller {
 
   start() {
     if (this.intervalId) {
-      console.warn("⚠️ Poller already running");
       return;
     }
     this.isRunning = true;
-    // Poll immediately
     this.poll();
 
-    // Then poll at intervals
     this.intervalId = setInterval(() => {
       if (this.isRunning) {
         this.poll();

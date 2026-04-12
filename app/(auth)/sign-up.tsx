@@ -20,10 +20,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useRegister } from "@/hooks/useAuthActions";
 import { useAuth } from "@/context/AuthContext";
-import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
-  console.log("Rendering SignUp screen...");
   const { t } = useTranslation();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { setAuth } = useAuth();
@@ -62,7 +60,6 @@ const SignUp = () => {
   };
 
   const onSignUpPress = async () => {
-    console.log("Sign Up button pressed, form data:", form);
     if (!form.name || !form.phone || !form.password || !form.email) {
       showAlert(t("common.error"), "Vui lòng nhập đầy đủ Tên, Số điện thoại, Email và Mật khẩu");
       return;
@@ -73,10 +70,6 @@ const SignUp = () => {
     setLocalOtp(newOtp);
 
     try {
-      // Gọi API route cục bộ (app/(api)/email/send-verification+api.ts)
-      // fetchAPI trong project này tự động prepend EXPO_PUBLIC_SERVER_URL nếu path bắt đầu bằng /
-      // Nhưng nếu dự án sử dụng Expo Router API routes, ta cần gọi tới origin của app.
-      // Do đó, ta sẽ sử dụng fetch trực tiếp để gọi api nội bộ.
       const response = await fetch("/(api)/email/send-verification", {
         method: "POST",
         body: JSON.stringify({
@@ -96,7 +89,6 @@ const SignUp = () => {
       }
     } catch (error) {
       setIsSendingEmail(false);
-      console.error("Email send error:", error);
       showAlert(t("common.error"), "Lỗi hệ thống khi gửi email.");
     }
   };

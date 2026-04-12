@@ -231,7 +231,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
 
           {/* Radius selector */}
           <View className="px-5 mb-4">
-            <Text className="text-gray-500 text-xs font-JakartaMedium mb-2 uppercase tracking-wider">
+            <Text className="text-gray-500 text-xs font-JakartaMedium mb-2 uppercase">
               Bán kính tìm kiếm
             </Text>
             <View className="flex-row">

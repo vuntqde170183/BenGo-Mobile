@@ -212,7 +212,7 @@ const EarningsScreen = () => {
 
               <View className="mt-6 flex-row items-center bg-white/10 p-4 rounded-2xl border border-white/10">
                 <View className="flex-1 items-center">
-                  <Text className="text-white font-JakartaSemiBold text-sm uppercase tracking-wider mb-1">
+                  <Text className="text-white font-JakartaSemiBold text-sm uppercase mb-1">
                     Tổng chuyến
                   </Text>
                   <Text className="text-white font-JakartaBold text-lg">
@@ -221,7 +221,7 @@ const EarningsScreen = () => {
                 </View>
                 <View className="w-[1px] h-8 bg-white/20" />
                 <View className="flex-1 items-center">
-                  <Text className="text-white font-JakartaSemiBold text-sm uppercase tracking-wider mb-1">
+                  <Text className="text-white font-JakartaSemiBold text-sm uppercase mb-1">
                     Xếp hạng
                   </Text>
                   <View className="flex-row items-center">
@@ -316,7 +316,7 @@ const EarningsScreen = () => {
               <Ionicons name={showTodayOnly ? "calendar-outline" : "stats-chart-outline"} size={24} color="white" />
             </View>
             <View className="flex-1">
-              <Text className="text-white/80 font-JakartaSemiBold text-sm uppercase tracking-widest mb-0.5">
+              <Text className="text-white/80 font-JakartaSemiBold text-sm uppercase mb-0.5">
                 {showTodayOnly ? "Thu nhập hôm nay" : "Thu nhập tuần này"}
               </Text>
               <Text className="text-white font-JakartaExtraBold text-2xl">

@@ -12,18 +12,29 @@ import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useDriverDocuments, useDriverToggleStatus } from "@/hooks/useDriver";
-import { fetchAPI } from "@/lib/fetch";
-import { useState, useCallback } from "react";
+import { useUpload } from "@/hooks/useUpload";
+import * as ImagePicker from "expo-image-picker";
 import CustomButton from "@/components/Common/CustomButton";
 import CustomModal from "@/components/Common/CustomModal";
+import InputField from "@/components/Common/InputField";
 import StatusBadge from "@/components/Common/StatusBadge";
+import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { fetchAPI } from "@/lib/fetch";
 
 const ProfileScreen = () => {
   const { user, logout, token } = useAuth();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const [editForm, setEditForm] = useState({
+    name: "",
+    phone: "",
+    avatar: "",
+  });
 
   const [alertModal, setAlertModal] = useState({
     visible: false,
@@ -59,6 +70,20 @@ const ProfileScreen = () => {
     refetch: refetchProfile
   } = useProfile();
 
+  const { mutate: updateProfile, isPending: updating } = useUpdateProfile();
+  const { uploadImage, isUploading } = useUpload();
+  const [isUploadingLocal, setIsUploadingLocal] = useState(false);
+
+  useEffect(() => {
+    if (profileData) {
+      setEditForm({
+        name: profileData.name || "",
+        phone: profileData.phone || "",
+        avatar: profileData.avatar || "",
+      });
+    }
+  }, [profileData]);
+
   const effectiveUserId = user?._id || user?.id || profileData?._id || profileData?.id || null;
 
   const {
@@ -72,6 +97,54 @@ const ProfileScreen = () => {
     await Promise.all([refetchProfile(), refetchDocs()]);
     setRefreshing(false);
   }, [refetchProfile, refetchDocs]);
+
+  const handlePickAvatar = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert("Lỗi", "Cần quyền truy cập ảnh để đổi ảnh đại diện!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const selectedUri = result.assets[0].uri;
+      setIsUploadingLocal(true);
+
+      try {
+        const res = await uploadImage(selectedUri);
+        if (res?.url) {
+          setEditForm(prev => ({ ...prev, avatar: res.url }));
+        }
+      } catch (err) {
+        showAlert("Lỗi", "Không thể tải ảnh lên. Vui lòng thử lại!");
+      } finally {
+        setIsUploadingLocal(false);
+      }
+    }
+  };
+
+  const handleUpdateProfile = () => {
+    if (!editForm.name || !editForm.phone) {
+      showAlert("Lỗi", "Vui lòng nhập đầy đủ họ tên và số điện thoại");
+      return;
+    }
+
+    updateProfile(editForm, {
+      onSuccess: () => {
+        bottomSheetRef.current?.close();
+        showAlert("Thành công", "Cập nhật hồ sơ thành công");
+      },
+      onError: (error: any) => {
+        showAlert("Lỗi", error.message || "Cập nhật hồ sơ thất bại");
+      }
+    });
+  };
 
   const handleLogout = () => {
     showAlert(
@@ -192,7 +265,7 @@ const ProfileScreen = () => {
             <MenuActionItem
               icon="person-circle-outline"
               label="Chỉnh sửa hồ sơ"
-              onPress={() => showAlert("Thông báo", "Chuyển đến màn hình Chỉnh sửa hồ sơ")}
+              onPress={() => bottomSheetRef.current?.expand()}
             />
             <Divider />
             <MenuActionItem
@@ -236,6 +309,88 @@ const ProfileScreen = () => {
         secondaryButtonText={alertModal.secondaryButtonText}
         onSecondaryPress={handleSecondaryPress}
       />
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={["60%"]}
+        enablePanDownToClose
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        )}
+        handleIndicatorStyle={{ backgroundColor: "#E5E7EB", width: 40 }}
+        backgroundStyle={{ borderRadius: 32, backgroundColor: 'white' }}
+      >
+        <BottomSheetView className="px-4 pb-6">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-2xl font-JakartaExtraBold text-gray-800">Chỉnh sửa hồ sơ</Text>
+            <TouchableOpacity
+              onPress={() => bottomSheetRef.current?.close()}
+              className="bg-gray-100 p-2 rounded-full"
+            >
+              <Ionicons name="close" size={24} color="#64748B" />
+            </TouchableOpacity>
+          </View>
+
+          <View className="space-y-4">
+            <View className="items-center">
+              <TouchableOpacity onPress={handlePickAvatar} className="relative">
+                <View className="w-28 h-28 rounded-full bg-gray-100 border-4 border-white shadow-md overflow-hidden items-center justify-center">
+                  {isUploadingLocal || isUploading ? (
+                    <ActivityIndicator color="#10B981" />
+                  ) : (
+                    <Image
+                      source={{ uri: editForm.avatar || `https://api.dicebear.com/9.x/avataaars/png?seed=${editForm.name}` }}
+                      className="w-full h-full"
+                    />
+                  )}
+                </View>
+                <View className="absolute bottom-0 right-0 bg-green-600 p-2 rounded-full border-2 border-white shadow-sm">
+                  <Ionicons name="camera" size={16} color="white" />
+                </View>
+              </TouchableOpacity>
+              <Text className="text-gray-500 text-base mt-2 font-JakartaMedium">Nhấn để thay đổi ảnh</Text>
+            </View>
+
+            <InputField
+              label="Họ và tên"
+              placeholder="Nhập họ tên của bạn"
+              icon="person-outline"
+              value={editForm.name}
+              onChangeText={(value) => setEditForm(prev => ({ ...prev, name: value }))}
+            />
+
+            <InputField
+              label="Số điện thoại"
+              placeholder="Nhập số điện thoại"
+              icon="call-outline"
+              value={editForm.phone}
+              keyboardType="phone-pad"
+              onChangeText={(value) => setEditForm(prev => ({ ...prev, phone: value }))}
+            />
+
+            <View className="mt-4 flex-row gap-4">
+              <View className="flex-1">
+                <CustomButton
+                  title="Hủy"
+                  onPress={() => bottomSheetRef.current?.close()}
+                  bgVariant="outline"
+                  textVariant="primary"
+                  IconLeft={() => <Ionicons name="close-outline" size={20} color="#10B981" />}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomButton
+                  title="Lưu"
+                  onPress={handleUpdateProfile}
+                  loading={updating}
+                  IconLeft={() => <Ionicons name="checkmark-outline" size={20} color="white" />}
+                />
+              </View>
+            </View>
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
     </SafeAreaView>
   );
 };
