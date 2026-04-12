@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import { useDriverStats, useDriverOrders } from "@/hooks/useDriver";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const EarningsScreen = () => {
+  const [showTodayOnly, setShowTodayOnly] = useState(false);
   const dateRange = useMemo(() => {
     const today = new Date();
     const fromDate = subDays(today, 7);
@@ -87,6 +88,26 @@ const EarningsScreen = () => {
     };
   }, [ordersData]);
 
+  const todayData = useMemo(() => {
+    const today = format(new Date(), "yyyy-MM-dd");
+    const transactions = ordersData?.data?.data || [];
+    const filtered = transactions.filter((order: any) => {
+      if (!order.createdAt) return false;
+      return format(new Date(order.createdAt), "yyyy-MM-dd") === today;
+    });
+
+    let totalIncome = 0;
+    filtered.forEach((order: any) => {
+      totalIncome += (Number(order.totalPrice) || 0) * 0.85;
+    });
+
+    return {
+      transactions: filtered,
+      totalIncome,
+      count: filtered.length
+    };
+  }, [ordersData]);
+
   const onRefresh = useCallback(() => {
     refetchStats();
     refetchOrders();
@@ -112,7 +133,7 @@ const EarningsScreen = () => {
     const netPrice = (Number(item.totalPrice) || 0) * 0.85;
 
     return (
-      <View key={String(item.id)} className="bg-white p-4 rounded-2xl mb-3 border border-gray-50 shadow-sm flex-row items-center">
+      <View key={String(item.id)} className="bg-white p-4 rounded-2xl mb-3 border border-gray-100 shadow-sm flex-row items-center">
         <View className="bg-green-100/50 w-12 h-12 rounded-xl items-center justify-center mr-4">
           <Ionicons name="car-outline" size={24} color="#059669" />
         </View>
@@ -144,7 +165,7 @@ const EarningsScreen = () => {
   const isRefreshing = statsLoading || ordersLoading;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -157,9 +178,6 @@ const EarningsScreen = () => {
             <Text className="text-2xl font-JakartaBold text-slate-800">
               Thu nhập
             </Text>
-            <TouchableOpacity className="bg-white p-2 rounded-full shadow-sm border border-slate-100">
-              <Ionicons name="calendar-outline" size={20} color="#059669" />
-            </TouchableOpacity>
           </View>
 
           {/* Main Balance Card */}
@@ -168,11 +186,11 @@ const EarningsScreen = () => {
               colors={["#065f46", "#059669", "#10B981"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ padding: 20, borderRadius: 28, elevation: 8, shadowColor: "#059669", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}
+              style={{ padding: 16, borderRadius: 28, elevation: 8, shadowColor: "#059669", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}
             >
               <View className="flex-row justify-between items-start">
                 <View>
-                  <Text className="text-white/70 font-JakartaMedium text-sm mb-1">
+                  <Text className="text-white/70 font-JakartaMedium text-base mb-1">
                     Tổng thu nhập thực nhận (Tuần này)
                   </Text>
                   <Text className="text-white font-JakartaExtraBold text-3xl">
@@ -233,7 +251,7 @@ const EarningsScreen = () => {
           </View>
 
           {/* Chart Card */}
-          <View className="bg-white p-5 pt-8 rounded-[32px] border border-slate-100 shadow-sm mb-6">
+          <View className="bg-white p-4 pt-8 rounded-[32px] border border-gray-100 shadow-sm mb-6">
             <View style={{ marginLeft: -16 }}>
               <BarChart
                 data={chartData}
@@ -262,12 +280,56 @@ const EarningsScreen = () => {
           </View>
 
           {/* History Header */}
-          <View className="flex-row items-center mb-4">
-            <View className="bg-green-600 w-7 h-7 rounded-full items-center justify-center mr-2 border border-green-200">
-              <Ionicons name="receipt" size={14} color="#ffffff" />
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center">
+              <View className="bg-green-600 w-7 h-7 rounded-full items-center justify-center mr-2 border border-green-200">
+                <Ionicons name="receipt" size={14} color="#ffffff" />
+              </View>
+              <Text className="text-lg font-JakartaBold text-green-600">Lịch sử thu nhập</Text>
             </View>
-            <Text className="text-lg font-JakartaBold text-green-600">Lịch sử thu thập</Text>
+
+            <TouchableOpacity
+              onPress={() => setShowTodayOnly(!showTodayOnly)}
+              className={`px-4 py-1.5 rounded-full border flex-row items-center ${!showTodayOnly ? 'bg-green-600 border-green-600' : 'bg-white border-green-600'}`}
+            >
+              <Ionicons
+                name={showTodayOnly ? "list-outline" : "calendar-outline"}
+                size={18}
+                color={!showTodayOnly ? "white" : "#059669"}
+                style={{ marginRight: 4 }}
+              />
+              <Text className={`font-JakartaBold text-base ${!showTodayOnly ? 'text-white' : 'text-green-600'}`}>
+                {showTodayOnly ? 'Hiện tất cả' : 'Xem hôm nay'}
+              </Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Summary Card (Adaptive: Today or Week) */}
+          <LinearGradient
+            colors={["#059669", "#10B981"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="flex-row items-center shadow-md mb-4"
+            style={{ padding: 16, borderRadius: 12, elevation: 8 }}
+          >
+            <View className="bg-white/20 p-3 rounded-2xl mr-4">
+              <Ionicons name={showTodayOnly ? "calendar-outline" : "stats-chart-outline"} size={24} color="white" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white/80 font-JakartaSemiBold text-sm uppercase tracking-widest mb-0.5">
+                {showTodayOnly ? "Thu nhập hôm nay" : "Thu nhập tuần này"}
+              </Text>
+              <Text className="text-white font-JakartaExtraBold text-2xl">
+                {formatCurrency(showTodayOnly ? todayData.totalIncome : calculatedStats?.totalNet)}
+              </Text>
+            </View>
+            <View className="bg-white/20 px-3 py-1.5 rounded-2xl items-center border border-white/10">
+              <Text className="text-white font-JakartaBold text-lg leading-6">
+                {showTodayOnly ? todayData.count : calculatedStats?.totalTrips}
+              </Text>
+              <Text className="text-white/80 font-JakartaMedium text-sm uppercase">Chuyến</Text>
+            </View>
+          </LinearGradient>
 
           {/* Transaction List */}
           {(statsLoading || ordersLoading) && transactions.length === 0 ? (
@@ -275,10 +337,10 @@ const EarningsScreen = () => {
               <ActivityIndicator color="#059669" size="large" />
               <Text className="text-gray-400 font-JakartaMedium mt-4">Đang tải đơn hàng...</Text>
             </View>
-          ) : transactions.length > 0 ? (
-            transactions.map((item: any) => renderTransactionItem(item))
+          ) : (showTodayOnly ? todayData.transactions : transactions).length > 0 ? (
+            (showTodayOnly ? todayData.transactions : transactions).map((item: any) => renderTransactionItem(item))
           ) : (
-            <View className="items-center justify-center py-20 bg-white rounded-[32px] border border-slate-100 border-dashed">
+            <View className="items-center justify-center py-20 bg-white rounded-[32px] border border-gray-100 border-dashed">
               <Ionicons name="receipt-outline" size={56} color="#E2E8F0" />
               <Text className="text-gray-400 font-JakartaBold text-base mt-2">
                 Không có dữ liệu

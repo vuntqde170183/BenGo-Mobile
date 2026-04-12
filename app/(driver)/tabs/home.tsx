@@ -1,9 +1,10 @@
 import { View, Text, Modal, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+import { format } from 'date-fns';
 import {
   MapCard,
   IncomingRequestModal,
@@ -12,9 +13,10 @@ import {
 } from '@/components/Driver/HomeScreen';
 import { Switch } from 'react-native-switch';
 import { Image } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
 import CustomModal from "@/components/Common/CustomModal";
 import { useAuth } from '@/context/AuthContext';
-import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation, useDriverActiveOrder } from '@/hooks/useDriver';
+import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation, useDriverActiveOrder, useDriverOrders } from '@/hooks/useDriver';
 import { useHotspot } from '@/hooks/useHotspot';
 import { PendingOrder } from '@/api/driver';
 import { HotspotLocation } from '@/api/hotspot';
@@ -83,6 +85,34 @@ const DriverHome = () => {
   );
 
   const { data: activeOrder, isLoading: isLoadingActiveOrder } = useDriverActiveOrder();
+
+  const { data: todayOrdersData } = useDriverOrders({
+    limit: 100,
+    status: "DELIVERED",
+    time: "today",
+  });
+
+  const calculatedTodayStats = useMemo(() => {
+    const today = format(new Date(), "yyyy-MM-dd");
+    const transactions = todayOrdersData?.data?.data || [];
+    
+    const filtered = transactions.filter((order: any) => {
+      if (!order.createdAt) return false;
+      return format(new Date(order.createdAt), "yyyy-MM-dd") === today;
+    });
+
+    let grossEarnings = 0;
+    filtered.forEach((order: any) => {
+      grossEarnings += Number(order.totalPrice) || 0;
+    });
+
+    const netEarnings = grossEarnings * 0.85;
+
+    return {
+      totalNet: netEarnings,
+      totalTrips: filtered.length,
+    };
+  }, [todayOrdersData]);
 
   // Mutations
   const { mutateAsync: toggleStatus, isPending: isTogglingStatus } = useDriverToggleStatus();
@@ -290,8 +320,8 @@ const DriverHome = () => {
 
       <View className="flex-1">
         <SummaryCard
-          totalEarnings={driverStats.totalEarnings}
-          totalTrips={driverStats.totalTrips}
+          totalEarnings={calculatedTodayStats.totalNet}
+          totalTrips={calculatedTodayStats.totalTrips}
         />
 
         {activeOrder && (
@@ -536,21 +566,26 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
   };
 
   return (
-    <View
-      className="mx-5 my-3 bg-white p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-      }}
-    >
-      <Text className="text-gray-700 font-Jakarta">
-        Thu nhập hôm nay: <Text className="font-JakartaBold">{formatCurrency(totalEarnings)}</Text>
-      </Text>
-      <View className="w-px h-4 bg-gray-200" />
-      <Text className="text-gray-700 font-JakartaBold">{totalTrips} chuyến</Text>
+    <View className="mx-5 my-3">
+      <LinearGradient
+        colors={["#059669", "#10B981"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        className="flex-row items-center shadow-md"
+        style={{ padding: 16, borderRadius: 16, elevation: 8 }}
+      >
+        <View className="bg-white/20 p-3 rounded-2xl mr-4">
+          <Ionicons name="calendar-outline" size={24} color="white" />
+        </View>
+        <View className="flex-1">
+          <Text className="text-white/80 font-JakartaSemiBold text-xs uppercase tracking-widest mb-0.5">Thu nhập hôm nay</Text>
+          <Text className="text-white font-JakartaExtraBold text-2xl">{formatCurrency(totalEarnings)}</Text>
+        </View>
+        <View className="bg-white/20 px-3 py-1.5 rounded-2xl items-center border border-white/10">
+          <Text className="text-white font-JakartaBold text-lg leading-6">{totalTrips}</Text>
+          <Text className="text-white/80 font-JakartaMedium text-[10px] uppercase">Chuyến</Text>
+        </View>
+      </LinearGradient>
     </View>
   );
 };

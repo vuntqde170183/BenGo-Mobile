@@ -36,6 +36,8 @@ export const useDriverOrders = (params: { page?: number; limit?: number; status?
         queryKey: ["driver-orders", params],
         queryFn: () => DriverApi.getOrders(params),
         enabled: params.enabled !== false,
+        refetchInterval: 4000,
+        refetchIntervalInBackground: true,
     });
 };
 
@@ -77,31 +79,31 @@ export const useDriverUpdateLocation = () => {
 };
 
 export const useDriverDocuments = (id: string | null) => {
-  return useQuery({
-    queryKey: ["driver-documents", id],
-    queryFn: () => DriverApi.getDocuments(id!),
-    enabled: !!id,
-  });
+    return useQuery({
+        queryKey: ["driver-documents", id],
+        queryFn: () => DriverApi.getDocuments(id!),
+        enabled: !!id,
+    });
 };
 
 export const useUpdateDriverDocuments = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: DriverApi.updateDocuments,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["driver-documents", variables.id] });
-    },
-  });
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: DriverApi.updateDocuments,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["driver-documents", variables.id] });
+        },
+    });
 };
 
 export const useDriverUpdateOrderStatus = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => DriverApi.updateOrderStatus(id, status),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.id] });
-      queryClient.invalidateQueries({ queryKey: ["driver-orders"] });
-      queryClient.invalidateQueries({ queryKey: ["driver-active-order"] });
-    },
-  });
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, status }: { id: string; status: string }) => DriverApi.updateOrderStatus(id, status),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["order-detail", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["driver-orders"] });
+            queryClient.invalidateQueries({ queryKey: ["driver-active-order"] });
+        },
+    });
 };
