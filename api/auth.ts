@@ -8,8 +8,20 @@ export interface RegisterPayload {
     type: "CUSTOMER" | "DRIVER";
 }
 
+export interface VerifyRegisterPayload {
+    email: string;
+    otp: string;
+}
+
 export const register = async (data: RegisterPayload) => {
     return fetchAPI("/(api)/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+    });
+};
+
+export const verifyRegister = async (data: VerifyRegisterPayload) => {
+    return fetchAPI("/(api)/auth/verify-register", {
         method: "POST",
         body: JSON.stringify(data),
     });

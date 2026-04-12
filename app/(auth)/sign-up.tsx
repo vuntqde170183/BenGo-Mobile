@@ -15,10 +15,12 @@ import {
   Keyboard,
   Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useRegister } from "@/hooks/useAuthActions";
 import { useAuth } from "@/context/AuthContext";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   console.log("Rendering SignUp screen...");
@@ -26,12 +28,19 @@ const SignUp = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { setAuth } = useAuth();
   const { mutate: register, isPending: loading } = useRegister();
+  const [localOtp, setLocalOtp] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     phone: "",
+  });
+
+  const [verificationModal, setVerificationModal] = useState({
+    visible: false,
+    otp: "",
   });
 
   const [alertModal, setAlertModal] = useState({
@@ -59,6 +68,46 @@ const SignUp = () => {
       return;
     }
 
+    setIsSendingEmail(true);
+    const newOtp = Math.floor(1000 + Math.random() * 9000).toString();
+    setLocalOtp(newOtp);
+
+    try {
+      // Gọi API route cục bộ (app/(api)/email/send-verification+api.ts)
+      // fetchAPI trong project này tự động prepend EXPO_PUBLIC_SERVER_URL nếu path bắt đầu bằng /
+      // Nhưng nếu dự án sử dụng Expo Router API routes, ta cần gọi tới origin của app.
+      // Do đó, ta sẽ sử dụng fetch trực tiếp để gọi api nội bộ.
+      const response = await fetch("/(api)/email/send-verification", {
+        method: "POST",
+        body: JSON.stringify({
+          email: form.email,
+          name: form.name,
+          otp: newOtp,
+        }),
+      });
+
+      const result = await response.json();
+      setIsSendingEmail(false);
+
+      if (result.success) {
+        setVerificationModal({ ...verificationModal, visible: true });
+      } else {
+        showAlert(t("common.error"), result.error || "Không thể gửi email xác thực. Vui lòng kiểm tra lại email hoặc thử lại sau.");
+      }
+    } catch (error) {
+      setIsSendingEmail(false);
+      console.error("Email send error:", error);
+      showAlert(t("common.error"), "Lỗi hệ thống khi gửi email.");
+    }
+  };
+
+  const onVerifyPress = async () => {
+    if (verificationModal.otp !== localOtp) {
+      showAlert(t("common.error"), "Mã xác thực không chính xác");
+      return;
+    }
+
+    // Nếu OTP đúng, gọi API register chính thức để tạo user trên DB
     register({
       name: form.name,
       phone: form.phone,
@@ -67,20 +116,19 @@ const SignUp = () => {
       type: "CUSTOMER"
     }, {
       onSuccess: (res: any) => {
-        console.log("Registration Response:", res);
-        const registrationData = res.data;
-        console.log("Registration Data:", registrationData);
+        const registrationData = res.data || res;
         if (registrationData && registrationData.accessToken && registrationData.user) {
           setAuth(registrationData.accessToken, registrationData.user);
+          setVerificationModal({ ...verificationModal, visible: false });
           setShowSuccessModal(true);
         } else {
+          setVerificationModal({ ...verificationModal, visible: false });
           setShowSuccessModal(true);
         }
       },
       onError: (err: any) => {
-        let errorMsg = err.message || "Đăng ký thất bại. Vui lòng thử lại sau.";
+        let errorMsg = err.message || "Đăng ký thất bại sau xác thực. Vui lòng thử lại sau.";
 
-        // Cố gắng lấy message từ chuỗi JSON trong lỗi HTTP
         if (errorMsg.includes(" - {")) {
           try {
             const jsonPart = errorMsg.substring(errorMsg.indexOf(" - ") + 3);
@@ -92,10 +140,7 @@ const SignUp = () => {
           }
         }
 
-        showAlert(
-          t("common.error"),
-          errorMsg
-        );
+        showAlert(t("common.error"), errorMsg);
       }
     });
   };
@@ -173,7 +218,8 @@ const SignUp = () => {
               <CustomButton
                 title={t("auth.signUp")}
                 onPress={onSignUpPress}
-                loading={loading}
+                loading={loading || isSendingEmail}
+                IconLeft={() => <Ionicons name="person-add-outline" size={20} color="white" />}
                 className="mt-4"
               />
               <View className="flex-row justify-center items-center mt-4 mb-4">
@@ -214,10 +260,58 @@ const SignUp = () => {
             </Text>
             <CustomButton
               title="Bắt đầu ngay"
+              IconLeft={() => <Ionicons name="checkmark-circle-outline" size={20} color="white" />}
               onPress={() => {
                 setShowSuccessModal(false);
                 router.replace("/(root)/tabs/home");
               }}
+              className="mt-4"
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal for Verification (OTP) */}
+      <Modal
+        visible={verificationModal.visible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View
+          className="flex-1 justify-center items-center px-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <View className="bg-white w-full p-6 rounded-2xl">
+            <Text className="text-2xl text-center text-black font-JakartaBold">
+              Xác thực tài khoản
+            </Text>
+            <Text className="mt-4 text-base text-center text-gray-500 font-Jakarta">
+              Mã xác xác thực đã được gửi đến email {form.email}
+            </Text>
+
+            <InputField
+              label="Mã xác thực (OTP)"
+              placeholder="Nhập mã 4 số"
+              icon="mail-unread-outline"
+              value={verificationModal.otp}
+              keyboardType="number-pad"
+              maxLength={4}
+              onChangeText={(otp) => setVerificationModal({ ...verificationModal, otp })}
+            />
+            <CustomButton
+              title="Xác nhận"
+              loading={loading}
+              IconLeft={() => <Ionicons name="checkmark-outline" size={20} color="white" />}
+              onPress={onVerifyPress}
+              className="mt-4"
+            />
+
+            <CustomButton
+              title="Hủy"
+              bgVariant="outline"
+              textVariant="primary"
+              IconLeft={() => <Ionicons name="close-circle-outline" size={20} color="#38A169" />}
+              onPress={() => setVerificationModal({ ...verificationModal, visible: false })}
               className="mt-4"
             />
           </View>
