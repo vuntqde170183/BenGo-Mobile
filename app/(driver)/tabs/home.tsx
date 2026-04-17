@@ -365,7 +365,6 @@ const DriverHome = () => {
             onOrderPress={handleOrderPress}
             hotspots={hotspots}
             onHotspotPress={(h) => {
-              // Could show detail or navigate
             }}
           />
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { HotspotLocation } from '@/api/hotspot';
 
 export interface MarkerLocation {
@@ -68,7 +68,7 @@ const MapCard: React.FC<MapCardProps & {
             longitudeDelta: 0.004,
           };
           setRegion(currentRegion);
-          
+
           setTimeout(() => {
             mapRef.current?.animateToRegion(currentRegion, 1000);
           }, 500);
@@ -88,6 +88,20 @@ const MapCard: React.FC<MapCardProps & {
     const formatCurrency = (amount?: number): string => {
       if (amount == null || isNaN(amount)) return '0 ₫';
       return amount.toLocaleString('vi-VN') + ' ₫';
+    };
+
+    const handleZoomIn = () => {
+      mapRef.current?.getCamera().then((camera) => {
+        const currentZoom = camera.zoom || 15;
+        mapRef.current?.animateCamera({ zoom: currentZoom + 1 }, { duration: 300 });
+      });
+    };
+
+    const handleZoomOut = () => {
+      mapRef.current?.getCamera().then((camera) => {
+        const currentZoom = camera.zoom || 15;
+        mapRef.current?.animateCamera({ zoom: currentZoom - 1 }, { duration: 300 });
+      });
     };
 
     if (loading) {
@@ -116,6 +130,7 @@ const MapCard: React.FC<MapCardProps & {
           initialRegion={region}
           showsUserLocation={false}
           showsMyLocationButton={false}
+          toolbarEnabled={false}
         >
           {/* Driver/User Marker */}
           {region && (
@@ -216,6 +231,24 @@ const MapCard: React.FC<MapCardProps & {
             );
           })}
         </MapView>
+
+        {/* Zoom Controls */}
+        <View className="absolute right-4 top-4 flex-col gap-3">
+          <TouchableOpacity
+            onPress={handleZoomIn}
+            className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-lg border border-gray-100"
+            activeOpacity={0.7}
+          >
+            <Ionicons name="add" size={24} color="#374151" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleZoomOut}
+            className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-lg border border-gray-100"
+            activeOpacity={0.7}
+          >
+            <Ionicons name="remove" size={24} color="#374151" />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
