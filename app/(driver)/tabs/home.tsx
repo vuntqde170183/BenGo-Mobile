@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { format } from 'date-fns';
 import {
   MapCard,
@@ -277,18 +277,23 @@ const DriverHome = () => {
 
 
 
-  useEffect(() => {
-    if (isOnline && currentLocation.latitude !== 0) {
-      const interval = setInterval(() => {
-        updateLocation({
-          lat: currentLocation.latitude,
-          lng: currentLocation.longitude,
-          heading: currentLocation.heading || undefined
-        } as any);
-      }, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [isOnline, currentLocation.latitude, currentLocation.longitude, updateLocation]);
+  useFocusEffect(
+    useCallback(() => {
+      let interval: ReturnType<typeof setInterval>;
+      if (isOnline && currentLocation.latitude !== 0) {
+        interval = setInterval(() => {
+          updateLocation({
+            lat: currentLocation.latitude,
+            lng: currentLocation.longitude,
+            heading: currentLocation.heading || undefined
+          } as any);
+        }, 10000);
+      }
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    }, [isOnline, currentLocation.latitude, currentLocation.longitude, updateLocation])
+  );
 
   const formatCurrency = (amount?: number): string => {
     if (amount == null || isNaN(amount)) return '0 ₫';

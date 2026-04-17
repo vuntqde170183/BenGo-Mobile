@@ -281,7 +281,7 @@ const TripDetailScreen = () => {
           {order?.goodsImages && order.goodsImages.length > 0 && (
             <View className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm mb-4">
               <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-4">
-                Hình ảnh minh chứng
+                Hình ảnh sản phẩm
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {order.goodsImages.map((img: string, idx: number) => (
@@ -292,6 +292,22 @@ const TripDetailScreen = () => {
                     resizeMode="cover"
                   />
                 ))}
+              </View>
+            </View>
+          )}
+
+          {/* Delivery Proof Card */}
+          {order?.deliveryProof && (
+            <View className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm mb-4">
+              <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-4">
+                Ảnh giao hàng thành công
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                <Image
+                  source={{ uri: order.deliveryProof }}
+                  className="w-[100px] h-[100px] rounded-2xl bg-gray-50 border border-gray-100"
+                  resizeMode="cover"
+                />
               </View>
             </View>
           )}

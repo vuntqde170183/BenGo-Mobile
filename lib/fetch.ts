@@ -39,11 +39,10 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             const errorText = await response.text();
 
             if (response.status === 401) {
+                console.warn("🔐 [fetchAPI] 401 Unauthorized - Logging out");
                 useAuthStore.getState().logout();
-
-                setTimeout(() => {
-                    router.replace("/(auth)/sign-in");
-                }, 0);
+                // We avoid direct router.replace here as it can cause "Navigation context" errors
+                // when called from background intervals or during transitions.
             }
             throw new Error(`Lỗi HTTP! trạng thái: ${response.status} - ${errorText.substring(0, 200)}`);
         }

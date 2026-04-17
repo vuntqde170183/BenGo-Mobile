@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 interface PageHeaderProps {
   title: string;
@@ -8,6 +8,8 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title, onBackPress }: PageHeaderProps) => {
+  const router = useRouter();
+
   const handleBack = () => {
     if (onBackPress) {
       onBackPress();

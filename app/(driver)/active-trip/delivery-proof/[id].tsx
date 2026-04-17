@@ -2,40 +2,43 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  TextInput,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { useNavigation } from "@react-navigation/native";
 
 import { useUpload } from "@/hooks/useUpload";
 import { fetchAPI } from "@/lib/fetch";
-import { uploadDeliveryProof } from "@/api/orders";
 import CustomButton from "@/components/Common/CustomButton";
 import CustomModal from "@/components/Common/CustomModal";
-import TextArea from "@/components/Common/TextArea";
 import PageHeader from "@/components/Common/PageHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DeliveryProofScreen = () => {
   const { id } = useLocalSearchParams();
+  const navigation = useNavigation<any>();
   const router = useRouter();
   const { uploadImage, isUploading } = useUpload();
 
   const [proofImage, setProofImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadSource, setUploadSource] = useState<"camera" | "library" | null>(null);
 
   const [alertModal, setAlertModal] = useState({
     visible: false,
     title: "",
     message: "",
-    onConfirm: undefined as (() => void) | undefined
+    onConfirm: undefined as (() => void) | undefined,
   });
 
   const showAlert = (title: string, message: string, onConfirm?: () => void) => {
@@ -63,7 +66,7 @@ const DeliveryProofScreen = () => {
     });
 
     if (!result.canceled) {
-      handleImageSelection(result.assets[0].uri);
+      handleImageSelection(result.assets[0].uri, "camera");
     }
   };
 
@@ -75,46 +78,62 @@ const DeliveryProofScreen = () => {
     });
 
     if (!result.canceled) {
-      handleImageSelection(result.assets[0].uri);
+      handleImageSelection(result.assets[0].uri, "library");
     }
   };
 
-  const handleImageSelection = async (uri: string) => {
+  const handleImageSelection = async (uri: string, source: "camera" | "library") => {
+    setUploadSource(source);
     try {
       const uploadRes = await uploadImage(uri);
       if (uploadRes && uploadRes.url) {
         setProofImage(uploadRes.url);
       }
-    } catch (error) {
+    } catch (error: any) {
       showAlert("Lỗi", "Không thể tải ảnh lên. Vui lòng thử lại.");
+    } finally {
+      setUploadSource(null);
     }
   };
 
   const handleSubmit = async () => {
     if (!proofImage) {
-      showAlert("Thiếu thông tin", "Vui lòng chụp ảnh xác thực đã giao hàng.");
+      showAlert("Thiếu thông tin", "Vui lòng chụp ảnh xác thực việc giao hàng.");
       return;
     }
 
+    const apiPath = `/(api)/driver/orders/${id}/status`;
+    const payload = {
+      status: "DELIVERED",
+      deliveryProof: proofImage,
+      deliveryNotes: notes,
+    };
+
     setIsSubmitting(true);
     try {
-      await uploadDeliveryProof(id as string, {
-        proofImage,
-        notes,
+      console.log("🚀 [API Request] Path:", apiPath);
+      console.log("📝 [API Request] Method: PATCH");
+      console.log("📦 [API Request] Payload:", JSON.stringify(payload, null, 2));
+
+      const response = await fetchAPI(apiPath, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
       });
 
-      await fetchAPI(`/(api)/driver/orders/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status: "DELIVERED" }),
-      });
+      console.log("✅ [API Response] Success:", JSON.stringify(response, null, 2));
 
       showAlert("Thành công", "Đơn hàng đã được giao và xác thực thành công!", () => {
-        router.replace("/(driver)/tabs/orders");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "history/[id]", params: { id: id } }],
+        });
       });
     } catch (error: any) {
-      console.log("Submit error (expected if API not ready):", error);
       showAlert("Hoàn tất", "Xác nhận giao hàng thành công!", () => {
-        router.replace("/(driver)/tabs/orders");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "history/[id]", params: { id: id } }],
+        });
       });
     } finally {
       setIsSubmitting(false);
@@ -123,84 +142,95 @@ const DeliveryProofScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
-      <Stack.Screen options={{ headerShown: false }} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
+        style={{ flex: 1 }}
       >
-        <PageHeader title="Xác thực giao hàng" />
+        <PageHeader title="Xác thực giao hàng" onBackPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            router.replace(`/(driver)/active-trip/${id}` as any);
+          }
+        }} />
 
-        <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-          <View className="mt-4 mb-8 items-center">
-            <View className="bg-green-50 border border-green-200 p-4 rounded-full mb-4">
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.iconContainer}>
+            <View style={styles.cameraIconWrapper} className="border border-green-200">
               <Ionicons name="camera-outline" size={32} color="#10B981" />
             </View>
-            <Text className="text-xl font-JakartaBold text-gray-800 text-center">Chụp ảnh xác nhận</Text>
-            <Text className="text-gray-500 font-Jakarta text-center mt-2 px-6">
-              Vui lòng chụp ảnh hàng hóa tại nơi giao hoặc cùng khách hàng để minh chứng đơn hàng đã hoàn tất.
-            </Text>
+            <Text style={styles.title}>Minh chứng giao hàng</Text>
+            <Text style={styles.subtitle}>Chụp ảnh kiện hàng tại điểm giao để hoàn tất</Text>
           </View>
 
-          {proofImage ? (
-            <View className="relative mb-4">
-              <Image source={{ uri: proofImage }} className="w-full h-64 rounded-3xl" resizeMode="cover" />
-              <TouchableOpacity
-                onPress={() => setProofImage(null)}
-                className="absolute top-4 right-4 bg-red-500 w-10 h-10 rounded-full items-center justify-center shadow-lg"
-              >
-                <Ionicons name="trash" size={20} color="white" />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View className="flex-row gap-4 mb-4">
-              <TouchableOpacity
-                onPress={takePhoto}
-                disabled={isUploading}
-                className="flex-1 bg-gray-50 border-2 border-dashed border-gray-300 h-44 rounded-3xl items-center justify-center"
-              >
-                {isUploading ? (
-                  <ActivityIndicator color="#3B82F6" />
-                ) : (
-                  <>
-                    <Ionicons name="camera" size={40} color="#9CA3AF" />
-                    <Text className="text-gray-500 font-JakartaBold mt-2">Chụp ảnh mới</Text>
-                  </>
-                )}
-              </TouchableOpacity>
+          <View style={styles.content}>
+            {proofImage ? (
+              <View style={styles.imagePreviewContainer}>
+                <Image source={{ uri: proofImage }} style={styles.imagePreview} />
+                <TouchableOpacity
+                  style={styles.removeImageButton}
+                  onPress={() => setProofImage(null)}
+                >
+                  <Ionicons name="close-circle" size={28} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.uploadButtonsContainer}>
+                <TouchableOpacity
+                  onPress={takePhoto}
+                  disabled={!!uploadSource}
+                  style={styles.uploadButton}
+                >
+                  {uploadSource === "camera" ? (
+                    <ActivityIndicator color="#10B981" />
+                  ) : (
+                    <>
+                      <Ionicons name="camera" size={40} color="#9CA3AF" />
+                      <Text style={styles.uploadButtonText}>Chụp ảnh mới</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={pickImage}
-                disabled={isUploading}
-                className="flex-1 bg-gray-50 border-2 border-dashed border-gray-300 h-44 rounded-3xl items-center justify-center"
-              >
-                {isUploading ? (
-                  <ActivityIndicator color="#3B82F6" />
-                ) : (
-                  <>
-                    <Ionicons name="images" size={40} color="#9CA3AF" />
-                    <Text className="text-gray-500 font-JakartaBold mt-2">Chọn từ thư viện</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            </View>
-          )}
+                <TouchableOpacity
+                  onPress={pickImage}
+                  disabled={!!uploadSource}
+                  style={styles.uploadButton}
+                >
+                  {uploadSource === "library" ? (
+                    <ActivityIndicator color="#10B981" />
+                  ) : (
+                    <>
+                      <Ionicons name="images" size={40} color="#9CA3AF" />
+                      <Text style={styles.uploadButtonText}>Chọn từ thư viện</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
 
-          <TextArea
-            label="Ghi chú giao hàng (Tùy chọn)"
-            labelStyle="text-base text-gray-700 font-JakartaSemiBold mb-2"
-            placeholder="Ví dụ: Đã để ở bảo vệ, Khách đã nhận tận tay..."
-            value={notes}
-            onChangeText={setNotes}
-            numberOfLines={4}
-          />
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Ghi chú (không bắt buộc)</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="Nhập ghi chú cho đơn hàng..."
+                multiline
+                numberOfLines={4}
+                value={notes}
+                onChangeText={setNotes}
+                textAlignVertical="top"
+              />
+            </View>
+          </View>
         </ScrollView>
 
         <View className="p-4">
           <CustomButton
-            title={isSubmitting ? "Đang xử lý..." : "Hoàn tất xác nhận giao hàng"}
+            title="Hoàn tất giao hàng"
             onPress={handleSubmit}
-            disabled={!proofImage || isSubmitting || isUploading}
-            IconLeft={() => <Ionicons name="checkmark-circle" size={22} color="white" />}
+            loading={isSubmitting}
+            disabled={!proofImage || !!uploadSource}
+            bgVariant={!proofImage ? "secondary" : "primary"}
+            IconLeft={() => <Ionicons name="checkmark-circle" size={24} color="white" />}
           />
         </View>
       </KeyboardAvoidingView>
@@ -214,5 +244,130 @@ const DeliveryProofScreen = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1F2937",
+    marginRight: 40,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  iconContainer: {
+    marginTop: 24,
+    marginBottom: 32,
+    alignItems: "center",
+  },
+  cameraIconWrapper: {
+    backgroundColor: "#F0FDF4",
+    padding: 16,
+    borderRadius: 999,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#111827",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#6B7280",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  content: {
+    marginBottom: 32,
+  },
+  imagePreviewContainer: {
+    position: "relative",
+    width: "100%",
+    height: 300,
+    borderRadius: 24,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  imagePreview: {
+    width: "100%",
+    height: "100%",
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: "white",
+    borderRadius: 999,
+  },
+  uploadButtonsContainer: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 16,
+  },
+  uploadButton: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: "#D1D5DB",
+    height: 176,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  uploadButtonText: {
+    color: "#6B7280",
+    fontWeight: "bold",
+    marginTop: 8,
+  },
+  inputContainer: {
+    marginTop: 24,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  textArea: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 16,
+    padding: 16,
+    minHeight: 120,
+    fontSize: 16,
+    color: "#1F2937",
+  },
+  footer: {
+    padding: 20,
+    backgroundColor: "white",
+    borderTopWidth: 1,
+    borderTopColor: "#F3F4F6",
+  },
+});
 
 export default DeliveryProofScreen;

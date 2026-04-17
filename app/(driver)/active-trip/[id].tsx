@@ -199,7 +199,7 @@ const ActiveTripScreen = () => {
 
         {/* Bottom Information Card */}
         <View
-          className="bg-white rounded-t-3xl pt-6 px-5 pb-8"
+          className="bg-white rounded-t-3xl p-4"
           style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, marginTop: -20 }}
         >
           {/* Customer Info */}

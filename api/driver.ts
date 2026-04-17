@@ -44,6 +44,8 @@ export interface OrderDetail extends OrderHistoryItem {
     paymentStatus: 'UNPAID' | 'PAID';
     priority: 'NORMAL' | 'VIP' | 'URGENT' | 'FRAGILE';
     specialNote?: string;
+    deliveryProof?: string;
+    deliveryNotes?: string;
     tags?: string[];
     updatedAt: string;
 }
