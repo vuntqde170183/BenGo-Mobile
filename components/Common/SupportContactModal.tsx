@@ -60,7 +60,7 @@ const SupportContactModal = ({
 
           <TouchableOpacity
             onPress={handlePhonePress}
-            className="flex-row items-center justify-between border border-gray-100 rounded-2xl px-4 py-3 mb-6"
+            className="flex-row items-center justify-between border border-gray-100 rounded-2xl px-4 py-3 mb-4"
           >
             <View className="flex-row items-center gap-3">
               <View className="w-12 h-12 items-center justify-center bg-green-50 rounded-full">

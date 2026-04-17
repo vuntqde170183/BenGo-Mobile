@@ -33,10 +33,10 @@ const TrackOrderScreen = () => {
   // Effect for polling
   useEffect(() => {
     const interval = setInterval(() => {
-        if (order && (order.status === 'ACCEPTED' || order.status === 'PICKED_UP')) {
-            refetch();
-        }
-    }, 10000); 
+      if (order && (order.status === 'ACCEPTED' || order.status === 'PICKED_UP')) {
+        refetch();
+      }
+    }, 10000);
     return () => clearInterval(interval);
   }, [order?.status]);
 
@@ -46,7 +46,7 @@ const TrackOrderScreen = () => {
         { latitude: Number(order.pickup.lat), longitude: Number(order.pickup.lng) },
         { latitude: Number(order.dropoff.lat), longitude: Number(order.dropoff.lng) }
       ];
-      
+
       const driverPos = order.driver?.currentLocation || order.driverId?.currentLocation;
       if (driverPos) {
         points.push({
@@ -82,19 +82,19 @@ const TrackOrderScreen = () => {
     return (
       <View className="flex-row items-center justify-between px-6 py-4 bg-white/95 rounded-3xl mx-4 shadow-xl border border-gray-100">
         {statuses.map((step, index) => {
-            const isActive = index <= currentStatusIndex;
-            return (
-                <View key={index} className="flex-1 items-center">
-                    <View className="flex-row items-center w-full">
-                        <View className={`h-[2px] flex-1 ${index === 0 ? 'bg-transparent' : (isActive ? 'bg-green-500' : 'bg-gray-200')}`} />
-                        <View className={`w-3 h-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-300'}`} />
-                        <View className={`h-[2px] flex-1 ${index === statuses.length - 1 ? 'bg-transparent' : (index < currentStatusIndex ? 'bg-green-500' : 'bg-gray-200')}`} />
-                    </View>
-                    <Text className={`text-[10px] mt-1 font-JakartaBold ${isActive ? 'text-green-600' : 'text-gray-400'}`}>
-                        {step.label}
-                    </Text>
-                </View>
-            );
+          const isActive = index <= currentStatusIndex;
+          return (
+            <View key={index} className="flex-1 items-center">
+              <View className="flex-row items-center w-full">
+                <View className={`h-[2px] flex-1 ${index === 0 ? 'bg-transparent' : (isActive ? 'bg-green-500' : 'bg-gray-200')}`} />
+                <View className={`w-3 h-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-300'}`} />
+                <View className={`h-[2px] flex-1 ${index === statuses.length - 1 ? 'bg-transparent' : (index < currentStatusIndex ? 'bg-green-500' : 'bg-gray-200')}`} />
+              </View>
+              <Text className={`text-[10px] mt-1 font-JakartaBold ${isActive ? 'text-green-600' : 'text-gray-400'}`}>
+                {step.label}
+              </Text>
+            </View>
+          );
         })}
       </View>
     );
@@ -138,15 +138,15 @@ const TrackOrderScreen = () => {
         }}
       >
         <Marker coordinate={{ latitude: Number(order.pickup.lat), longitude: Number(order.pickup.lng) }}>
-            <View className="bg-white p-1 rounded-full shadow-lg border-2 border-blue-500">
-                <Ionicons name="radio-button-on" size={20} color="#3B82F6" />
-            </View>
+          <View className="bg-white p-1 rounded-full shadow-lg border-2 border-blue-500">
+            <Ionicons name="radio-button-on" size={20} color="#3B82F6" />
+          </View>
         </Marker>
 
         <Marker coordinate={{ latitude: Number(order.dropoff.lat), longitude: Number(order.dropoff.lng) }}>
-            <View className="bg-white p-1 rounded-full shadow-lg border-2 border-red-500">
-                <Ionicons name="location" size={20} color="#EF4444" />
-            </View>
+          <View className="bg-white p-1 rounded-full shadow-lg border-2 border-red-500">
+            <Ionicons name="location" size={20} color="#EF4444" />
+          </View>
         </Marker>
 
         {driver?.currentLocation && (
@@ -193,10 +193,10 @@ const TrackOrderScreen = () => {
           >
             <Ionicons name="chevron-back" size={28} color="#111827" />
           </TouchableOpacity>
-          
+
           <View className="bg-white px-5 py-3 rounded-full shadow-xl border border-gray-100">
             <Text className="font-JakartaExtraBold text-gray-800">
-                {isHeadingToPickup ? "Tài xế đang đến lấy hàng" : isHeadingToDropoff ? "Đang giao hàng" : "Chờ xác nhận"}
+              {isHeadingToPickup ? "Tài xế đang đến lấy hàng" : isHeadingToDropoff ? "Đang giao hàng" : "Chờ xác nhận"}
             </Text>
           </View>
 
@@ -204,7 +204,7 @@ const TrackOrderScreen = () => {
         </View>
 
         <View className="mt-4">
-            {renderStatusTimeline()}
+          {renderStatusTimeline()}
         </View>
       </SafeAreaView>
 
@@ -254,10 +254,10 @@ const TrackOrderScreen = () => {
 
           <View className="mt-4">
             <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-JakartaBold text-gray-800">Thông tin lộ trình</Text>
-                <View className="bg-green-50 px-3 py-1 rounded-full">
-                    <Text className="text-green-600 font-JakartaBold text-xs">{order.distanceKm} km</Text>
-                </View>
+              <Text className="text-lg font-JakartaBold text-gray-800">Thông tin lộ trình</Text>
+              <View className="bg-green-50 px-3 py-1 rounded-full">
+                <Text className="text-green-600 font-JakartaBold text-xs">{order.distanceKm} km</Text>
+              </View>
             </View>
 
             <View className="flex-row items-start">
@@ -281,21 +281,21 @@ const TrackOrderScreen = () => {
 
           <View className="mt-8 flex-row justify-between items-center bg-gray-50 p-4 rounded-2xl">
             <View>
-                <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Tổng phí cước</Text>
-                <Text className="text-2xl font-JakartaExtraBold text-green-600">
-                  {order.totalPrice.toLocaleString("vi-VN")}đ
-                </Text>
+              <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Tổng phí cước</Text>
+              <Text className="text-2xl font-JakartaExtraBold text-green-600">
+                {order.totalPrice.toLocaleString("vi-VN")}đ
+              </Text>
             </View>
             <View className="items-end">
-                <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Thanh toán</Text>
-                <Text className="text-gray-700 font-JakartaBold uppercase">{order.paymentMethod === 'CASH' ? 'Tiền mặt' : 'Ví BenGo'}</Text>
+              <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Thanh toán</Text>
+              <Text className="text-gray-700 font-JakartaBold uppercase">{order.paymentMethod === 'CASH' ? 'Tiền mặt' : 'Ví BenGo'}</Text>
             </View>
           </View>
 
           {order.status === "DELIVERED" && (
             <TouchableOpacity
               onPress={() => router.replace(`/(root)/order-detail/${id}` as any)}
-              className="mt-6 bg-green-500 py-4 rounded-2xl items-center shadow-lg active:bg-green-600"
+              className="mt-4 bg-green-500 py-4 rounded-2xl items-center shadow-lg active:bg-green-600"
             >
               <Text className="text-white font-JakartaExtraBold text-lg">XEM CHI TIẾT & THANH TOÁN</Text>
             </TouchableOpacity>

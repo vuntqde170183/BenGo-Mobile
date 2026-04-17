@@ -181,7 +181,7 @@ const EarningsScreen = () => {
           </View>
 
           {/* Main Balance Card */}
-          <View className="mb-6">
+          <View className="mb-4">
             <LinearGradient
               colors={["#065f46", "#059669", "#10B981"]}
               start={{ x: 0, y: 0 }}
@@ -210,7 +210,7 @@ const EarningsScreen = () => {
                 </Text>
               </View>
 
-              <View className="mt-6 flex-row items-center bg-white/10 p-4 rounded-2xl border border-white/10">
+              <View className="mt-4 flex-row items-center bg-white/10 p-4 rounded-2xl border border-white/10">
                 <View className="flex-1 items-center">
                   <Text className="text-white font-JakartaSemiBold text-sm uppercase mb-1">
                     Tổng chuyến
@@ -251,7 +251,7 @@ const EarningsScreen = () => {
           </View>
 
           {/* Chart Card */}
-          <View className="bg-white p-4 pt-8 rounded-[32px] border border-gray-100 shadow-sm mb-6">
+          <View className="bg-white p-4 pt-8 rounded-[32px] border border-gray-100 shadow-sm mb-4">
             <View style={{ marginLeft: -16 }}>
               <BarChart
                 data={chartData}

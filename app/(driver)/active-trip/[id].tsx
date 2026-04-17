@@ -203,7 +203,7 @@ const ActiveTripScreen = () => {
           style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10, marginTop: -20 }}
         >
           {/* Customer Info */}
-          <View className="flex-row justify-between items-center mb-6">
+          <View className="flex-row justify-between items-center mb-4">
             <View className="flex-row items-center flex-1">
               <View className="w-14 h-14 bg-gray-100 rounded-full items-center justify-center mr-3 overflow-hidden">
                 <Image source={{ uri: `https://api.dicebear.com/9.x/avataaars/png?seed=${order.customer?.name || 'Customer'}` }} className="w-full h-full" />
@@ -227,7 +227,7 @@ const ActiveTripScreen = () => {
           </View>
 
           {/* Body: Timeline */}
-          <View className="mb-6 px-1">
+          <View className="mb-4 px-1">
             <View className="flex-row items-start">
               <View className="items-center mr-4 pt-1.5">
                 <View className="w-5 h-5 rounded-full border-2 border-green-500 bg-white items-center justify-center">
@@ -267,7 +267,7 @@ const ActiveTripScreen = () => {
           </View>
 
           {/* Order Details: Financial & Goods */}
-          <View className="flex-row justify-between mb-6 bg-gray-50 p-4 rounded-2xl">
+          <View className="flex-row justify-between mb-4 bg-gray-50 p-4 rounded-2xl">
             <View>
               <Text className="text-sm text-gray-400 font-JakartaBold uppercase mb-1">Phí cước</Text>
               <Text className="text-base font-JakartaBold text-green-600">{order.totalPrice?.toLocaleString('vi-VN')}đ</Text>
@@ -283,7 +283,7 @@ const ActiveTripScreen = () => {
           </View>
 
           {order.goodsImages && order.goodsImages.length > 0 && (
-            <View className="mb-6">
+            <View className="mb-4">
               <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Hình ảnh hàng hóa</Text>
               <View className="flex-row">
                 {order.goodsImages.slice(0, 4).map((img, idx) => (

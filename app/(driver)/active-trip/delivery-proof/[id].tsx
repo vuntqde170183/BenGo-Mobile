@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -20,6 +20,7 @@ import { uploadDeliveryProof } from "@/api/orders";
 import CustomButton from "@/components/Common/CustomButton";
 import CustomModal from "@/components/Common/CustomModal";
 import TextArea from "@/components/Common/TextArea";
+import PageHeader from "@/components/Common/PageHeader";
 
 const DeliveryProofScreen = () => {
   const { id } = useLocalSearchParams();
@@ -97,13 +98,11 @@ const DeliveryProofScreen = () => {
 
     setIsSubmitting(true);
     try {
-      // Use the newly created API service
       await uploadDeliveryProof(id as string, {
         proofImage,
         notes,
       });
 
-      // Also update order status to DELIVERED
       await fetchAPI(`/(api)/driver/orders/${id}/status`, {
         method: "PATCH",
         body: JSON.stringify({ status: "DELIVERED" }),
@@ -113,10 +112,7 @@ const DeliveryProofScreen = () => {
         router.replace("/(driver)/tabs/orders");
       });
     } catch (error: any) {
-      // Fallback if API doesn't exist yet but we want to show it's working
       console.log("Submit error (expected if API not ready):", error);
-
-      // Temporary success for demo purposes if user hasn't added API yet
       showAlert("Hoàn tất", "Xác nhận giao hàng thành công!", () => {
         router.replace("/(driver)/tabs/orders");
       });
@@ -127,22 +123,17 @@ const DeliveryProofScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
+      <Stack.Screen options={{ headerShown: false }} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <View className="flex-row items-center px-4 py-4 border-b border-gray-100">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text className="flex-1 text-center font-JakartaBold text-lg text-gray-700">Xác thực giao hàng</Text>
-          <View className="w-6" />
-        </View>
+        <PageHeader title="Xác thực giao hàng" />
 
         <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-          <View className="mt-6 mb-8 items-center">
-            <View className="bg-blue-50 p-4 rounded-full mb-4">
-              <Ionicons name="camera-outline" size={32} color="#3B82F6" />
+          <View className="mt-4 mb-8 items-center">
+            <View className="bg-green-50 border border-green-200 p-4 rounded-full mb-4">
+              <Ionicons name="camera-outline" size={32} color="#10B981" />
             </View>
             <Text className="text-xl font-JakartaBold text-gray-800 text-center">Chụp ảnh xác nhận</Text>
             <Text className="text-gray-500 font-Jakarta text-center mt-2 px-6">
@@ -151,7 +142,7 @@ const DeliveryProofScreen = () => {
           </View>
 
           {proofImage ? (
-            <View className="relative mb-6">
+            <View className="relative mb-4">
               <Image source={{ uri: proofImage }} className="w-full h-64 rounded-3xl" resizeMode="cover" />
               <TouchableOpacity
                 onPress={() => setProofImage(null)}
@@ -161,7 +152,7 @@ const DeliveryProofScreen = () => {
               </TouchableOpacity>
             </View>
           ) : (
-            <View className="flex-row gap-4 mb-6">
+            <View className="flex-row gap-4 mb-4">
               <TouchableOpacity
                 onPress={takePhoto}
                 disabled={isUploading}
@@ -202,13 +193,11 @@ const DeliveryProofScreen = () => {
             onChangeText={setNotes}
             numberOfLines={4}
           />
-
-          <View className="h-10" />
         </ScrollView>
 
-        <View className="p-5 border-t border-gray-100">
+        <View className="p-4">
           <CustomButton
-            title={isSubmitting ? "Đang xử lý..." : "Hoàn tất đơn hàng"}
+            title={isSubmitting ? "Đang xử lý..." : "Hoàn tất xác nhận giao hàng"}
             onPress={handleSubmit}
             disabled={!proofImage || isSubmitting || isUploading}
             IconLeft={() => <Ionicons name="checkmark-circle" size={22} color="white" />}
