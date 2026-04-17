@@ -94,3 +94,10 @@ export const cancelOrder = async (orderId: string, reason: string) => {
         body: JSON.stringify({ reason }),
     });
 };
+
+export const uploadDeliveryProof = async (orderId: string, proofData: { proofImage: string; notes?: string }) => {
+    return fetchAPI(`/(api)/orders/delivery-proof/${orderId}`, {
+        method: "POST",
+        body: JSON.stringify(proofData),
+    });
+};

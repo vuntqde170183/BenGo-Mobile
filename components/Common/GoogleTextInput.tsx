@@ -1,7 +1,7 @@
 import { Image, View, ActivityIndicator, TextInput, Text } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useTranslation } from "react-i18next";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 import { icons } from "@/constants";
@@ -18,9 +18,16 @@ const GoogleTextInput = ({
   userLatitude,
   userLongitude,
 }: GoogleInputProps) => {
-  const { t } = useTranslation();
+   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  const textInputRef = useRef<TextInput>(null);
+  const placesRef = useRef<any>(null);
+  const textInputRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (initialLocation && placesRef.current) {
+      placesRef.current?.setAddressText(initialLocation);
+    }
+  }, [initialLocation]);
 
   const origin = userLatitude && userLongitude ? `${userLatitude},${userLongitude}` : undefined;
   console.log("DEBUG - Tọa độ của bạn (Origin):", origin);
@@ -30,6 +37,7 @@ const GoogleTextInput = ({
       className={`flex relative z-50 flex-row justify-center items-center rounded-xl border border-gray-300 bg-white h-14 ${containerStyle}`}
     >
       <GooglePlacesAutocomplete
+        ref={placesRef}
         fetchDetails={true}
         placeholder={t("home.whereTo")}
         enablePoweredByContainer={false}
@@ -173,7 +181,7 @@ const GoogleTextInput = ({
         }}
         textInputProps={{
           placeholderTextColor: "gray",
-          placeholder: initialLocation ?? t("home.whereTo"),
+          placeholder: t("home.whereTo"),
           numberOfLines: 1,
           editable: !isLoading,
           scrollEnabled: false,

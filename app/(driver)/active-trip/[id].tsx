@@ -94,8 +94,8 @@ const ActiveTripScreen = () => {
       if (isHeadingToPickup) {
         await updateStatus({ id: id as string, status: 'PICKED_UP' });
       } else if (isHeadingToDropoff) {
-        await updateStatus({ id: id as string, status: 'DELIVERED' });
-        showAlert('Thành công', 'Chuyến đi đã hoàn thành!', () => router.replace('/(driver)/tabs/orders'));
+        // Rederect to delivery proof screen instead of completing
+        router.push(`/(driver)/active-trip/delivery-proof/${id}`);
       }
     } catch (error) {
       showAlert('Lỗi', 'Không thể cập nhật trạng thái');

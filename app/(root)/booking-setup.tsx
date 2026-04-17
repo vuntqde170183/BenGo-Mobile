@@ -25,6 +25,7 @@ import InputField from "@/components/Common/InputField";
 import { useUpload } from "@/hooks/useUpload";
 import { useBookingAI } from "@/hooks/useBookingAI";
 import { useStripe } from "@stripe/stripe-react-native";
+import * as Location from "expo-location";
 
 const VEHICLE_TYPES = [
   { id: "BIKE", title: "Xe máy", icon: "bicycle", basePrice: 15000 },
@@ -36,7 +37,6 @@ const PAYMENT_METHODS = [
   { id: "CASH", title: "Tiền mặt", icon: "cash-outline", color: "#10B981" },
   { id: "WALLET", title: "Ví BenGo", icon: "wallet-outline", color: "#3B82F6" },
   { id: "STRIPE", title: "Thẻ/Stripe", icon: "card-outline", color: "#6366F1" },
-  { id: "QR", title: "Chuyển khoản QR", icon: "qr-code-outline", color: "#F59E0B" },
 ];
 const BookingSetupScreen = () => {
   const { t } = useTranslation();
@@ -83,6 +83,7 @@ const BookingSetupScreen = () => {
   } | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const { uploadImage, isUploading } = useUpload();
 
   // AI Booking Suggestion
@@ -254,6 +255,43 @@ const BookingSetupScreen = () => {
     }
   };
 
+  const handleSelectCurrentLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        showAlert("Quyền truy cập", "Vui lòng cho phép quyền truy cập vị trí để sử dụng tính năng này.");
+        return;
+      }
+
+      setIsLocating(true);
+      let location = await Location.getCurrentPositionAsync({});
+      let address: Location.LocationGeocodedAddress[] = [];
+
+      try {
+        address = await Location.reverseGeocodeAsync({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+      } catch (error) {
+        console.error("Geocoding error", error);
+      }
+
+      const addressString = address && address[0]
+        ? `${address[0].name ? address[0].name + ", " : ""}${address[0].street ? address[0].street + ", " : ""}${address[0].district ? address[0].district + ", " : ""}${address[0].city || address[0].region || ""}`.replace(/^, |, $/, "")
+        : `Vị trí (${location.coords.latitude.toFixed(4)}, ${location.coords.longitude.toFixed(4)})`;
+
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        address: addressString,
+      });
+    } catch (error) {
+      showAlert("Lỗi", "Không thể lấy vị trí hiện tại. Vui lòng kiểm tra GPS.");
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
       <KeyboardAvoidingView
@@ -287,7 +325,23 @@ const BookingSetupScreen = () => {
               </View>
               {/* Pickup Section */}
               <View className="mb-4" style={{ zIndex: 10 }}>
-                <Text className="text-lg font-JakartaSemiBold mb-2 text-gray-700">Điểm lấy hàng</Text>
+                <View className="flex-row justify-between items-center mb-2">
+                  <Text className="text-lg font-JakartaSemiBold text-gray-700">Điểm lấy hàng</Text>
+                  <TouchableOpacity
+                    onPress={handleSelectCurrentLocation}
+                    disabled={isLocating}
+                    className="flex-row items-center bg-green-600 px-3 py-1.5 rounded-full border border-green-100"
+                  >
+                    {isLocating ? (
+                      <ActivityIndicator size="small" color="#10B981" />
+                    ) : (
+                      <>
+                        <Ionicons name="location" size={14} color="#ffffff" />
+                        <Text className="text-white font-JakartaBold text-xs ml-1">Vị trí hiện tại</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
                 <GoogleTextInput
                   initialLocation={userAddress || ""}
                   handlePress={(location) => setUserLocation(location)}
