@@ -70,6 +70,12 @@ const SignUp = () => {
     setLocalOtp(newOtp);
 
     try {
+      console.log("Sending email verification request:", {
+        email: form.email,
+        name: form.name,
+        otp: newOtp,
+      });
+
       const response = await fetch("/(api)/email/send-verification", {
         method: "POST",
         body: JSON.stringify({
@@ -80,6 +86,7 @@ const SignUp = () => {
       });
 
       const result = await response.json();
+      console.log("Email verification result:", result);
       setIsSendingEmail(false);
 
       if (result.success) {
@@ -88,6 +95,7 @@ const SignUp = () => {
         showAlert(t("common.error"), result.error || "Không thể gửi email xác thực. Vui lòng kiểm tra lại email hoặc thử lại sau.");
       }
     } catch (error) {
+      console.error("Error in onSignUpPress:", error);
       setIsSendingEmail(false);
       showAlert(t("common.error"), "Lỗi hệ thống khi gửi email.");
     }
