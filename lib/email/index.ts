@@ -1,6 +1,4 @@
 import { transporter } from './config';
-import dotenv from 'dotenv';
-dotenv.config();
 import {
   getRideConfirmationHTML,
   getRideConfirmationText,
@@ -13,11 +11,7 @@ export const sendRideConfirmationEmail = async (
   data: RideConfirmationData
 ): Promise<{ success: boolean; messageId?: string; error?: string }> => {
   try {
-    console.log("sendRideConfirmationEmail process.env check:", {
-      EMAIL_USER: process.env.EMAIL_USER ? "Defined" : "Undefined",
-      EMAIL_PASS: process.env.EMAIL_PASS ? "Defined" : "Undefined"
-    });
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!process.env.EXPO_PUBLIC_EMAIL_USER || !process.env.EXPO_PUBLIC_EMAIL_PASS) {
       return {
         success: false,
         error: 'Email service not configured'
@@ -25,7 +19,7 @@ export const sendRideConfirmationEmail = async (
     }
 
     const info = await transporter.sendMail({
-      from: `"BenGo" <${process.env.EMAIL_USER}>`,
+      from: `"BenGo" <${process.env.EXPO_PUBLIC_EMAIL_USER}>`,
       to: data.userEmail,
       subject: `✅ Xác nhận đặt xe thành công - Chuyến #${data.rideId}`,
       text: getRideConfirmationText(data),
@@ -50,11 +44,7 @@ export const sendVerificationEmail = async (
   otp: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> => {
   try {
-    console.log("sendVerificationEmail process.env check:", {
-      EMAIL_USER: process.env.EMAIL_USER ? "Defined" : "Undefined",
-      EMAIL_PASS: process.env.EMAIL_PASS ? "Defined" : "Undefined"
-    });
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!process.env.EXPO_PUBLIC_EMAIL_USER || !process.env.EXPO_PUBLIC_EMAIL_PASS) {
       return {
         success: false,
         error: 'Email service not configured'
@@ -62,7 +52,7 @@ export const sendVerificationEmail = async (
     }
 
     const info = await transporter.sendMail({
-      from: `"BenGo" <${process.env.EMAIL_USER}>`,
+      from: `"BenGo" <${process.env.EXPO_PUBLIC_EMAIL_USER}>`,
       to: email,
       subject: `🔐 Mã xác thực (OTP) - BenGo App`,
       text: getVerificationEmailText(name, otp),
