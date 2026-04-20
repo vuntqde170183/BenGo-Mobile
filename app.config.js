@@ -2,6 +2,11 @@ import 'dotenv/config';
 
 export default ({ config }) => ({
   ...config,
+  extra: {
+    ...config.extra,
+    EXPO_PUBLIC_GOOGLE_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
+    EXPO_PUBLIC_OPENWEATHER_API_KEY: process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY,
+  },
   ios: {
     ...config.ios,
     config: {
