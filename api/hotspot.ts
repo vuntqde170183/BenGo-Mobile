@@ -77,7 +77,7 @@ export interface NearbyHotspotsResult {
   fetchedAt: string;
 }
 
-// ─── Interface tool getDanangWeatherForecast ──────────────────────────────────
+// ─── Interface tool getWeatherByCoords ───────────────────────────────────────
 
 export interface WeatherData {
   city: string;
@@ -96,8 +96,8 @@ export interface WeatherData {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-/** Tọa độ trung tâm Đà Nẵng — dùng làm fallback khi không có tọa độ tài xế */
-const DANANG_CENTER_COORDS = { lat: 16.0544, lng: 108.2022 } as const;
+/** Tọa độ fallback mặc định — chỉ dùng khi caller không truyền tọa độ (ít xảy ra với getWeatherByCoords) */
+const DEFAULT_FALLBACK_COORDS = { lat: 16.0544, lng: 108.2022 } as const;
 
 /**
  * Nhóm địa điểm ưu tiên: Chợ, Siêu thị, Cảng, VLXD, Công ty xây dựng, Xuất khẩu.
@@ -501,22 +501,17 @@ export const searchNearbyHotspots = async (
   return nearbyResult;
 };
 
-// ─── TOOL 2: getDanangWeatherForecast ─────────────────────────────────────────
+// ─── TOOL 2: getWeatherByCoords ──────────────────────────────────────────────
 /**
- * Lấy dữ liệu thời tiết thực tế hiện tại của Đà Nẵng từ OpenWeatherMap API.
- *
- * Trả về nhiệt độ, độ ẩm, mô tả thời tiết, tốc độ gió, v.v.
- * Phân tích sơ bộ: isRaining, isHot, isCold để phục vụ AI.
- */
-/**
- * Lấy thời tiết theo tọa độ bất kỳ (mặc định trung tâm Đà Nẵng nếu không truyền).
+ * Lấy dữ liệu thời tiết thực tế theo tọa độ từ OpenWeatherMap API.
  * Kết quả được cache 10 phút theo tọa độ (~1.1km precision).
  *
- * #10: Tọa độ động — tài xế ở Hội An / Hòa Vang sẽ lấy đúng thời tiết khu vực.
+ * Tọa độ hoàn toàn động theo vị trí tài xế — không hardcode địa danh cụ thể.
+ * Trả về nhiệt độ, độ ẩm, mô tả thời tiết, tốc độ gió, isRaining, isHot, isCold.
  */
 export const getWeatherByCoords = async (
-  lat: number = DANANG_CENTER_COORDS.lat,
-  lng: number = DANANG_CENTER_COORDS.lng
+  lat: number = DEFAULT_FALLBACK_COORDS.lat,
+  lng: number = DEFAULT_FALLBACK_COORDS.lng
 ): Promise<WeatherData> => {
   // #4: Kiểm tra cache trước
   const cacheKey = getWeatherCacheKey(lat, lng);
@@ -564,7 +559,7 @@ export const getWeatherByCoords = async (
   const isCold = temp < 18;
 
   const result: WeatherData = {
-    city: data.name ?? "Đà Nẵng",
+    city: data.name ?? "",
     temperature: Math.round(temp * 10) / 10,
     feelsLike: Math.round(feelsLike * 10) / 10,
     humidity,
@@ -586,7 +581,7 @@ export const getWeatherByCoords = async (
 
 /** @deprecated Dùng getWeatherByCoords() thay thế */
 export const getDanangWeatherForecast = (): Promise<WeatherData> =>
-  getWeatherByCoords(DANANG_CENTER_COORDS.lat, DANANG_CENTER_COORDS.lng);
+  getWeatherByCoords(DEFAULT_FALLBACK_COORDS.lat, DEFAULT_FALLBACK_COORDS.lng);
 
 // ─── buildAiRankingPrompt ─────────────────────────────────────────────────────
 /**
@@ -658,7 +653,7 @@ const getMaxResultsByRadius = (radiusKm: number): number => {
  *
  * Quy trình:
  * 1. Gọi searchNearbyHotspots → lấy địa điểm thực tế (chợ, siêu thị, cảng, VLXD, xây dựng, xuất khẩu)
- * 2. Gọi getDanangWeatherForecast → lấy thời tiết hiện tại Đà Nẵng
+ * 2. Gọi getWeatherByCoords → lấy thời tiết theo tọa độ thực của tài xế
  * 3. Kết hợp vị trí + thời tiết + thời gian → AI xếp hạng các vị trí tốt nhất
  *
  * @param request - Vị trí hiện tại và bán kính tìm kiếm
@@ -697,7 +692,7 @@ export const predictHotspots = async (
 
   // ── Bước 1 & 2: Song song lấy địa điểm (Google Places) và thời tiết ────────
   // searchNearbyHotspots và getWeatherByCoords hoàn toàn độc lập → chạy đồng thời
-  // #10: truyền tọa độ thực của tài xế thay vì hardcode Đà Nẵng
+  // Tọa độ hoàn toàn động theo vị trí tài xế — không phụ thuộc địa danh cụ thể
   const [nearbyResult, weatherRaw] = await Promise.all([
     searchNearbyHotspots(request.latitude, request.longitude, radiusKm),
     getWeatherByCoords(request.latitude, request.longitude).catch((err: unknown) => {
@@ -759,7 +754,7 @@ export const predictHotspots = async (
     return pa !== pb ? pa - pb : a.distanceKm - b.distanceKm;
   });
 
-  // Context địa lý từ tọa độ (thay vì hardcode Đà Nẵng)
+  // Context địa lý: tên thành phố từ OpenWeatherMap hoặc tọa độ thực
   const cityContext = weather?.city
     ? `gần ${weather.city} (${request.latitude.toFixed(4)}, ${request.longitude.toFixed(4)})`
     : `tọa độ ${request.latitude.toFixed(4)}, ${request.longitude.toFixed(4)}`;
