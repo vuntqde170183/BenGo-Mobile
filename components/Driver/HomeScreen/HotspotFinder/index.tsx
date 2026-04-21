@@ -28,7 +28,6 @@ interface HotspotFinderProps {
 }
 
 const RADIUS_OPTIONS = [
-  { label: '3 km', value: 3 },
   { label: '5 km', value: 5 },
   { label: '10 km', value: 10 },
   { label: '15 km', value: 15 },
@@ -336,8 +335,8 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
           {/* Results list */}
           {!isLoading && hotspots.length > 0 && (
             <FlatList
-              data={hotspots}
-              keyExtractor={(item) => item.id}
+              data={Array.from(new Map(hotspots.map((h) => [h.id, h])).values())}
+              keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={renderHotspotItem}
               contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
               showsVerticalScrollIndicator={false}
