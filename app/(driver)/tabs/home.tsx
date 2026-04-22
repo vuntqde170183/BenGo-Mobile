@@ -303,7 +303,7 @@ const DriverHome = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
       <Header
         isOnline={isOnline}
         onToggleStatus={toggleOnlineStatus}
@@ -361,7 +361,7 @@ const DriverHome = () => {
               </View>
 
               {/* Tall Map Section */}
-              <View className="relative mx-4 mb-6 rounded-3xl overflow-hidden shadow-lg border border-gray-100" style={{ height: 500 }}>
+              <View className="relative rounded-t-3xl overflow-hidden shadow-lg border border-gray-100" style={{ height: 500 }}>
                 <MapCard
                   orders={pendingOrders}
                   onOrderPress={handleOrderPress}

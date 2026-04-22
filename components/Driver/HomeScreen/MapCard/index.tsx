@@ -108,17 +108,15 @@ const MapCard: React.FC<MapCardProps & {
 
     if (loading) {
       return (
-        <View className="h-[300px] w-full items-center justify-center bg-gray-50 mb-4 rounded-3xl overflow-hidden px-4">
+        <View className="flex-1 w-full items-center justify-center bg-gray-50 rounded-t-3xl overflow-hidden px-4">
           <ActivityIndicator size="small" color="#22C55E" />
           <Text className="text-gray-500 mt-2 text-base font-Jakarta">Đang tải bản đồ...</Text>
         </View>
       );
     }
 
-    // ── Shared markers renderer ──────────────────────────────────────────────
     const renderMarkers = () => (
       <>
-        {/* Driver/User Marker */}
         {region && (
           <Marker
             coordinate={{
@@ -223,7 +221,7 @@ const MapCard: React.FC<MapCardProps & {
       <>
         {/* ── Compact Map Card ───────────────────────────────────────────── */}
         <View
-          className="h-[400px] w-full mb-4 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100"
+          className="flex-1 w-full rounded-t-3xl overflow-hidden bg-gray-50 border border-gray-100"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 1 },
