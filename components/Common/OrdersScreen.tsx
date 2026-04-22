@@ -27,7 +27,6 @@ const FILTERS = [
 const TIME_FILTERS = [
   { label: 'Hôm nay', value: 'today' },
   { label: '7 ngày qua', value: 'week' },
-  { label: 'Tùy chọn', value: 'custom' },
 ];
 
 const OrdersScreen = () => {
@@ -54,6 +53,8 @@ const OrdersScreen = () => {
     status: statusFilter,
     page,
     limit: 10,
+    search,
+    time: timeFilter,
     enabled: !isDriver
   });
 
@@ -61,8 +62,15 @@ const OrdersScreen = () => {
   const { data, isLoading: loading, isFetching: loadingMore, refetch } = query;
 
   useEffect(() => {
-    console.log("🔍 [OrdersScreen] Query Result Data:", JSON.stringify(data, null, 2));
-  }, [data]);
+    console.log("🕒 [OrdersScreen] TIME_FILTERS:", TIME_FILTERS);
+    console.log("📡 [OrdersScreen] Fetching Params:", {
+      isDriver,
+      status: statusFilter,
+      time: timeFilter,
+      search,
+      page
+    });
+  }, [isDriver, statusFilter, timeFilter, search, page]);
 
   useEffect(() => {
     if (data) {

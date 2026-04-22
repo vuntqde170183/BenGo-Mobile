@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as OrderApi from "@/api/orders";
 
-export const useOrderHistory = (params: { status?: string; page?: number; limit?: number; enabled?: boolean }) => {
+export const useOrderHistory = (params: { status?: string; page?: number; limit?: number; search?: string; time?: string; enabled?: boolean }) => {
     return useQuery({
         queryKey: ["orders-history", params],
         queryFn: () => OrderApi.getOrderHistory(params),

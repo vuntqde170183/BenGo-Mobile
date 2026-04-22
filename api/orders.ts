@@ -52,11 +52,13 @@ export interface Order {
     } | null;
 }
 
-export const getOrderHistory = async (params: { status?: string; page?: number; limit?: number }): Promise<Order[]> => {
+export const getOrderHistory = async (params: { status?: string; page?: number; limit?: number; search?: string; time?: string }): Promise<Order[]> => {
     const queryParams = new URLSearchParams();
     if (params.status && params.status !== "ALL") queryParams.append("status", params.status);
     if (params.page) queryParams.append("page", params.page.toString());
     if (params.limit) queryParams.append("limit", params.limit.toString());
+    if (params.search) queryParams.append("search", params.search);
+    if (params.time) queryParams.append("time", params.time);
 
     const response = await fetchAPI(`/(api)/orders/history?${queryParams.toString()}`);
     return response.data ?? response;
