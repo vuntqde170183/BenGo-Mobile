@@ -68,11 +68,10 @@ const DriverHome = () => {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Queries
   const { data: rawPendingOrders = [], refetch: refetchOrders, isLoading: isLoadingOrders } = useDriverPendingOrders(
     currentLocation.latitude,
     currentLocation.longitude,
-    5
+    10 // Bán kính
   );
 
   const pendingOrders = isOnline ? rawPendingOrders : [];
@@ -152,6 +151,7 @@ const DriverHome = () => {
 
   const handleAcceptOrder = async (orderId: string) => {
     try {
+      await acceptOrder(orderId);
       setShowOrderModal(false);
       setSelectedOrder(null);
 
