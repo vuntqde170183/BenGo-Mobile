@@ -46,7 +46,7 @@ const EarningsScreen = () => {
   });
 
   const calculatedStats = useMemo(() => {
-    const transactions = ordersData?.data?.data || [];
+    const transactions = ordersData?.data || [];
     let grossEarnings = 0;
 
     transactions.forEach((order: any) => {
@@ -58,7 +58,7 @@ const EarningsScreen = () => {
     return {
       totalGross: grossEarnings,
       totalNet: netEarnings,
-      totalTrips: ordersData?.data?.meta?.total || transactions.length,
+      totalTrips: ordersData?.pagination?.total || transactions.length,
       rating: stats?.rating || 5.0
     };
   }, [ordersData, stats]);
@@ -67,7 +67,7 @@ const EarningsScreen = () => {
     const labels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
     const dailyNetEarnings = [0, 0, 0, 0, 0, 0, 0];
 
-    const transactions = ordersData?.data?.data || [];
+    const transactions = ordersData?.data || [];
 
     transactions.forEach((order: any) => {
       if (order.createdAt) {
@@ -89,7 +89,7 @@ const EarningsScreen = () => {
 
   const todayData = useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
-    const transactions = ordersData?.data?.data || [];
+    const transactions = ordersData?.data || [];
     const filtered = transactions.filter((order: any) => {
       if (!order.createdAt) return false;
       return format(new Date(order.createdAt), "yyyy-MM-dd") === today;
@@ -160,7 +160,7 @@ const EarningsScreen = () => {
     );
   };
 
-  const transactions = ordersData?.data?.data || [];
+  const transactions = ordersData?.data || [];
   const isRefreshing = statsLoading || ordersLoading;
 
   return (

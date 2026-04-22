@@ -75,7 +75,6 @@ const DriverHome = () => {
   );
 
   const pendingOrders = isOnline ? rawPendingOrders : [];
-  const { data: activeOrder, isLoading: isLoadingActiveOrder } = useDriverActiveOrder();
 
   const { data: driverStats } = useDriverStats(
     today,
@@ -85,16 +84,23 @@ const DriverHome = () => {
 
   const { data: todayOrdersData } = useDriverOrders({
     limit: 100,
-    status: "DELIVERED",
+    status: "ALL",
     time: "today",
   });
 
+  const activeOrder = useMemo(() => {
+    const orders = todayOrdersData?.data || [];
+    // Chuyến đi hiện tại: status ACCEPTED hoặc PICKED_UP, lấy chuyến gần nhất (đầu danh sách)
+    return orders.find((o: any) => o.status === "ACCEPTED" || o.status === "PICKED_UP");
+  }, [todayOrdersData]);
+
   const calculatedTodayStats = useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
-    const transactions = todayOrdersData?.data?.data || [];
+    const transactions = todayOrdersData?.data || [];
 
+    // Chỉ tính tiền cho các đơn đã giao thành công (DELIVERED)
     const filtered = transactions.filter((order: any) => {
-      if (!order.createdAt) return false;
+      if (!order.createdAt || order.status !== "DELIVERED") return false;
       return format(new Date(order.createdAt), "yyyy-MM-dd") === today;
     });
 
@@ -326,8 +332,14 @@ const DriverHome = () => {
               {/* Active Trip Notification */}
               {activeOrder && (
                 <TouchableOpacity
+                  style={{
+                    padding: 16,
+                    borderRadius: 12,
+                    elevation: 8,
+                    backgroundColor: "#059669"
+                  }}
                   onPress={() => router.push(`/(driver)/active-trip/${activeOrder.id}` as any)}
-                  className="mx-4 mb-4 bg-green-600 p-4 rounded-2xl flex-row items-center justify-between shadow-md"
+                  className="mx-4 mb-4 flex-row items-center justify-between shadow-md"
                 >
                   <View className="flex-row items-center flex-1">
                     <View className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-3">
@@ -336,7 +348,7 @@ const DriverHome = () => {
                     <View className="flex-1">
                       <Text className="text-white font-JakartaBold text-sm uppercase">Bạn có chuyến đi đang thực hiện</Text>
                       <Text className="text-white text-xs font-JakartaMedium" numberOfLines={1}>
-                        {activeOrder.pickupAddress || 'Đang thực hiện chuyến đi'}
+                        {activeOrder.pickup?.address || 'Đang thực hiện chuyến đi'}
                       </Text>
                     </View>
                   </View>
@@ -569,7 +581,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
   return (
     <View className="mx-4 my-3">
       <View
-        className="bg-green-600 p-4 rounded-2xl flex-row items-center justify-between shadow-md"
+        style={{
+          padding: 16,
+          borderRadius: 12,
+          elevation: 8,
+          backgroundColor: "#059669"
+        }}
+        className="flex-row items-center justify-between shadow-md"
       >
         <View className="bg-white/20 p-3 rounded-2xl mr-4">
           <Ionicons name="calendar-outline" size={24} color="white" />

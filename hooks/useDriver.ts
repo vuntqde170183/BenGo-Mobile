@@ -14,11 +14,11 @@ export const useDriverActiveOrder = () => {
         queryKey: ["driver-active-order"],
         queryFn: async () => {
             const response = await DriverApi.getOrders({ status: "ACCEPTED", limit: 1 });
-            const accepted = response.data?.data?.[0];
+            const accepted = response.data?.[0];
             if (accepted) return accepted;
 
             const pickedUpResponse = await DriverApi.getOrders({ status: "PICKED_UP", limit: 1 });
-            return pickedUpResponse.data?.data?.[0] || null;
+            return pickedUpResponse.data?.[0] || null;
         },
     });
 };
