@@ -1,4 +1,4 @@
-import { View, Text, Modal, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,11 +9,9 @@ import {
   MapCard,
   IncomingRequestModal,
   HotspotFinder,
-  type MarkerLocation,
 } from '@/components/Driver/HomeScreen';
 import { Switch } from 'react-native-switch';
 import { Image } from 'react-native';
-import { LinearGradient } from "expo-linear-gradient";
 import CustomModal from "@/components/Common/CustomModal";
 import { useAuth } from '@/context/AuthContext';
 import { useDriverPendingOrders, useDriverStats, useDriverToggleStatus, useDriverAcceptOrder, useDriverUpdateLocation, useDriverActiveOrder, useDriverOrders } from '@/hooks/useDriver';
@@ -129,10 +127,6 @@ const DriverHome = () => {
     fetchHotspots,
     clearHotspots,
   } = useHotspot();
-
-
-
-  // Toggle online/offline status via API
   const toggleOnlineStatus = async () => {
     if (currentLocation.latitude === 0 && currentLocation.longitude === 0) {
       showAlert('Lỗi', 'Vui lòng chờ xác định vị trí trước khi bật trạng thái');
@@ -140,8 +134,6 @@ const DriverHome = () => {
     }
 
     const newStatus = !isOnline;
-
-    // Optimistic Update: Cập nhật giao diện ngay lập tức để không bị delay
     setIsOnline(newStatus);
 
     try {
@@ -153,17 +145,13 @@ const DriverHome = () => {
         },
       });
     } catch (error: any) {
-      // Revert lại nếu gọi API lỗi
       setIsOnline(!newStatus);
       showAlert('Lỗi', 'Không thể cập nhật trạng thái hoạt động. Vui lòng thử lại.');
     }
   };
 
-  // Accept order
   const handleAcceptOrder = async (orderId: string) => {
     try {
-      const response = await acceptOrder(orderId);
-
       setShowOrderModal(false);
       setSelectedOrder(null);
 
@@ -315,7 +303,7 @@ const DriverHome = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
       <Header
         isOnline={isOnline}
         onToggleStatus={toggleOnlineStatus}
@@ -324,136 +312,140 @@ const DriverHome = () => {
       />
 
       <View className="flex-1">
-        <SummaryCard
-          totalEarnings={driverStats?.totalEarnings || calculatedTodayStats.totalNet}
-          totalTrips={driverStats?.totalTrips || calculatedTodayStats.totalTrips}
-        />
+        <FlatList
+          data={pendingOrders}
+          keyExtractor={(item: PendingOrder) => item.orderId}
+          ListHeaderComponent={
+            <>
+              {/* Stats Summary */}
+              <SummaryCard
+                totalEarnings={driverStats?.totalEarnings || calculatedTodayStats.totalNet}
+                totalTrips={driverStats?.totalTrips || calculatedTodayStats.totalTrips}
+              />
 
-        {activeOrder && (
-          <TouchableOpacity
-            onPress={() => router.push(`/(driver)/active-trip/${activeOrder.id}` as any)}
-            className="mx-5 mb-4 bg-green-600 p-4 rounded-2xl flex-row items-center justify-between shadow-md"
-          >
-            <View className="flex-row items-center flex-1">
-              <View className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-3">
-                <Ionicons name="car-outline" size={24} color="white" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-JakartaBold text-sm uppercase">Bạn có chuyến đi đang thực hiện</Text>
-                <Text className="text-white text-xs font-JakartaMedium" numberOfLines={1}>
-                  {activeOrder.pickupAddress || 'Đang thực hiện chuyến đi'}
-                </Text>
-              </View>
-            </View>
-            <View className="bg-white/20 px-3 py-1.5 rounded-full flex-row items-center">
-              <Text className="text-white font-JakartaBold text-xs mr-1">Quay lại</Text>
-              <Ionicons name="arrow-forward" size={14} color="white" />
-            </View>
-          </TouchableOpacity>
-        )}
-
-        <View className="px-4 mb-2">
-          {isOnline ? (
-            <Text className="text-green-600 text-base font-JakartaMedium italic">
-              Đang tìm đơn hàng mới xung quanh bạn...
-            </Text>
-          ) : (
-            <Text className="text-red-500 text-base font-JakartaBold">
-              Bạn đang tắt chế độ nhận đơn
-            </Text>
-          )}
-        </View>
-
-        <View className="flex-1 relative">
-          <MapCard
-            orders={pendingOrders}
-            onOrderPress={handleOrderPress}
-            hotspots={hotspots}
-            onHotspotPress={(h) => {
-            }}
-          />
-
-          {/* Hotspot FAB */}
-          <TouchableOpacity
-            className="absolute left-5 bottom-5 h-12 bg-white rounded-full items-center justify-center border border-orange-200 flex-row px-4"
-            style={{
-              shadowColor: "#F97316",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 6,
-              elevation: 4,
-            }}
-            onPress={() => setShowHotspotModal(true)}
-          >
-            <Ionicons name="flame" size={20} color="#F97316" />
-            <Text className="text-orange-600 font-JakartaBold text-xs ml-1.5">Điểm nóng</Text>
-            {hotspots.length > 0 && (
-              <View className="ml-1.5 w-5 h-5 bg-orange-500 rounded-full items-center justify-center">
-                <Text className="text-white text-[10px] font-JakartaBold">{hotspots.length}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-
-          {/* Recenter FAB */}
-          <TouchableOpacity
-            className="absolute right-5 bottom-5 w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 4,
-            }}
-            onPress={getCurrentLocation}
-          >
-            <Ionicons name="location-sharp" size={24} color="#10B981" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Bottom List of Orders */}
-        <View className="h-1/3 bg-white border-t border-gray-100">
-          <View className="px-4 py-3 border-b border-gray-100 flex-row justify-between items-center">
-            <Text className="text-gray-700 font-JakartaBold text-lg">Đơn hàng khả dụng ({pendingOrders.length})</Text>
-            <TouchableOpacity onPress={() => refetchOrders()}>
-              <Ionicons name="refresh" size={24} color="#10B981" />
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            data={pendingOrders}
-            keyExtractor={(item) => item.orderId}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => handleOrderPress(item)}
-                className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100 active:bg-gray-50"
-              >
-                <View className="flex-1 mr-4">
-                  <View className="flex-row items-center mb-1">
-                    <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                    <Text className="text-gray-700 font-JakartaBold text-base flex-1" numberOfLines={1}>
-                      {item.pickup?.address || 'Điểm đón hiện tại'}
-                    </Text>
+              {/* Active Trip Notification */}
+              {activeOrder && (
+                <TouchableOpacity
+                  onPress={() => router.push(`/(driver)/active-trip/${activeOrder.id}` as any)}
+                  className="mx-4 mb-4 bg-green-600 p-4 rounded-2xl flex-row items-center justify-between shadow-md"
+                >
+                  <View className="flex-row items-center flex-1">
+                    <View className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-3">
+                      <Ionicons name="car-outline" size={24} color="white" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-JakartaBold text-sm uppercase">Bạn có chuyến đi đang thực hiện</Text>
+                      <Text className="text-white text-xs font-JakartaMedium" numberOfLines={1}>
+                        {activeOrder.pickupAddress || 'Đang thực hiện chuyến đi'}
+                      </Text>
+                    </View>
                   </View>
-                  <Text className="text-gray-500 text-base font-Jakarta ml-4">Cách bạn {item.distance} km</Text>
-                </View>
-                <Text className="text-green-600 font-JakartaBold text-base">{formatCurrency(item.price)}</Text>
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={() => (
-              <View className="flex-1 items-center justify-center pt-10">
-                <Ionicons
-                  name={isOnline ? "search-outline" : "cloud-offline-outline"}
-                  size={60}
-                  color="#9CA3AF"
-                />
-                <Text className="text-gray-500 font-Jakarta text-base mt-2">
-                  {isOnline ? 'Chưa tìm thấy đơn hàng nào gần đây' : 'Bật trực tuyến để xem đơn hàng'}
-                </Text>
+                  <View className="bg-white/20 px-3 py-1.5 rounded-full flex-row items-center">
+                    <Text className="text-white font-JakartaBold text-xs mr-1">Quay lại</Text>
+                    <Ionicons name="arrow-forward" size={14} color="white" />
+                  </View>
+                </TouchableOpacity>
+              )}
+
+              {/* Online Status Text */}
+              <View className="px-4 mb-4">
+                {isOnline ? (
+                  <Text className="text-green-600 text-base font-JakartaMedium italic">
+                    Đang tìm đơn hàng mới xung quanh bạn...
+                  </Text>
+                ) : (
+                  <Text className="text-red-500 text-base font-JakartaBold">
+                    Bạn đang tắt chế độ nhận đơn
+                  </Text>
+                )}
               </View>
-            )}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
+
+              {/* Tall Map Section */}
+              <View className="relative mx-4 mb-6 rounded-3xl overflow-hidden shadow-lg border border-gray-100" style={{ height: 500 }}>
+                <MapCard
+                  orders={pendingOrders}
+                  onOrderPress={handleOrderPress}
+                  hotspots={hotspots}
+                  onHotspotPress={(h) => { }}
+                />
+
+                {/* Hotspot FAB */}
+                <TouchableOpacity
+                  className="absolute left-4 bottom-4 h-12 bg-white rounded-full items-center justify-center border border-orange-200 flex-row px-4"
+                  style={{
+                    shadowColor: "#F97316",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 6,
+                    elevation: 4,
+                  }}
+                  onPress={() => setShowHotspotModal(true)}
+                >
+                  <Ionicons name="flame" size={20} color="#F97316" />
+                  <Text className="text-orange-600 font-JakartaBold text-xs ml-1.5">Điểm nóng</Text>
+                  {hotspots.length > 0 && (
+                    <View className="ml-1.5 w-5 h-5 bg-orange-500 rounded-full items-center justify-center">
+                      <Text className="text-white text-[10px] font-JakartaBold">{hotspots.length}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                {/* Recenter FAB */}
+                <TouchableOpacity
+                  className="absolute right-4 bottom-4 w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }}
+                  onPress={getCurrentLocation}
+                >
+                  <Ionicons name="location-sharp" size={24} color="#10B981" />
+                </TouchableOpacity>
+              </View>
+
+              {/* List Title */}
+              <View className="px-4 py-4 border-b border-gray-100 flex-row justify-between items-center bg-white">
+                <Text className="text-gray-700 font-JakartaBold text-lg">Đơn hàng khả dụng ({pendingOrders.length})</Text>
+                <TouchableOpacity onPress={() => refetchOrders()}>
+                  <Ionicons name="refresh" size={24} color="#10B981" />
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          renderItem={({ item }: { item: PendingOrder }) => (
+            <TouchableOpacity
+              onPress={() => handleOrderPress(item)}
+              className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100 bg-white active:bg-gray-50"
+            >
+              <View className="flex-1 mr-4">
+                <View className="flex-row items-center mb-1">
+                  <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                  <Text className="text-gray-700 font-JakartaBold text-base flex-1" numberOfLines={1}>
+                    {item.pickup?.address || 'Điểm đón hiện tại'}
+                  </Text>
+                </View>
+                <Text className="text-gray-500 text-base font-Jakarta ml-4">Cách bạn {item.distance} km</Text>
+              </View>
+              <Text className="text-green-600 font-JakartaBold text-base">{formatCurrency(item.price)}</Text>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={() => (
+            <View className="items-center justify-center py-20 bg-white">
+              <Ionicons
+                name={isOnline ? "search-outline" : "cloud-offline-outline"}
+                size={60}
+                color="#9CA3AF"
+              />
+              <Text className="text-gray-500 font-Jakarta text-base mt-2 px-10 text-center">
+                {isOnline ? 'Chưa tìm thấy đơn hàng nào gần đây' : 'Bật trực tuyến để xem đơn hàng'}
+              </Text>
+            </View>
+          )}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
 
       <IncomingRequestModal
@@ -576,12 +568,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
 
   return (
     <View className="mx-4 my-3">
-      <LinearGradient
-        colors={["#059669", "#10B981"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        className="flex-row items-center shadow-md"
-        style={{ padding: 14, borderRadius: 16, elevation: 8 }}
+      <View
+        className="bg-green-600 p-4 rounded-2xl flex-row items-center justify-between shadow-md"
       >
         <View className="bg-white/20 p-3 rounded-2xl mr-4">
           <Ionicons name="calendar-outline" size={24} color="white" />
@@ -594,7 +582,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ totalEarnings, totalTrips }) 
           <Text className="text-white font-JakartaBold text-lg leading-6">{totalTrips}</Text>
           <Text className="text-white/80 font-JakartaMedium text-[10px] uppercase">Chuyến</Text>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 };

@@ -289,7 +289,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
 
           {/* Error display */}
           {error && (
-            <View className="mx-5 mb-4 bg-red-50 border border-red-200 p-3 rounded-xl flex-row items-start">
+            <View className="mx-4 mb-4 bg-red-50 border border-red-200 p-3 rounded-xl flex-row items-start">
               <Ionicons name="alert-circle" size={18} color="#EF4444" />
               <Text className="text-red-600 text-sm font-Jakarta ml-2 flex-1">{error}</Text>
             </View>
@@ -319,7 +319,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
 
           {/* Summary */}
           {!isLoading && summary ? (
-            <View className="mx-5 mb-3 bg-blue-50 border border-blue-200 p-3 rounded-xl flex-row items-start">
+            <View className="mx-4 mb-3 bg-blue-50 border border-blue-200 p-3 rounded-xl flex-row items-start">
               <Ionicons name="analytics" size={18} color="#3B82F6" />
               <View className="ml-2 flex-1">
                 <Text className="text-blue-800 text-sm font-JakartaMedium">{summary}</Text>
