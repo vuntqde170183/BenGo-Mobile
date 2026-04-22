@@ -110,8 +110,8 @@ const OrdersScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
       {/* Header & Search */}
-      <View className="px-4 py-2 bg-white mb-4">
-        <Text className="text-xl font-JakartaBold text-gray-700 mb-4">Hoạt động của {isDriver ? "Tài xế" : "Khách hàng"}</Text>
+      <View className="p-4 bg-white mb-4">
+        <Text className="text-2xl font-JakartaBold text-slate-800 mb-4">Hoạt động của {isDriver ? "Tài xế" : "Khách hàng"}</Text>
 
         <InputField
           icon="search-outline"

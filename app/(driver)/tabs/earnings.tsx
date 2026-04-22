@@ -172,7 +172,7 @@ const EarningsScreen = () => {
           <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={["#059669"]} tintColor="#059669" />
         }
       >
-        <View className="px-5 py-4">
+        <View className="p-4">
           <View className="flex-row justify-between items-center mb-5">
             <Text className="text-2xl font-JakartaBold text-slate-800">
               Thu nhập
