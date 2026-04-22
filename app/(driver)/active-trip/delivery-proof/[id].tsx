@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
 
 import { useUpload } from "@/hooks/useUpload";
+import { useDriverOrderDetail } from "@/hooks/useDriver";
 import { fetchAPI } from "@/lib/fetch";
 import CustomButton from "@/components/Common/CustomButton";
 import CustomModal from "@/components/Common/CustomModal";
@@ -28,6 +29,13 @@ const DeliveryProofScreen = () => {
   const navigation = useNavigation<any>();
   const router = useRouter();
   const { uploadImage, isUploading } = useUpload();
+  const { data: order } = useDriverOrderDetail(id as string);
+
+  React.useEffect(() => {
+    console.log('🚀 [DEBUG] DeliveryProofScreen Rendered');
+    console.log('🆔 Order ID:', id);
+    console.log('📊 Order Status:', order?.status);
+  }, [id, order?.status]);
 
   const [proofImage, setProofImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
@@ -102,33 +110,32 @@ const DeliveryProofScreen = () => {
       return;
     }
 
-    const apiPath = `/(api)/driver/orders/${id}/status`;
+    const apiPath = `/(api)/orders/delivery-proof/${id}`;
     const payload = {
-      status: "DELIVERED",
-      deliveryProof: proofImage,
-      deliveryNotes: notes,
+      proofImage: proofImage,
+      notes: notes,
     };
 
     setIsSubmitting(true);
+    console.log("📤 [API Request] Submitting Delivery Proof...");
+    console.log("🆔 ID:", id);
+    console.log("📦 Payload:", JSON.stringify(payload, null, 2));
+
     try {
       const response = await fetchAPI(apiPath, {
-        method: "PATCH",
+        method: "POST",
         body: JSON.stringify(payload),
       });
 
+      console.log("✅ [API Success] Order Completed Successfully");
+      console.log("📊 Response Data:", JSON.stringify(response, null, 2));
+
       showAlert("Thành công", "Đơn hàng đã được giao và xác thực thành công!", () => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "history/[id]", params: { id: id } }],
-        });
+        router.replace(`/(driver)/history/${id}` as any);
       });
     } catch (error: any) {
-      showAlert("Hoàn tất", "Xác nhận giao hàng thành công!", () => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "history/[id]", params: { id: id } }],
-        });
-      });
+      console.error("❌ [API Error] Delivery Proof Failed:", error);
+      showAlert("Lỗi", error.message || "Không thể hoàn tất đơn hàng. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }
