@@ -74,28 +74,56 @@ const TrackOrderScreen = () => {
   };
 
   const renderStatusTimeline = () => {
-    const statuses: { label: string; key: OrderStatus[] }[] = [
-      { label: "Đã nhận", key: ["ACCEPTED", "PICKED_UP", "DELIVERED"] },
-      { label: "Lấy hàng", key: ["PICKED_UP", "DELIVERED"] },
-      { label: "Đang giao", key: ["PICKED_UP", "DELIVERED"] },
-      { label: "Xong", key: ["DELIVERED"] },
-    ];
+    const statuses = ["Đã nhận", "Lấy hàng", "Đang giao", "Xong"];
 
-    const currentStatusIndex = statuses.findIndex(s => s.key.includes(order?.status || "PENDING"));
+    const getStatusIndex = (status: string) => {
+      switch (status) {
+        case "ACCEPTED":
+          return 0;
+        case "PICKED_UP":
+          return 2;
+        case "DELIVERED":
+          return 3;
+        default:
+          return -1;
+      }
+    };
+
+    const currentStatusIndex = getStatusIndex(order?.status || "PENDING");
 
     return (
       <View className="flex-row items-center justify-between px-6 py-4 bg-white/95 rounded-3xl mx-4 shadow-xl border border-gray-100">
-        {statuses.map((step, index) => {
+        {statuses.map((label, index) => {
           const isActive = index <= currentStatusIndex;
           return (
             <View key={index} className="flex-1 items-center">
               <View className="flex-row items-center w-full">
-                <View className={`h-[2px] flex-1 ${index === 0 ? 'bg-transparent' : (isActive ? 'bg-green-500' : 'bg-gray-200')}`} />
-                <View className={`w-3 h-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-300'}`} />
-                <View className={`h-[2px] flex-1 ${index === statuses.length - 1 ? 'bg-transparent' : (index < currentStatusIndex ? 'bg-green-500' : 'bg-gray-200')}`} />
+                <View
+                  className={`h-[2px] flex-1 ${index === 0
+                    ? "bg-transparent"
+                    : isActive
+                      ? "bg-green-500"
+                      : "bg-gray-200"
+                    }`}
+                />
+                <View
+                  className={`w-3 h-3 rounded-full ${isActive ? "bg-green-500" : "bg-gray-300"
+                    }`}
+                />
+                <View
+                  className={`h-[2px] flex-1 ${index === statuses.length - 1
+                    ? "bg-transparent"
+                    : index < currentStatusIndex
+                      ? "bg-green-500"
+                      : "bg-gray-200"
+                    }`}
+                />
               </View>
-              <Text className={`text-[10px] mt-1 font-JakartaBold ${isActive ? 'text-green-600' : 'text-gray-400'}`}>
-                {step.label}
+              <Text
+                className={`text-[10px] mt-1 font-JakartaBold ${isActive ? "text-green-600" : "text-gray-400"
+                  }`}
+              >
+                {label}
               </Text>
             </View>
           );
