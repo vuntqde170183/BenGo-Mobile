@@ -60,13 +60,6 @@ const OrdersScreen = () => {
 
   const query = isDriver ? driverQuery : customerQuery;
   const { data, isLoading: loading, isFetching: loadingMore, refetch } = query;
-
-  useEffect(() => {
-    if (isDriver) {
-      console.log("🚚 [OrdersScreen] Driver Data:", JSON.stringify(driverQuery.data, null, 2));
-    }
-  }, [driverQuery.data, isDriver]);
-
   useEffect(() => {
     if (data) {
       const rawItems = data?.data || data;

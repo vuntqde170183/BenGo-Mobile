@@ -22,7 +22,6 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...options?.headers as Record<string, string>,
         };
-
         if (isFormData) {
             delete headers['Content-Type'];
         } else if (!headers['Content-Type']) {

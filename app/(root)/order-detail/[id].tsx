@@ -11,6 +11,8 @@ import VehicleBadge from "@/components/Common/VehicleBadge";
 import CustomModal from "@/components/Common/CustomModal";
 import CustomButton from "@/components/Common/CustomButton";
 import StatusBadge from "@/components/Common/StatusBadge";
+import { useAuth } from "@/context/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: any }> = {
     PENDING: { label: "Chờ xác nhận", color: "#D97706", bgColor: "#FEF3C7", icon: "time-outline" },
@@ -22,7 +24,10 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 
 const CustomerOrderDetailScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
+    const { user } = useAuth();
+    const { data: profile, isLoading: profileLoading } = useProfile();
     const { data: order, isLoading } = useOrderDetails(id);
+
     const { mutateAsync: cancelOrder, isPending: isCancelling } = useCancelOrder();
 
     const mapRef = useRef<MapView>(null);
