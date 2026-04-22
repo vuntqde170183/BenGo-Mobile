@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
@@ -130,12 +129,10 @@ const CustomerProfileScreen = () => {
 
                 {/* P2: BenGo Wallet Card */}
                 <View className="px-4 mb-4">
-                    <LinearGradient
-                        colors={["#16A34A", "#15803D"]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        className="rounded-[24px] p-4 shadow-xl overflow-hidden"
-                    >
+                <View
+                    className="rounded-[24px] p-4 shadow-xl overflow-hidden"
+                    style={{ backgroundColor: "#16A34A" }}
+                >
                         <View className="flex-row justify-between items-start mb-4">
                             <View>
                                 <Text className="text-white/70 text-sm font-JakartaMedium mb-1">Số dư ví BenGo</Text>
@@ -166,7 +163,7 @@ const CustomerProfileScreen = () => {
                                 <Text className="ml-2 font-JakartaBold text-[#16A34A] text-sm">Nạp tiền</Text>
                             </TouchableOpacity>
                         </View>
-                    </LinearGradient>
+                    </View>
                 </View>
 
                 {/* P3: Action Menu List */}

@@ -10,7 +10,6 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { useDriverDocuments } from "@/hooks/useDriver";
 import { useProfile } from "@/hooks/useProfile";
@@ -79,16 +78,16 @@ const DocumentManagementScreen = () => {
   const profileStatus = driverProfile?.status || profileData?.status || "PENDING";
   const rejectionReason = driverProfile?.rejectionReason;
 
-  const getBannerColors = (status: string): readonly [string, string] => {
+  const getBannerBackground = (status: string): string => {
     switch (status) {
       case "APPROVED":
-        return ["#059669", "#10B981"] as const;
+        return "#059669";
       case "REJECTED":
-        return ["#DC2626", "#EF4444"] as const;
+        return "#DC2626";
       case "LOCKED":
-        return ["#374151", "#4B5563"] as const;
+        return "#374151";
       default:
-        return ["#D97706", "#F59E0B"] as const;
+        return "#D97706";
     }
   };
 
@@ -130,12 +129,15 @@ const DocumentManagementScreen = () => {
       </View>
 
       <ScrollView className="flex-1 px-4 pt-5" showsVerticalScrollIndicator={false}>
-        {/* C1: Banner Gradient */}
-        <LinearGradient
-          colors={getBannerColors(profileStatus)}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{ padding: 16, borderRadius: 24, marginBottom: 16, overflow: "hidden" }}
+        {/* C1: Banner View */}
+        <View
+          style={{ 
+            padding: 16, 
+            borderRadius: 24, 
+            marginBottom: 16, 
+            overflow: "hidden",
+            backgroundColor: getBannerBackground(profileStatus)
+          }}
         >
           <View className="flex-row items-center">
             <View className="bg-white/30 w-14 h-14 rounded-2xl items-center justify-center mr-4">
@@ -154,7 +156,7 @@ const DocumentManagementScreen = () => {
               </Text>
             </View>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Rejection Reason if any */}
         {profileStatus === "REJECTED" && rejectionReason && (

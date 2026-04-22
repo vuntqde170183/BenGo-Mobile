@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
-import { LinearGradient } from "expo-linear-gradient";
 
 import PageHeader from "@/components/Common/PageHeader";
 import CustomModal from "@/components/Common/CustomModal";
@@ -146,11 +145,8 @@ export default function DriverProfileScreen() {
             elevation: 3,
           }}
         >
-          <LinearGradient
-            colors={["#10B981", "#059669"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ padding: 16 }}
+          <View
+            style={{ padding: 16, backgroundColor: "#10B981" }}
             className="p-4"
           >
             <View className="flex-row items-center">
@@ -208,7 +204,7 @@ export default function DriverProfileScreen() {
                 </Text>
               </View>
             </View>
-          </LinearGradient>
+          </View>
 
           {/* Stats Grid */}
           <View className="flex-row flex-wrap p-3 items-stretch">

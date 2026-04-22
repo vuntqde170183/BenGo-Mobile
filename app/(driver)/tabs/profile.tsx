@@ -11,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useDriverDocuments, useDriverToggleStatus } from "@/hooks/useDriver";
 import { useUpload } from "@/hooks/useUpload";
@@ -295,9 +294,8 @@ const ProfileScreen = () => {
             source={{ uri: `https://picsum.photos/seed/${user?.id || 'bengo'}/800/400` }}
             className="h-48 w-full"
           />
-          <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.5)"]}
-            className="absolute h-48 w-full"
+          <View
+            className="absolute h-48 w-full bg-black/30"
           />
 
           <View className="absolute top-32 left-0 right-0 items-center px-6">

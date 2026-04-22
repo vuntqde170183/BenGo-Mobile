@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { BarChart } from "react-native-chart-kit";
 import { format, isValid, subDays } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -182,11 +181,17 @@ const EarningsScreen = () => {
 
           {/* Main Balance Card */}
           <View className="mb-4">
-            <LinearGradient
-              colors={["#065f46", "#059669", "#10B981"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ padding: 16, borderRadius: 28, elevation: 8, shadowColor: "#059669", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}
+            <View
+              style={{
+                padding: 16,
+                borderRadius: 28,
+                elevation: 8,
+                shadowColor: "#059669",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+                backgroundColor: "#059669"
+              }}
             >
               <View className="flex-row justify-between items-start">
                 <View>
@@ -232,7 +237,7 @@ const EarningsScreen = () => {
                   </View>
                 </View>
               </View>
-            </LinearGradient>
+            </View>
           </View>
 
           {/* Chart Header */}
@@ -305,12 +310,14 @@ const EarningsScreen = () => {
           </View>
 
           {/* Summary Card (Adaptive: Today or Week) */}
-          <LinearGradient
-            colors={["#059669", "#10B981"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+          <View
             className="flex-row items-center shadow-md mb-4"
-            style={{ padding: 16, borderRadius: 12, elevation: 8 }}
+            style={{
+              padding: 16,
+              borderRadius: 12,
+              elevation: 8,
+              backgroundColor: "#059669"
+            }}
           >
             <View className="bg-white/20 p-3 rounded-2xl mr-4">
               <Ionicons name={showTodayOnly ? "calendar-outline" : "stats-chart-outline"} size={24} color="white" />
@@ -329,7 +336,7 @@ const EarningsScreen = () => {
               </Text>
               <Text className="text-white/80 font-JakartaMedium text-sm uppercase">Chuyến</Text>
             </View>
-          </LinearGradient>
+          </View>
 
           {/* Transaction List */}
           {(statsLoading || ordersLoading) && transactions.length === 0 ? (
