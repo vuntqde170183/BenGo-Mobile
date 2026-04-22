@@ -440,14 +440,14 @@ const BookingSetupScreen = () => {
                 >
                   {isAILoading ? (
                     <>
-                      <ActivityIndicator color="#9333EA" size="small" />
+                      <ActivityIndicator color="#10B981" size="small" />
                       <Text className="text-green-600 font-JakartaBold text-base ml-2">
                         AI đang phân tích hàng hóa...
                       </Text>
                     </>
                   ) : (
                     <>
-                      <Ionicons name="sparkles" size={20} color="#9333EA" />
+                      <Ionicons name="sparkles" size={20} color="#10B981" />
                       <Text className="text-green-600 font-JakartaBold text-base ml-2">
                         AI Gợi ý loại xe & ghi chú
                       </Text>
@@ -498,9 +498,33 @@ const BookingSetupScreen = () => {
                         {aiSuggestion.vehicleReason}
                       </Text>
 
+                      {/* Phân tích chuyên sâu */}
+                      {aiSuggestion.analysis && (
+                        <View className="mt-2 space-y-2">
+                          {aiSuggestion.analysis.technical && (
+                            <View className="flex-row items-start">
+                              <Text className="text-green-700 text-sm font-JakartaBold mr-1">⚙️ Kỹ thuật:</Text>
+                              <Text className="text-green-600 text-sm font-Jakarta flex-1">{aiSuggestion.analysis.technical}</Text>
+                            </View>
+                          )}
+                          {aiSuggestion.analysis.experience && (
+                            <View className="flex-row items-start">
+                              <Text className="text-green-700 text-sm font-JakartaBold mr-1">⭐ Trải nghiệm:</Text>
+                              <Text className="text-green-600 text-sm font-Jakarta flex-1">{aiSuggestion.analysis.experience}</Text>
+                            </View>
+                          )}
+                          {aiSuggestion.analysis.compliance && (
+                            <View className="flex-row items-start">
+                              <Text className="text-green-700 text-sm font-JakartaBold mr-1">⚖️ Quy định:</Text>
+                              <Text className="text-green-600 text-sm font-Jakarta flex-1">{aiSuggestion.analysis.compliance}</Text>
+                            </View>
+                          )}
+                        </View>
+                      )}
+
                       {/* Thông số - ưu tiên dùng số liệu người dùng đã nhập */}
                       {(goodsWeight || goodsLength || aiSuggestion.estimatedWeight || aiSuggestion.estimatedLength) ? (
-                        <View className="bg-white rounded-lg p-2 py-3 flex-row flex-wrap">
+                        <View className="bg-white rounded-lg p-2 py-3 mt-3 flex-row flex-wrap">
                           {/* Khối lượng: dùng số người dùng nhập, fallback về AI estimate */}
                           {(goodsWeight || aiSuggestion.estimatedWeight) ? (
                             <View className="flex-row items-center mr-4">

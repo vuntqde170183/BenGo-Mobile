@@ -3,6 +3,11 @@ export interface BookingAISuggestion {
   estimatedWeight: string;
   estimatedLength: string;
   productInfo: string;
+  analysis?: {
+    technical: string;
+    experience: string;
+    compliance: string;
+  };
   // Gợi ý xe (áp dụng khi người dùng nhấn "Áp dụng")
   recommendedVehicle: 'BIKE' | 'VAN' | 'TRUCK';
   vehicleReason: string;
@@ -23,41 +28,38 @@ export interface BookingAIRequest {
   distance?: number;
 }
 
-const SYSTEM_PROMPT = `Bạn là trợ lý AI cho ứng dụng giao hàng BenGo. Nhiệm vụ của bạn là:
+const SYSTEM_PROMPT = `Bạn là trợ lý AI chuyên gia logistics cho ứng dụng giao hàng BenGo. Nhiệm vụ của bạn là phân tích đơn hàng và đưa ra gợi ý tối ưu.
 
-**PHÂN TÍCH HÀNG HÓA (chỉ để tham khảo)**
-Dựa vào tên hàng hóa người dùng nhập để:
-- Ước tính cân nặng thực tế của sản phẩm (estimatedWeight)
-- Ước tính kích thước/chiều dài thực tế (estimatedLength)
-- Mô tả ngắn về sản phẩm (productInfo)
-- Nếu thông tin người dùng khai có sự chênh lệch quá lớn so với thực tế, hãy hiển thị cảnh báo (conflictWarning) để người dùng lưu ý.
+**QUY TRÌNH PHÂN TÍCH:**
+1. **Phân tích hàng hóa (Tham khảo):** Ước tính cân nặng, kích thước thực tế và đưa ra cảnh báo (conflictWarning) nếu thông tin người dùng nhập sai lệch quá lớn so với thực tế.
+2. **Đánh giá chuyên sâu (Phân tích):**
+   - **Đặc thù kỹ thuật:** Xác định tính chất hàng (dễ vỡ, đồ điện tử, cần giữ thẳng đứng, chống rung lắc...).
+   - **Trải nghiệm khách hàng:** Đánh giá phương tiện nào giúp đảm bảo an toàn hàng hóa cao nhất.
+   - **Quy định giao thông:** Đối chiếu luật GTĐB Việt Nam (ví dụ: giới hạn kích thước hàng hóa trên xe máy, quy định chiều cao...).
+3. **Gợi ý phương tiện (Quyết định):**
+   - Dựa trên kích thước/cân nặng người dùng nhập để lọc xe hợp lệ (BIKE: <=20kg & <50cm; VAN: 20-200kg & 50cm-1.8m; TRUCK: >200kg hoặc >1.8m).
+   - **Quan trọng:** Bạn PHẢI cân nhắc các yếu tố ở mục (2). Nếu hàng hóa là đồ điện tử hoặc dễ vỡ, hãy ưu tiên gợi ý VAN hoặc TRUCK dù kích thước có thể vừa với xe máy, đồng thời đưa ra lý do thuyết phục trong 'vehicleReason'.
 
-**GỢI Ý LOẠI XE (BẮT BUỘC DỰA TRÊN THÔNG TIN NGƯỜI DÙNG NHẬP)**
-Các loại xe có sẵn:
-- BIKE: Xe máy - tối đa 20kg, dài dưới 50cm.
-- VAN: Xe tải van - từ 20-200kg, dài 50cm-1.8m.
-- TRUCK: Xe tải lớn - trên 200kg HOẶC dài trên 1.8m.
-
-QUY TẮC TỐI THƯỢNG:
-- Bạn PHẢI sử dụng Khối lượng và Kích thước mà người dùng ĐÃ NHẬP làm căn cứ duy nhất để gợi ý loại phương tiện.
-- KHÔNG ĐƯỢC tự ý dùng số liệu thực tế bạn ước tính để thay đổi gợi ý xe nếu người dùng đã nhập thông tin.
-- **Giải thích lý do (vehicleReason):** Bạn phải giải thích rõ ràng tại sao loại xe này phù hợp dựa trên số liệu người dùng đã nhập. Ví dụ: "Dựa trên khối lượng 10kg và kích thước 40cm bạn nhập, xe máy (BIKE) là lựa chọn tối ưu và tiết kiệm nhất." hoặc "Vì hàng dài 2m (vượt quá giới hạn 1.8m của xe Van), nên bạn cần sử dụng xe tải (TRUCK)."
-
-Trả về JSON chính xác (KHÔNG markdown, KHÔNG \`\`\`json):
+**JSON PHẢN HỒI (CHỈ TRẢ VỀ JSON, KHÔNG MARKDOWN, KHÔNG GIẢI THÍCH NGOÀI):**
 {
-  "estimatedWeight": "Ước tính thực tế (ví dụ: ~112 kg)",
-  "estimatedLength": "Ước tính thực tế (ví dụ: 1.9m x 0.7m)",
+  "estimatedWeight": "Ước tính thực tế (ví dụ: ~15 kg)",
+  "estimatedLength": "Ước tính thực tế (ví dụ: 47x47x45 cm)",
   "productInfo": "Mô tả ngắn về sản phẩm",
+  "analysis": {
+    "technical": "Đánh giá kỹ thuật (vd: cần giữ thẳng đứng, chống rung lắc)",
+    "experience": "Đánh giá trải nghiệm (vd: rủi ro hư hỏng, sự chuyên nghiệp)",
+    "compliance": "Đánh giá tuân thủ (vd: phù hợp luật GTĐB Việt Nam)"
+  },
   "recommendedVehicle": "BIKE|VAN|TRUCK",
-  "vehicleReason": "Giải thích logic lý do chọn xe bằng cách so khớp số liệu người dùng nhập với giới hạn của loại xe đó.",
-  "suggestedNote": "Ghi chú hướng dẫn tài xế cụ thể",
+  "vehicleReason": "Giải thích logic: Kết hợp giữa số liệu người dùng nhập và các yếu tố kỹ thuật/an toàn đã phân tích.",
+  "suggestedNote": "Ghi chú hướng dẫn cho tài xế",
   "tips": ["Mẹo 1", "Mẹo 2"],
-  "conflictWarning": "Cảnh báo nếu thông tin người dùng khai chênh lệch lớn so với sản phẩm thực tế"
+  "conflictWarning": "Cảnh báo nếu số liệu người dùng khai chênh lệch lớn"
 }
 
-Quy tắc bắt buộc:
-- vehicleReason: Phải chỉ ra sự tương quan giữa thông số (cân nặng/kích thước) của đơn hàng và khả năng đáp ứng của loại xe.
-- Dùng tiếng Việt tự nhiên`;
+QUY TẮC BẮT BUỘC:
+- Nếu thông số người dùng nhập (ví dụ: 10kg) nằm trong giới hạn xe máy (BIKE), nhưng hàng hóa là đồ dễ vỡ, hãy KHUYẾN NGHỊ VAN và giải thích trong vehicleReason.
+- Dùng tiếng Việt chuyên nghiệp, ngắn gọn.`;
 
 export const getBookingAISuggestion = async (
   request: BookingAIRequest,
@@ -140,6 +142,7 @@ Hãy thực hiện:
       estimatedWeight: parsed.estimatedWeight || '',
       estimatedLength: parsed.estimatedLength || '',
       productInfo: parsed.productInfo || '',
+      analysis: parsed.analysis,
       recommendedVehicle: parsed.recommendedVehicle || 'VAN',
       vehicleReason: parsed.vehicleReason || '',
       suggestedNote: parsed.suggestedNote || '',
