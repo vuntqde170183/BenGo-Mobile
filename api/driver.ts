@@ -25,8 +25,10 @@ export interface DriverStats {
 export interface OrderHistoryItem {
   id: string;
   status: 'PENDING' | 'ACCEPTED' | 'PICKED_UP' | 'DELIVERED' | 'CANCELLED';
-  pickupAddress: string;
-  dropoffAddress: string;
+  pickup: { address: string; lat: number; lng: number };
+  dropoff: { address: string; lat: number; lng: number };
+  pickupAddress?: string; // Legacy
+  dropoffAddress?: string; // Legacy
   totalPrice: number;
   createdAt: string;
 }

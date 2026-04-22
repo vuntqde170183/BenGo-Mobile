@@ -84,10 +84,10 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
                 Điểm đón
               </Text>
               <Text
-                className="text-gray-700 font-JakartaBold"
+                className="text-gray-700 font-JakartaMedium"
                 numberOfLines={2}
               >
-                {item?.pickupAddress || "Không xác định"}
+                {item?.pickup?.address || "Không xác định"}
               </Text>
             </View>
             <View>
@@ -95,10 +95,10 @@ const TripCard: React.FC<TripCardProps> = ({ item, onPress }) => {
                 Điểm giao
               </Text>
               <Text
-                className="text-gray-700 font-JakartaBold"
+                className="text-gray-700 font-JakartaMedium"
                 numberOfLines={2}
               >
-                {item?.dropoffAddress || "Không xác định"}
+                {item?.dropoff?.address || "Không xác định"}
               </Text>
             </View>
           </View>

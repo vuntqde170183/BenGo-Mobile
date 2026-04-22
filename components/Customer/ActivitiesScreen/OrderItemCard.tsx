@@ -71,13 +71,13 @@ const OrderItemCard = ({ order }: { order: Order }) => {
                     <View className="flex-1">
                         <View className="mb-4">
                             <Text className="text-gray-500 font-JakartaBold mb-1 uppercase">Điểm đón</Text>
-                            <Text className="text-gray-700 font-JakartaBold" numberOfLines={2}>
+                            <Text className="text-gray-700 font-JakartaMedium" numberOfLines={2}>
                                 {order?.pickup?.address || "Không xác định"}
                             </Text>
                         </View>
                         <View>
                             <Text className="text-gray-500 font-JakartaBold mb-1 uppercase">Điểm giao</Text>
-                            <Text className="text-gray-700 font-JakartaBold" numberOfLines={2}>
+                            <Text className="text-gray-700 font-JakartaMedium" numberOfLines={2}>
                                 {order?.dropoff?.address || "Không xác định"}
                             </Text>
                         </View>
