@@ -61,8 +61,14 @@ const OrdersScreen = () => {
   const { data, isLoading: loading, isFetching: loadingMore, refetch } = query;
 
   useEffect(() => {
+    console.log("🔍 [OrdersScreen] Query Result Data:", JSON.stringify(data, null, 2));
+  }, [data]);
+
+  useEffect(() => {
     if (data) {
-      const newItems = isDriver ? data?.data?.data : (Array.isArray(data) ? data : []);
+      const newItems = isDriver
+        ? (Array.isArray(data) ? data : data?.data?.data)
+        : (Array.isArray(data) ? data : data?.data);
       if (newItems) {
         if (page === 1) {
           setOrders(newItems);
@@ -73,6 +79,13 @@ const OrdersScreen = () => {
       }
     }
   }, [data, page, isDriver, statusFilter, timeFilter, search]);
+
+  useEffect(() => {
+    console.log("📊 [OrdersScreen] Current Orders Count:", orders.length);
+    if (orders.length > 0) {
+      console.log("📦 Sample Order ID:", orders[0]?.id || orders[0]?._id);
+    }
+  }, [orders]);
 
   useEffect(() => {
     setPage(1);
@@ -151,7 +164,7 @@ const OrdersScreen = () => {
       {/* List */}
       <FlatList
         data={orders}
-        keyExtractor={(item, index) => item?.id || index.toString()}
+        keyExtractor={(item, index) => `${item?.id || index}-${index}`}
         renderItem={({ item }) => (
           isDriver ? (
             <TripCard item={item} onPress={handleTripPress} />

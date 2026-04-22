@@ -314,7 +314,7 @@ const DriverHome = () => {
       <View className="flex-1">
         <FlatList
           data={pendingOrders}
-          keyExtractor={(item: PendingOrder) => item.orderId}
+          keyExtractor={(item: PendingOrder, index) => `${item.orderId}-${index}`}
           ListHeaderComponent={
             <>
               {/* Stats Summary */}

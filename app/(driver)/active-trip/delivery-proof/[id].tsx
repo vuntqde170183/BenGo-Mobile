@@ -134,7 +134,6 @@ const DeliveryProofScreen = () => {
         router.replace(`/(driver)/history/${id}` as any);
       });
     } catch (error: any) {
-      console.error("❌ [API Error] Delivery Proof Failed:", error);
       showAlert("Lỗi", error.message || "Không thể hoàn tất đơn hàng. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);

@@ -40,14 +40,13 @@ export const useRideStatusSync = ({
         onStatusChange?.(data);
       },
       onError: (error) => {
-        console.error(error);
+        console.log("[RideStatusSync] Error:", error);
       },
     });
 
     pollerRef.current.start();
     setIsPolling(true);
 
-    // Setup push notification listener
     const notificationListener =
       pushNotificationService.addNotificationListener((notification) => {
         const notificationData = notification.request.content.data;

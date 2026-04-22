@@ -6,6 +6,7 @@ export const useOrderHistory = (params: { status?: string; page?: number; limit?
         queryKey: ["orders-history", params],
         queryFn: () => OrderApi.getOrderHistory(params),
         enabled: params.enabled !== false,
+        refetchInterval: 4000,
     });
 };
 

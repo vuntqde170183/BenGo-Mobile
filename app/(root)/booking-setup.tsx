@@ -273,7 +273,7 @@ const BookingSetupScreen = () => {
           longitude: location.coords.longitude,
         });
       } catch (error) {
-        console.error("Geocoding error", error);
+        console.log("Geocoding error", error);
       }
 
       const addressString = address && address[0]
