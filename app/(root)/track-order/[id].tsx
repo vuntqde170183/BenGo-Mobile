@@ -28,13 +28,6 @@ const TrackOrderScreen = () => {
   const mapRef = useRef<MapView>(null);
 
   const snapPoints = useMemo(() => ["35%", "60%"], []);
-
-  useEffect(() => {
-    console.log('🚀 [DEBUG] TrackOrderScreen Rendered');
-    console.log('🆔 Order ID:', id);
-    console.log('📊 Order Status:', order?.status);
-  }, [id, order?.status]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (order && (order.status === 'ACCEPTED' || order.status === 'PICKED_UP')) {
@@ -120,7 +113,7 @@ const TrackOrderScreen = () => {
                 />
               </View>
               <Text
-                className={`text-[10px] mt-1 font-JakartaBold ${isActive ? "text-green-600" : "text-gray-400"
+                className={`text-[10px] mt-1 font-JakartaBold ${isActive ? "text-green-600" : "text-gray-500"
                   }`}
               >
                 {label}
@@ -275,11 +268,6 @@ const TrackOrderScreen = () => {
                 >
                   <Ionicons name="call" size={24} color="#10B981" />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  className="w-12 h-12 bg-blue-50 rounded-full items-center justify-center border border-blue-100"
-                >
-                  <Ionicons name="chatbubbles" size={24} color="#3B82F6" />
-                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -300,11 +288,11 @@ const TrackOrderScreen = () => {
               </View>
               <View className="flex-1">
                 <View className="mb-4">
-                  <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Điểm lấy hàng</Text>
+                  <Text className="text-xs text-gray-500 font-JakartaBold uppercase mb-1">Điểm lấy hàng</Text>
                   <Text className="text-[15px] font-JakartaSemiBold text-gray-700" numberOfLines={2}>{order.pickup.address}</Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Điểm giao hàng</Text>
+                  <Text className="text-xs text-gray-500 font-JakartaBold uppercase mb-1">Điểm giao hàng</Text>
                   <Text className="text-[15px] font-JakartaSemiBold text-gray-700" numberOfLines={2}>{order.dropoff.address}</Text>
                 </View>
               </View>
@@ -313,13 +301,13 @@ const TrackOrderScreen = () => {
 
           <View className="mt-8 flex-row justify-between items-center bg-gray-50 p-4 rounded-2xl">
             <View>
-              <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Tổng phí cước</Text>
+              <Text className="text-xs text-gray-500 font-JakartaBold uppercase mb-1">Tổng phí cước</Text>
               <Text className="text-2xl font-JakartaExtraBold text-green-600">
                 {order.totalPrice.toLocaleString("vi-VN")}đ
               </Text>
             </View>
             <View className="items-end">
-              <Text className="text-xs text-gray-400 font-JakartaBold uppercase mb-1">Thanh toán</Text>
+              <Text className="text-xs text-gray-500 font-JakartaBold uppercase mb-1">Thanh toán</Text>
               <Text className="text-gray-700 font-JakartaBold uppercase">{order.paymentMethod === 'CASH' ? 'Tiền mặt' : 'Ví BenGo'}</Text>
             </View>
           </View>

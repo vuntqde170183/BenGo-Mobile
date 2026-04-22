@@ -16,8 +16,6 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             }
         }
 
-        console.log(`📡 [fetchAPI] Request: ${options?.method || 'GET'} ${finalUrl}`);
-
         const isFormData = options?.body instanceof FormData || (options?.body && typeof options.body === 'object' && '_parts' in options.body);
 
         const headers: Record<string, string> = {

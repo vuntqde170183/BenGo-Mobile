@@ -46,14 +46,14 @@ const ImageUploadBox = ({
       {isUploading ? (
         <View className="items-center justify-center">
           <ActivityIndicator color="#059669" size="large" />
-          <Text className="text-gray-400 font-JakartaMedium text-xs mt-2">Đang tải lên...</Text>
+          <Text className="text-gray-500 font-JakartaMedium text-xs mt-2">Đang tải lên...</Text>
         </View>
       ) : imageUri ? (
         <Image source={{ uri: imageUri }} className="w-full h-full" resizeMode="cover" />
       ) : (
         <View className="items-center">
           <Ionicons name="camera-outline" size={40} color="#94A3B8" />
-          <Text className="text-gray-400 font-JakartaMedium text-sm mt-2">Nhấn để tải ảnh</Text>
+          <Text className="text-gray-500 font-JakartaMedium text-sm mt-2">Nhấn để tải ảnh</Text>
         </View>
       )}
     </TouchableOpacity>

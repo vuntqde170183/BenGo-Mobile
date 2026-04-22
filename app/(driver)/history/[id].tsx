@@ -18,13 +18,6 @@ import VehicleBadge from "@/components/Common/VehicleBadge";
 const TripDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: order, isLoading: loading } = useDriverOrderDetail(id || null);
-
-  useEffect(() => {
-    console.log('🚀 [DEBUG] TripDetailScreen Rendered');
-    console.log('🆔 Order ID:', id);
-    console.log('📊 Order Status:', order?.status);
-  }, [id, order?.status]);
-
   if (loading) {
     return (
       <View className="flex-1 bg-white justify-center items-center">

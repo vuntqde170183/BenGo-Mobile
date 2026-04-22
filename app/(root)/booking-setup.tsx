@@ -504,7 +504,7 @@ const BookingSetupScreen = () => {
                           {/* Khối lượng: dùng số người dùng nhập, fallback về AI estimate */}
                           {(goodsWeight || aiSuggestion.estimatedWeight) ? (
                             <View className="flex-row items-center mr-4">
-                              <Text className="text-gray-400 text-sm font-Jakarta">⚖️ </Text>
+                              <Text className="text-gray-500 text-sm font-Jakarta">⚖️ </Text>
                               <Text className="text-gray-600 text-sm font-JakartaMedium">
                                 {goodsWeight ? `${goodsWeight} kg` : aiSuggestion.estimatedWeight}
                               </Text>
@@ -513,7 +513,7 @@ const BookingSetupScreen = () => {
                           {/* Kích thước: dùng số người dùng nhập, fallback về AI estimate */}
                           {(goodsLength || aiSuggestion.estimatedLength) ? (
                             <View className="flex-row items-center">
-                              <Text className="text-gray-400 text-sm font-Jakarta">📐 </Text>
+                              <Text className="text-gray-500 text-sm font-Jakarta">📐 </Text>
                               <Text className="text-gray-600 text-sm font-JakartaMedium">
                                 {goodsLength || aiSuggestion.estimatedLength}
                               </Text>

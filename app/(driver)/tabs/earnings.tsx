@@ -147,11 +147,11 @@ const EarningsScreen = () => {
           </View>
           <View className="flex-row items-center">
             <Ionicons name="time-outline" size={12} color="#94A3B8" className="mr-1" />
-            <Text className="text-gray-400 font-JakartaMedium text-sm mr-3">
+            <Text className="text-gray-500 font-JakartaMedium text-sm mr-3">
               {dateString}
             </Text>
             <Ionicons name="location-outline" size={12} color="#94A3B8" className="mr-1" />
-            <Text className="text-gray-400 font-JakartaMedium text-sm flex-1" numberOfLines={1}>
+            <Text className="text-gray-500 font-JakartaMedium text-sm flex-1" numberOfLines={1}>
               {item.pickupAddress}
             </Text>
           </View>
@@ -342,17 +342,17 @@ const EarningsScreen = () => {
           {(statsLoading || ordersLoading) && transactions.length === 0 ? (
             <View className="py-20 justify-center items-center">
               <ActivityIndicator color="#059669" size="large" />
-              <Text className="text-gray-400 font-JakartaMedium mt-4">Đang tải đơn hàng...</Text>
+              <Text className="text-gray-500 font-JakartaMedium mt-4">Đang tải đơn hàng...</Text>
             </View>
           ) : (showTodayOnly ? todayData.transactions : transactions).length > 0 ? (
             (showTodayOnly ? todayData.transactions : transactions).map((item: any) => renderTransactionItem(item))
           ) : (
             <View className="items-center justify-center py-20 bg-white rounded-[32px] border border-gray-100 border-dashed">
               <Ionicons name="receipt-outline" size={56} color="#E2E8F0" />
-              <Text className="text-gray-400 font-JakartaBold text-base mt-2">
+              <Text className="text-gray-500 font-JakartaBold text-lg mt-2">
                 Không có dữ liệu
               </Text>
-              <Text className="text-slate-300 font-JakartaMedium text-sm text-center px-10">
+              <Text className="text-gray-500 font-JakartaMedium text-base text-center px-10">
                 Bạn chưa có đơn hàng hoàn thành nào trong tuần này.
               </Text>
             </View>

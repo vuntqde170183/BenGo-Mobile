@@ -210,13 +210,13 @@ const CustomerOrderDetailScreen = () => {
 
                         <View className="flex-1">
                             <View className="mb-4">
-                                <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">Điểm đón</Text>
+                                <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">Điểm đón</Text>
                                 <Text className="text-gray-700 font-JakartaBold" numberOfLines={2}>
                                     {order?.pickup?.address || "Không xác định"}
                                 </Text>
                             </View>
                             <View>
-                                <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">Điểm giao</Text>
+                                <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">Điểm giao</Text>
                                 <Text className="text-gray-700 font-JakartaBold" numberOfLines={2}>
                                     {order?.dropoff?.address || "Không xác định"}
                                 </Text>
@@ -228,11 +228,11 @@ const CustomerOrderDetailScreen = () => {
 
                     <View className="flex-row items-center justify-between">
                         <View>
-                            <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">Phương tiện</Text>
+                            <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">Phương tiện</Text>
                             <VehicleBadge vehicleType={order.vehicleType} />
                         </View>
                         <View className="items-end">
-                            <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">Khoảng cách</Text>
+                            <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">Khoảng cách</Text>
                             <Text className="text-gray-700 font-JakartaBold text-base">{order.distanceKm} km</Text>
                         </View>
                     </View>
@@ -250,7 +250,7 @@ const CustomerOrderDetailScreen = () => {
                         <Text className="text-lg font-JakartaBold text-green-600">Đặc điểm hàng hóa</Text>
                     </View>
 
-                    <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-2">Hình ảnh</Text>
+                    <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-2">Hình ảnh</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
                         {order.goodsImages && order.goodsImages.length > 0 ? (
                             order.goodsImages.map((img, index) => (
@@ -268,7 +268,7 @@ const CustomerOrderDetailScreen = () => {
                         )}
                     </ScrollView>
 
-                    <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">Ghi chú từ khách hàng</Text>
+                    <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">Ghi chú từ khách hàng</Text>
                     <View className="bg-gray-50 p-3 rounded-xl border border-gray-100">
                         <Text className="text-gray-700 font-JakartaMedium italic">
                             {order.specialNote || "Không có ghi chú thêm."}
@@ -300,9 +300,9 @@ const CustomerOrderDetailScreen = () => {
                                     />
                                 </View>
                                 <View className="flex-1">
-                                    <Text className="text-sm text-gray-400 font-JakartaBold uppercase">Người gửi</Text>
+                                    <Text className="text-sm text-gray-500 font-JakartaBold uppercase">Người gửi</Text>
                                     <Text className="text-base font-JakartaBold text-gray-700" numberOfLines={1}>{order.customer.name}</Text>
-                                    <Text className="text-sm font-JakartaMedium text-gray-400">{order.customer.phone}</Text>
+                                    <Text className="text-sm font-JakartaMedium text-gray-500">{order.customer.phone}</Text>
                                 </View>
                             </View>
                             <TouchableOpacity
@@ -328,7 +328,7 @@ const CustomerOrderDetailScreen = () => {
                                     </View>
                                     <View className="flex-1">
                                         <View className="flex-row items-center justify-between pr-2">
-                                            <Text className="text-sm text-gray-400 font-JakartaBold uppercase">Tài xế vận chuyển</Text>
+                                            <Text className="text-sm text-gray-500 font-JakartaBold uppercase">Tài xế vận chuyển</Text>
                                         </View>
                                         <Text className="text-base font-JakartaBold text-gray-700" numberOfLines={1}>
                                             {order.driver?.name || order.driverId?.name}

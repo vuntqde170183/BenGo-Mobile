@@ -269,15 +269,15 @@ const ActiveTripScreen = () => {
           {/* Order Details: Financial & Goods */}
           <View className="flex-row justify-between mb-4 bg-gray-50 p-4 rounded-2xl">
             <View>
-              <Text className="text-sm text-gray-400 font-JakartaBold uppercase mb-1">Phí cước</Text>
+              <Text className="text-sm text-gray-500 font-JakartaBold uppercase mb-1">Phí cước</Text>
               <Text className="text-base font-JakartaBold text-green-600">{order.totalPrice?.toLocaleString('vi-VN')}đ</Text>
             </View>
             <View className="items-center">
-              <Text className="text-sm text-gray-400 font-JakartaBold uppercase mb-1">Khoảng cách</Text>
+              <Text className="text-sm text-gray-500 font-JakartaBold uppercase mb-1">Khoảng cách</Text>
               <Text className="text-base font-JakartaBold text-gray-700">{order.distanceKm} km</Text>
             </View>
             <View className="items-end">
-              <Text className="text-sm text-gray-400 font-JakartaBold uppercase mb-1">Thanh toán</Text>
+              <Text className="text-sm text-gray-500 font-JakartaBold uppercase mb-1">Thanh toán</Text>
               <Text className="text-base font-JakartaBold text-gray-700">{order.paymentMethod === 'CASH' ? 'Tiền mặt' : 'Ví điện tử'}</Text>
             </View>
           </View>

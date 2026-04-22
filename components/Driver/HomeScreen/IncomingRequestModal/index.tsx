@@ -101,7 +101,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
 
                 <View className="flex-1">
                   <View className="mb-4">
-                    <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">
+                    <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">
                       Điểm đón
                     </Text>
                     <Text
@@ -112,7 +112,7 @@ const IncomingRequestModal = ({ visible, order, onAccept, onDecline, onTimeout, 
                     </Text>
                   </View>
                   <View>
-                    <Text className="text-gray-400 font-JakartaBold text-sm uppercase mb-1">
+                    <Text className="text-gray-500 font-JakartaBold text-sm uppercase mb-1">
                       Điểm giao
                     </Text>
                     <Text

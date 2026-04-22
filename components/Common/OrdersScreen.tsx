@@ -60,44 +60,28 @@ const OrdersScreen = () => {
 
   const query = isDriver ? driverQuery : customerQuery;
   const { data, isLoading: loading, isFetching: loadingMore, refetch } = query;
-
-  useEffect(() => {
-    console.log("🕒 [OrdersScreen] TIME_FILTERS:", TIME_FILTERS);
-    console.log("📡 [OrdersScreen] Fetching Params:", {
-      isDriver,
-      status: statusFilter,
-      time: timeFilter,
-      search,
-      page
-    });
-  }, [isDriver, statusFilter, timeFilter, search, page]);
-
   useEffect(() => {
     if (data) {
-      const newItems = isDriver
-        ? (Array.isArray(data) ? data : data?.data?.data)
-        : (Array.isArray(data) ? data : data?.data);
-      if (newItems) {
-        if (page === 1) {
-          setOrders(newItems);
-        } else {
-          setOrders(prev => [...prev, ...newItems]);
-        }
-        setHasMore(newItems.length === 10);
+      const rawItems = data?.data || data;
+      const newItems = Array.isArray(rawItems) ? rawItems : [];
+      if (page === 1) {
+        setOrders(newItems);
+      } else if (newItems.length > 0) {
+        setOrders(prev => {
+          const existingIds = new Set(prev.map(o => o.id || o._id));
+          const uniqueNew = newItems.filter((o: any) => !existingIds.has(o.id || o._id));
+          return [...prev, ...uniqueNew];
+        });
       }
-    }
-  }, [data, page, isDriver, statusFilter, timeFilter, search]);
 
-  useEffect(() => {
-    console.log("📊 [OrdersScreen] Current Orders Count:", orders.length);
-    if (orders.length > 0) {
-      console.log("📦 Sample Order ID:", orders[0]?.id || orders[0]?._id);
+      setHasMore(newItems.length >= 10);
     }
-  }, [orders]);
+  }, [data, page, isDriver]);
 
   useEffect(() => {
     setPage(1);
     setOrders([]);
+    setHasMore(true);
   }, [statusFilter, timeFilter, search]);
 
   const onRefresh = () => {

@@ -30,13 +30,6 @@ const DeliveryProofScreen = () => {
   const router = useRouter();
   const { uploadImage, isUploading } = useUpload();
   const { data: order } = useDriverOrderDetail(id as string);
-
-  React.useEffect(() => {
-    console.log('🚀 [DEBUG] DeliveryProofScreen Rendered');
-    console.log('🆔 Order ID:', id);
-    console.log('📊 Order Status:', order?.status);
-  }, [id, order?.status]);
-
   const [proofImage, setProofImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,18 +110,11 @@ const DeliveryProofScreen = () => {
     };
 
     setIsSubmitting(true);
-    console.log("📤 [API Request] Submitting Delivery Proof...");
-    console.log("🆔 ID:", id);
-    console.log("📦 Payload:", JSON.stringify(payload, null, 2));
-
     try {
       const response = await fetchAPI(apiPath, {
         method: "POST",
         body: JSON.stringify(payload),
       });
-
-      console.log("✅ [API Success] Order Completed Successfully");
-      console.log("📊 Response Data:", JSON.stringify(response, null, 2));
 
       showAlert("Thành công", "Đơn hàng đã được giao và xác thực thành công!", () => {
         router.replace(`/(driver)/history/${id}` as any);

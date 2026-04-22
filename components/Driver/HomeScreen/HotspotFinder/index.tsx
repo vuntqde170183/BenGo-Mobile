@@ -164,7 +164,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
           <View className="ml-11 flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Ionicons name="people-outline" size={14} color="#9CA3AF" />
-              <Text className="text-gray-400 text-xs font-Jakarta ml-1">
+              <Text className="text-gray-500 text-xs font-Jakarta ml-1">
                 ~{item.estimatedCustomers}
               </Text>
             </View>
@@ -214,7 +214,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
                   <Text className="text-gray-800 font-JakartaBold text-lg">
                     Điểm nóng khách hàng
                   </Text>
-                  <Text className="text-gray-400 text-xs font-Jakarta">
+                  <Text className="text-gray-500 text-xs font-Jakarta">
                     Dự đoán bởi AI · Dựa trên vị trí & thời gian
                   </Text>
                 </View>
@@ -352,7 +352,7 @@ const HotspotFinder: React.FC<HotspotFinderProps> = ({
               <Text className="text-gray-700 font-JakartaBold text-lg text-center mb-2">
                 Khám phá điểm nóng
               </Text>
-              <Text className="text-gray-400 font-Jakarta text-sm text-center leading-5">
+              <Text className="text-gray-500 font-Jakarta text-sm text-center leading-5">
                 Nhấn "Tìm điểm nóng" để AI phân tích và gợi ý những địa điểm có nhiều khách hàng tiềm năng xung quanh bạn
               </Text>
             </View>
