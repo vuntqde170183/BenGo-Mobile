@@ -14,7 +14,7 @@ export const useOrderDetails = (id: string) => {
         queryKey: ["order-details", id],
         queryFn: () => OrderApi.getOrderDetails(id),
         enabled: !!id,
-        refetchInterval: 10000, // Polling mỗi 10s như yêu cầu ở màn hình Tracking
+        refetchInterval: 4000,
     });
 };
 
