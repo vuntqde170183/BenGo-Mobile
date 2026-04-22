@@ -43,7 +43,6 @@ export const useDriverOrders = (params: { page?: number; limit?: number; status?
 };
 
 export const useDriverOrderDetail = (id: string | null) => {
-    console.log('📡 [Hook] useDriverOrderDetail called for ID:', id);
     return useQuery({
         queryKey: ["order-detail", id],
         queryFn: () => DriverApi.getOrderDetails(id!),

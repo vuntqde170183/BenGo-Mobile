@@ -22,7 +22,6 @@ const { width, height } = Dimensions.get("window");
 
 const TrackOrderScreen = () => {
   const { id } = useLocalSearchParams();
-  // Polling every 10 seconds to get driver's current position
   const { data: order, isLoading: loading, refetch } = useOrderDetails(id as string);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -30,13 +29,18 @@ const TrackOrderScreen = () => {
 
   const snapPoints = useMemo(() => ["35%", "60%"], []);
 
-  // Effect for polling
+  useEffect(() => {
+    console.log('🚀 [DEBUG] TrackOrderScreen Rendered');
+    console.log('🆔 Order ID:', id);
+    console.log('📊 Order Status:', order?.status);
+  }, [id, order?.status]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (order && (order.status === 'ACCEPTED' || order.status === 'PICKED_UP')) {
         refetch();
       }
-    }, 10000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [order?.status]);
 

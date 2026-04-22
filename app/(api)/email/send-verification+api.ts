@@ -3,8 +3,6 @@ import { sendVerificationEmail } from "@/lib/email";
 export async function POST(request: Request) {
   try {
     const { email, name, otp } = await request.json();
-    console.log("POST /(api)/email/send-verification - Request Body:", { email, name, otp });
-
     if (!email || !name || !otp) {
       console.warn("POST /(api)/email/send-verification - Missing required fields");
       return new Response(
@@ -14,8 +12,6 @@ export async function POST(request: Request) {
     }
 
     const result = await sendVerificationEmail(email, name, otp);
-    console.log("POST /(api)/email/send-verification - Result:", result);
-
     return new Response(
       JSON.stringify(result),
       {

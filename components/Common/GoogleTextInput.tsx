@@ -18,7 +18,7 @@ const GoogleTextInput = ({
   userLatitude,
   userLongitude,
 }: GoogleInputProps) => {
-   const { t } = useTranslation();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const placesRef = useRef<any>(null);
   const textInputRef = useRef<any>(null);
@@ -30,8 +30,6 @@ const GoogleTextInput = ({
   }, [initialLocation]);
 
   const origin = userLatitude && userLongitude ? `${userLatitude},${userLongitude}` : undefined;
-  console.log("DEBUG - Tọa độ của bạn (Origin):", origin);
-
   return (
     <View
       className={`flex relative z-50 flex-row justify-center items-center rounded-xl border border-gray-300 bg-white h-14 ${containerStyle}`}
@@ -146,8 +144,6 @@ const GoogleTextInput = ({
         )}
         {...({ renderRow: undefined } as any)}
         renderRow={(data: any) => {
-          console.log("SUGGESTION ITEM:", data.description, " - DISTANCE:", data.distance_meters);
-
           return (
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 12, width: '100%', borderRadius: 12 }}>
               <View style={{ alignItems: "center", marginRight: 8, width: 50 }}>

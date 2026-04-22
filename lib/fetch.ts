@@ -29,7 +29,6 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
             headers['Content-Type'] = 'application/json';
         }
 
-        console.log(`📡 [fetchAPI] Request: ${options?.method || 'GET'} ${finalUrl}`);
         const response = await fetch(finalUrl, {
             ...options,
             headers,

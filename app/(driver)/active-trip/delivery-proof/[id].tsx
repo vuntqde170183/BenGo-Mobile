@@ -111,16 +111,10 @@ const DeliveryProofScreen = () => {
 
     setIsSubmitting(true);
     try {
-      console.log("🚀 [API Request] Path:", apiPath);
-      console.log("📝 [API Request] Method: PATCH");
-      console.log("📦 [API Request] Payload:", JSON.stringify(payload, null, 2));
-
       const response = await fetchAPI(apiPath, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });
-
-      console.log("✅ [API Response] Success:", JSON.stringify(response, null, 2));
 
       showAlert("Thành công", "Đơn hàng đã được giao và xác thực thành công!", () => {
         navigation.reset({

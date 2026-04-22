@@ -19,13 +19,6 @@ const ActiveTripScreen = () => {
   const mapRef = useRef<MapView>(null);
 
   const { data: order, isLoading } = useDriverOrderDetail(id as string);
-
-  useEffect(() => {
-    console.log('🚀 [DEBUG] ActiveTripScreen Rendered');
-    console.log('🆔 Order ID:', id);
-    console.log('📊 Order Status:', order?.status);
-  }, [id, order?.status]);
-
   const { mutateAsync: updateStatus, isPending } = useDriverUpdateOrderStatus();
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
 
