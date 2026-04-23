@@ -95,7 +95,7 @@ const SignUp = () => {
 
   const onVerifyPress = async () => {
     if (verificationModal.otp !== localOtp) {
-      showAlert(t("common.error"), "Mã xác thực không chính xác");
+      showAlert(t("common.error"), "Mã xác thực không chính xác. Vui lòng thử lại.");
       return;
     }
 
@@ -118,21 +118,17 @@ const SignUp = () => {
         }
       },
       onError: (err: any) => {
-        let errorMsg = err.message || "Đăng ký thất bại sau xác thực. Vui lòng thử lại sau.";
-
-        if (errorMsg.includes(" - {")) {
-          try {
-            const jsonPart = errorMsg.substring(errorMsg.indexOf(" - ") + 3);
-            const errorData = JSON.parse(jsonPart);
-            if (errorData.message) {
-              errorMsg = errorData.message;
-            }
-          } catch (e) {
-          }
+        let errorMsg = "Đăng ký thất bại sau xác thực. Vui lòng thử lại sau.";
+        
+        // Trích xuất message từ error object nếu có
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
         }
 
         showAlert(t("common.error"), errorMsg);
-      }
+      },
     });
   };
 
