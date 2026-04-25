@@ -208,6 +208,8 @@ const BookingSetupScreen = () => {
         body: JSON.stringify(orderData),
       });
 
+      console.log("✅ [Frontend] Phản hồi từ API /(api)/orders:", JSON.stringify(response, null, 2));
+
       if (!response || !response.data) {
         throw new Error("Không thể tạo đơn hàng hoặc dữ liệu phản hồi trống.");
       }
@@ -312,6 +314,7 @@ const BookingSetupScreen = () => {
       }
 
       // 3. Final Success Action
+      console.log("🎯 [Frontend] Đặt đơn thành công. Order ID:", orderId);
       showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => {
         router.push(`/order-detail/${orderId}`);
       });
