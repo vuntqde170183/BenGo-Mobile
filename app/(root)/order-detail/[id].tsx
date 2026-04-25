@@ -12,7 +12,6 @@ import CustomModal from "@/components/Common/CustomModal";
 import CustomButton from "@/components/Common/CustomButton";
 import StatusBadge from "@/components/Common/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
-import { useProfile } from "@/hooks/useProfile";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: any }> = {
     PENDING: { label: "Chờ xác nhận", color: "#D97706", bgColor: "#FEF3C7", icon: "time-outline" },
@@ -25,9 +24,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 const CustomerOrderDetailScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user } = useAuth();
-    const { data: profile, isLoading: profileLoading } = useProfile();
     const { data: order, isLoading } = useOrderDetails(id);
-
     const { mutateAsync: cancelOrder, isPending: isCancelling } = useCancelOrder();
 
     const mapRef = useRef<MapView>(null);
@@ -145,6 +142,8 @@ const CustomerOrderDetailScreen = () => {
                         </View>
                     </View>
                 </View>
+
+
 
                 {/* CD3: Route Map Summary */}
                 <View style={{ height: Dimensions.get('window').height * 0.35, width: '100%' }}>
@@ -394,20 +393,16 @@ const CustomerOrderDetailScreen = () => {
 
                         <View className="h-[1px] bg-gray-50 my-1" />
 
-                        <View className="flex-row items-center justify-between">
+                        <View className="flex-col justify-between gap-2">
                             <View className="flex-row items-center">
-                                <View className="p-1.5 bg-gray-100 rounded-lg mr-2">
-                                    <Ionicons
-                                        name={order.paymentMethod === "CASH" ? "cash-outline" : "wallet-outline"}
-                                        size={18}
-                                        color="#4B5563"
-                                    />
-                                </View>
-                                <Text className="text-gray-500 font-JakartaMedium text-sm">
-                                    {order.paymentMethod === "CASH" ? "Tiền mặt" : "Ví BenGo"}
-                                </Text>
+                                <Text className="text-gray-500 font-JakartaMedium mr-2">Trạng thái thanh toán:</Text>
+                                <StatusBadge status={order.paymentStatus} />
                             </View>
-                            <StatusBadge status={order.paymentStatus} />
+
+                            <View className="flex-row items-center">
+                                <Text className="text-gray-500 font-JakartaMedium mr-2">Hình thức thanh toán:</Text>
+                                <StatusBadge status={order.paymentMethod} />
+                            </View>
                         </View>
                     </View>
                 </View>

@@ -76,6 +76,21 @@ const statusConfig: Record<string, { label: string; container: string; text: str
     container: "bg-red-50 border-red-100",
     text: "text-red-600",
   },
+  VNPAY: {
+    label: "Ví VNPay",
+    container: "bg-blue-50 border-blue-100",
+    text: "text-blue-700",
+  },
+  STRIPE: {
+    label: "Thẻ/Stripe",
+    container: "bg-indigo-50 border-indigo-100",
+    text: "text-indigo-700",
+  },
+  CASH: {
+    label: "Tiền mặt",
+    container: "bg-emerald-50 border-emerald-100",
+    text: "text-emerald-700",
+  },
 };
 
 const StatusBadge = ({ status }: StatusBadgeProps) => {

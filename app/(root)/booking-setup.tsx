@@ -26,6 +26,8 @@ import { useUpload } from "@/hooks/useUpload";
 import { useBookingAI } from "@/hooks/useBookingAI";
 import { useStripe } from "@stripe/stripe-react-native";
 import * as Location from "expo-location";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 
 const VEHICLE_TYPES = [
   { id: "BIKE", title: "Xe máy", icon: "bicycle", basePrice: 15000 },
@@ -37,6 +39,7 @@ const PAYMENT_METHODS = [
   { id: "CASH", title: "Tiền mặt", icon: "cash-outline", color: "#10B981" },
   { id: "WALLET", title: "Ví BenGo", icon: "wallet-outline", color: "#3B82F6" },
   { id: "STRIPE", title: "Thẻ/Stripe", icon: "card-outline", color: "#6366F1" },
+  { id: "VNPAY", title: "Ví VNPay", icon: "qr-code-outline", color: "#005BA1" },
 ];
 const BookingSetupScreen = () => {
   const { t } = useTranslation();
@@ -189,13 +192,36 @@ const BookingSetupScreen = () => {
 
     setIsSubmitting(true);
     try {
-      // 1. If Stripe, handle payment first
+      const orderData = {
+        origin: { lat: userLatitude, lng: userLongitude, address: userAddress },
+        destination: { lat: destinationLatitude, lng: destinationLongitude, address: destinationAddress },
+        vehicleType: selectedVehicle,
+        goodsImages: images,
+        paymentMethod: selectedPayment,
+        totalPrice: estimation?.price || 0,
+        note: `${goodsName} (${goodsWeight}kg). ${note}`,
+      };
+
+      // 1. Create the order first (Pending payment)
+      const response = await fetchAPI("/(api)/orders", {
+        method: "POST",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response || !response.data) {
+        throw new Error("Không thể tạo đơn hàng hoặc dữ liệu phản hồi trống.");
+      }
+
+      const orderId = response.data.id || response.data._id;
+
+      // 2. Handle Payment logic
       if (selectedPayment === "STRIPE") {
         const { data: paymentIntent } = await fetchAPI("/(api)/orders/create-payment-intent", {
           method: "POST",
           body: JSON.stringify({
             amount: estimation?.price || 0,
             currency: "vnd",
+            orderId: orderId,
           }),
         });
 
@@ -208,9 +234,7 @@ const BookingSetupScreen = () => {
           merchantDisplayName: "BenGo JSC",
         });
 
-        if (initError) {
-          throw new Error(initError.message);
-        }
+        if (initError) throw new Error(initError.message);
 
         const { error: presentError } = await presentPaymentSheet();
         if (presentError) {
@@ -220,35 +244,79 @@ const BookingSetupScreen = () => {
           }
           throw new Error(presentError.message);
         }
-      }
-
-      // 2. Create the order
-      const response = await fetchAPI("/(api)/orders", {
-        method: "POST",
-        body: JSON.stringify({
-          origin: { lat: userLatitude, lng: userLongitude, address: userAddress },
-          destination: { lat: destinationLatitude, lng: destinationLongitude, address: destinationAddress },
-          vehicleType: selectedVehicle,
-          goodsImages: images,
-          paymentMethod: selectedPayment,
-          totalPrice: estimation?.price || 0,
-          note: `${goodsName} (${goodsWeight}kg). ${note}`,
-        }),
-      });
-
-      if (response && response.data) {
-        const orderId = response.data.id || response.data._id;
-        showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => {
-          if (orderId) {
-            router.push(`/order-detail/${orderId}`);
-          } else {
-            router.push("/(root)/tabs/activities");
-          }
+      } else if (selectedPayment === "VNPAY") {
+        const { data: vnpayData } = await fetchAPI("/(api)/payment/create-vnpay-url", {
+          method: "POST",
+          body: JSON.stringify({
+            amount: estimation?.price || 0,
+            orderId: orderId,
+            returnUrl: process.env.EXPO_PUBLIC_VNPAY_RETURN_URL,
+          }),
         });
-      } else {
-        showAlert("Đặt đơn thành công", "Đơn hàng của bạn đang được tìm tài xế.", () => router.push("/(root)/tabs/activities"));
+
+        if (!vnpayData?.paymentUrl) {
+          throw new Error("Không thể khởi tạo thanh toán VNPay.");
+        }
+
+        // Bắt đầu Timer 30s để tự động thành công (Dành cho Sandbox/Demo)
+        const autoSuccessTimer = setTimeout(async () => {
+          try {
+            const verifyRes = await fetchAPI("/(api)/payment/vnpay-verify", {
+              method: "POST",
+              body: JSON.stringify({
+                vnp_TxnRef: orderId,
+                vnp_ResponseCode: '00',
+                vnp_TransactionStatus: '00',
+                isDemo: true
+              }),
+            });
+            showAlert("Thành công (Demo)", "Hệ thống đã tự động xác nhận thanh toán sau 30s.", () => {
+              router.push(`/order-detail/${orderId}`);
+            });
+          } catch (e) {
+            console.error("❌ [VNPay] Lỗi tự động verify:", e);
+          }
+        }, 30000);
+
+        const result = await WebBrowser.openAuthSessionAsync(
+          vnpayData.paymentUrl,
+          process.env.EXPO_PUBLIC_VNPAY_RETURN_URL!
+        );
+
+        // Nếu người dùng thao tác xong trước 30s, hủy timer
+        clearTimeout(autoSuccessTimer);
+
+        if (result.type === 'success' && result.url) {
+          const url = Linking.parse(result.url);
+          const params = url.queryParams as any;
+          const { vnp_ResponseCode } = params;
+
+          if (vnp_ResponseCode === '00') {
+            const verifyRes = await fetchAPI("/(api)/payment/vnpay-verify", {
+              method: "POST",
+              body: JSON.stringify(params),
+            });
+            showAlert("Thanh toán thành công", "Đơn hàng của bạn đã được xác nhận thanh toán.", () => {
+              router.push(`/order-detail/${orderId}`);
+            });
+            return;
+          } else {
+            showAlert("Thanh toán thất bại", `Giao dịch không thành công (Mã: ${vnp_ResponseCode})`);
+            setIsSubmitting(false);
+            return;
+          }
+        } else if (result.type === 'cancel') {
+          setIsSubmitting(false);
+          return;
+        }
       }
+
+      // 3. Final Success Action
+      showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => {
+        router.push(`/order-detail/${orderId}`);
+      });
     } catch (error: any) {
+      console.error("❌ [Frontend] Lỗi chi tiết khi đặt đơn:", error);
       showAlert("Lỗi", error.message || "Không thể tạo đơn hàng lúc này. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);

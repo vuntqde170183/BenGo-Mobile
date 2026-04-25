@@ -1,7 +1,6 @@
 import Constants from "expo-constants";
 import { z } from "zod";
 
-// ─── Helpers lấy ENV an toàn ─────────────────────────────────────────────────
 const getGoogleApiKey = (): string => {
   const key =
     Constants.expoConfig?.extra?.EXPO_PUBLIC_GOOGLE_API_KEY ||
@@ -16,8 +15,6 @@ const getOpenWeatherApiKey = (): string => {
   if (!key) throw new Error("ENV EXPO_PUBLIC_OPENWEATHER_API_KEY chưa được cấu hình");
   return key as string;
 };
-
-// ─── Interface ────────────────────────────────────────────────────────────────
 
 export interface HotspotLocation {
   id: string;
@@ -45,8 +42,6 @@ export interface HotspotResponse {
   analyzedAt: string;
   weatherContext?: string;
 }
-
-// ─── Interface tool searchNearbyHotspots ─────────────────────────────────────
 
 export interface NearbyPlace {
   id: string;
@@ -77,8 +72,6 @@ export interface NearbyHotspotsResult {
   fetchedAt: string;
 }
 
-// ─── Interface tool getWeatherByCoords ───────────────────────────────────────
-
 export interface WeatherData {
   city: string;
   temperature: number;        // °C
@@ -94,15 +87,8 @@ export interface WeatherData {
   fetchedAt: string;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-/** Tọa độ fallback mặc định — chỉ dùng khi caller không truyền tọa độ (ít xảy ra với getWeatherByCoords) */
 const DEFAULT_FALLBACK_COORDS = { lat: 16.0544, lng: 108.2022 } as const;
 
-/**
- * Nhóm địa điểm ưu tiên: Chợ, Siêu thị, Cảng, VLXD, Công ty xây dựng, Xuất khẩu.
- * keyword: lọc chính xác hơn qua Google Places keyword param.
- */
 const HOTSPOT_CATEGORY_CONFIG: Array<{
   category: NearbyCategory;
   placeTypes: string[];
@@ -146,15 +132,6 @@ const HOTSPOT_CATEGORY_CONFIG: Array<{
     },
   ];
 
-// ─── Filter: Loại bỏ kết quả Google Places không liên quan ──────────────────────────────
-/**
- * Google Places đôi khi trả về sai do keyword match theo tên địa điểm.
- * Ví dụ: keyword="cảng" match "Hương Cảng chè quán" (tiệm trà),
- * keyword="xuất khẩu" match "xuất khẩu lao động" (du học).
- * Bộ filter này loại bỏ các kết quả chắc chắn sai trước khi gửi AI.
- */
-
-/** Từ khóa trong tên chỉ ra address/category KHÔNG phải là hotspot giao hàng */
 const GLOBAL_IRRELEVANT_NAME_PATTERNS = [
   // Ăn uống không phải địa điểm giao hàng
   /\bqu\u00e1n\b/i, /\bcaf[eé]\b/i, /\bc\u00e0 ph\u00ea\b/i, /\bch\u00e8\b/i,
@@ -191,10 +168,6 @@ const CATEGORY_EXTRA_EXCLUDE: Record<string, RegExp[]> = {
   ],
 };
 
-/**
- * Kiểm tra xem địa điểm có liên quan tới việc giao hàng không.
- * Trả về false nếu tên địa điểm chứa các từ khóa chỉ ra sai category.
- */
 const isPlaceRelevant = (name: string, category: string): boolean => {
   const lowerName = name.toLowerCase();
   // Kiểm tra global blacklist
@@ -210,8 +183,6 @@ const isPlaceRelevant = (name: string, category: string): boolean => {
   }
   return true;
 };
-
-// ─── Zod schema: validate output của AI ─────────────────────────────────────
 
 const AiRankedLocationSchema = z.object({
   id: z.string(),
@@ -230,8 +201,6 @@ const AiRankingResponseSchema = z.object({
 
 type AiRankedLocation = z.infer<typeof AiRankedLocationSchema>;
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const CATEGORY_TO_ICON: Record<string, string> = {
   market: "storefront",
   supermarket: "cart",
@@ -247,8 +216,6 @@ const CATEGORY_TO_ICON: Record<string, string> = {
   office: "briefcase",
   tourism: "camera",
 };
-
-// ─── Util: Haversine distance ─────────────────────────────────────────────────
 
 const haversineKm = (
   lat1: number,
@@ -266,8 +233,6 @@ const haversineKm = (
     Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
-
-// ─── Util: time helpers ───────────────────────────────────────────────────────
 
 const getDayName = (date: Date): string => {
   const days = [
@@ -293,11 +258,6 @@ const getTimeContext = (date: Date): string => {
   return "khuya";
 };
 
-// ─── Util: fetchWithRetry ────────────────────────────────────────────────────
-/**
- * Gọi lại tối đa `maxRetry` lần khi mạng lỗi hoặc server trả về 5xx.
- * Delay tăng dần: 300ms, 600ms, ... (exponential backoff nhẹ).
- */
 const fetchWithRetry = async (
   fn: () => Promise<Response>,
   maxRetry: number = 2,
@@ -317,8 +277,6 @@ const fetchWithRetry = async (
   throw new Error("fetchWithRetry: unexpected exit");
 };
 
-// ─── Cache: Google Places results (TTL 5 phút) ───────────────────────────────
-
 const PLACES_CACHE_TTL_MS = 5 * 60 * 1000; // 5 phút
 
 interface PlacesCacheEntry {
@@ -328,8 +286,6 @@ interface PlacesCacheEntry {
 
 const placesCache = new Map<string, PlacesCacheEntry>();
 
-// ─── Cache: Weather (TTL 10 phút) ───────────────────────────────────────────
-
 const WEATHER_CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
 
 interface WeatherCacheEntry {
@@ -337,21 +293,14 @@ interface WeatherCacheEntry {
   expiry: number;
 }
 
-/** Cache weather theo tọa độ (làm tròn 2 chữ số thập phân ~1.1km) */
 const weatherCache = new Map<string, WeatherCacheEntry>();
 
 const getWeatherCacheKey = (lat: number, lng: number): string =>
   `${lat.toFixed(2)}_${lng.toFixed(2)}`;
 
-/** Key cache Google Places làm tròn 3 chữ số thập phân (~110m sai số) */
 const getPlacesCacheKey = (lat: number, lng: number, radiusKm: number): string =>
   `${lat.toFixed(3)}_${lng.toFixed(3)}_${radiusKm}`;
 
-// ─── Util: fetch một nhóm địa điểm từ Google Places ─────────────────────────
-/**
- * Fetch tất cả địa điểm thuộc một category từ Google Places Nearby Search.
- * Hàm này được gọi song song cho 6 category thông qua Promise.allSettled.
- */
 const fetchCategoryPlaces = async (
   config: (typeof HOTSPOT_CATEGORY_CONFIG)[number],
   latitude: number,
@@ -409,18 +358,6 @@ const fetchCategoryPlaces = async (
   }));
 };
 
-// ─── TOOL 1: searchNearbyHotspots ─────────────────────────────────────────────
-/**
- * Tìm kiếm các điểm hotspot xung quanh vị trí hiện tại thông qua Google Places API.
- *
- * Tìm 6 nhóm địa điểm: Chợ, Siêu thị, Cảng, VLXD, Xây dựng.
- * Mỗi nhóm được fetch SONG SONG (Promise.allSettled) — giảm ~80% latency so với tuần tự.
- * Kết quả được CACHE 5 phút để tránh gọi lại API khi tài xế không di chuyển.
- *
- * @param latitude - Vĩ độ vị trí hiện tại
- * @param longitude - Kinh độ vị trí hiện tại
- * @param radiusKm - Bán kính tìm kiếm (mặc định 10km, tối đa 50km)
- */
 export const searchNearbyHotspots = async (
   latitude: number,
   longitude: number,

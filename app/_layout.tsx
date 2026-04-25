@@ -19,6 +19,7 @@ const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
+// LogBox.ignoreAllLogs();
 
 export default function RootLayout() {
   const [loaded] = useFonts({

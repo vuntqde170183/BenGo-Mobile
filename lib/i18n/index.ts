@@ -3,13 +3,11 @@ import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Import translations
 import en from './locales/en.json';
 import vi from './locales/vi.json';
 
 const LANGUAGE_KEY = '@app_language';
 
-// Language detector
 const languageDetector = {
   type: 'languageDetector' as const,
   async: true,
