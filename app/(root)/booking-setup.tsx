@@ -202,13 +202,10 @@ const BookingSetupScreen = () => {
         note: `${goodsName} (${goodsWeight}kg). ${note}`,
       };
 
-      // 1. Create the order first (Pending payment)
       const response = await fetchAPI("/(api)/orders", {
         method: "POST",
         body: JSON.stringify(orderData),
       });
-
-      console.log("✅ [Frontend] Phản hồi từ API /(api)/orders:", JSON.stringify(response, null, 2));
 
       if (!response || !response.data) {
         throw new Error("Không thể tạo đơn hàng hoặc dữ liệu phản hồi trống.");
@@ -216,8 +213,8 @@ const BookingSetupScreen = () => {
 
       const orderId = response.data.id || response.data._id;
 
-      // 2. Handle Payment logic
       if (selectedPayment === "STRIPE") {
+
         const { data: paymentIntent } = await fetchAPI("/(api)/orders/create-payment-intent", {
           method: "POST",
           body: JSON.stringify({
@@ -255,12 +252,6 @@ const BookingSetupScreen = () => {
             returnUrl: process.env.EXPO_PUBLIC_VNPAY_RETURN_URL,
           }),
         });
-
-        if (!vnpayData?.paymentUrl) {
-          throw new Error("Không thể khởi tạo thanh toán VNPay.");
-        }
-
-        // Bắt đầu Timer 30s để tự động thành công (Dành cho Sandbox/Demo)
         const autoSuccessTimer = setTimeout(async () => {
           try {
             const verifyRes = await fetchAPI("/(api)/payment/vnpay-verify", {
@@ -276,7 +267,7 @@ const BookingSetupScreen = () => {
               router.push(`/order-detail/${orderId}`);
             });
           } catch (e) {
-            console.error("❌ [VNPay] Lỗi tự động verify:", e);
+            console.error(e);
           }
         }, 30000);
 
@@ -313,13 +304,10 @@ const BookingSetupScreen = () => {
         }
       }
 
-      // 3. Final Success Action
-      console.log("🎯 [Frontend] Đặt đơn thành công. Order ID:", orderId);
       showAlert("Thành công", "Đơn hàng của bạn đã được tạo.", () => {
         router.push(`/order-detail/${orderId}`);
       });
     } catch (error: any) {
-      console.error("❌ [Frontend] Lỗi chi tiết khi đặt đơn:", error);
       showAlert("Lỗi", error.message || "Không thể tạo đơn hàng lúc này. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
